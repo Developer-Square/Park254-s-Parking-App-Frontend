@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/pages/registration_login_page.dart';
+import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../components/globals_registration_login.dart' as globals;
 
 class LoginScreen extends StatefulWidget {
@@ -53,12 +53,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                       'You need to sign in or create an account to continue',
                       style: TextStyle(
-                          fontFamily: globals.fontType,
                           fontWeight: FontWeight.bold,
                           color: globals.fontColor,
-                          height: 1.5,
-                          fontSize: 29.0))),
-              SizedBox(height: 200.0),
+                          height: 1.7,
+                          fontSize: 31.0))),
+              SizedBox(height: 160.0),
               Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       InkWell(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => RegistrationLoginPage()));
+                              builder: (context) => LoginPage()));
                         },
                         child: Container(
                           height: 50.0,
@@ -79,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text('Login with email',
                                   style: TextStyle(
                                       fontSize: 16.0,
-                                      fontFamily: globals.fontType,
                                       fontWeight: FontWeight.bold,
                                       color: globals.fontColor))),
                         ),

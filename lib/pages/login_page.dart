@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../components/globals_registration_login.dart' as globals;
 
-class RegistrationLoginPage extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _RegistrationLoginPageState createState() => _RegistrationLoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
+class _LoginPageState extends State<LoginPage> {
   //Widget function that displays the inputs
   Widget _buildFormField(String text) {
     return Column(children: <Widget>[
@@ -56,6 +57,7 @@ class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
                 image: AssetImage(
                   'images/parking-icon.png',
                 ),
+                color: Colors.grey.withOpacity(0.6),
                 height: 300.0,
               ),
             ),
@@ -100,7 +102,10 @@ class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
                       ),
                       FlatButton(
                           padding: EdgeInsets.only(right: 10.0),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => RegistrationPage()));
+                          },
                           child: Text(
                             'Sign up',
                             style: TextStyle(
