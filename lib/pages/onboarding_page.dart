@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../config/globals.dart' as globals;
+import '../components/OnBoardingScreen.dart';
 
 class OnBoardingPage extends StatefulWidget {
   OnBoardingPage({Key key}) : super(key: key);
@@ -11,8 +12,11 @@ class OnBoardingPage extends StatefulWidget {
 
 class _OnBoardingPageState extends State<OnBoardingPage> {
   Timer _timer;
-  int _start = 12;
+  int _start = 20;
 
+  /// Runs a periodic countdown timer of type [Timer]
+  ///
+  /// Timer can be adjusted by setting [_start]
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
@@ -20,7 +24,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           (Timer timer) {
         if (_start == 0) {
           setState(() {
-            _start = 12;
+            _start = 20;
           });
         } else {
           setState(() {
@@ -31,15 +35,33 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     );
   }
 
+  /// Changes the onboarding screens at set intervals
+  ///
+  /// Relies on [_start] value which is set by [startTimer()]
   changeScreens() {
-    if(_start > 9){
+    if(_start > 15){
       return Logo();
-    } else if (_start > 6 && _start < 10){
-      return Find();
-    } else if (_start > 3 && _start < 7){
-      return StayUpdated();
+    } else if (_start > 10 && _start < 16){
+      return OnBoardingScreen(
+          iconName: Icons.near_me,
+          iconSemanticLabel: 'find in page icon',
+          heading: 'Find the Perfect Parking Lot',
+          description: 'We can"t find perfect parking if we can"t find you'
+      );
+    } else if (_start > 5 && _start < 11){
+      return OnBoardingScreen(
+          iconName: Icons.notifications,
+          iconSemanticLabel: 'Notifications icon',
+          heading: 'Stay Updated With Nearby Parking Lot',
+          description: 'Only important reminders regarding the parking you choose'
+      );
     } else {
-      return Track();
+      return OnBoardingScreen(
+          iconName: Icons.directions_run,
+          iconSemanticLabel: 'Running icon',
+          heading: 'Always Find Your Parked Vehicle',
+          description: 'We can always help you to locate your vehicle'
+      );
     }
   }
 
@@ -65,6 +87,10 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           child: changeScreens(),
           key: ValueKey(_start),
           duration: Duration(seconds: 1),
+          transitionBuilder: (widget, animation) => ScaleTransition(
+            scale: animation,
+            child: widget,
+          ),
         ),
       ),
       backgroundColor: globals.primaryColor,
@@ -91,143 +117,8 @@ class Logo extends StatelessWidget {
         image: AssetImage(
           'assets/images/Park254_logo.png',
         ),
-        color: Color.fromRGBO(255, 255, 255, 0.5),
-        colorBlendMode: BlendMode.modulate
-    );
-  }
-}
-
-class Find extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Icon(
-              Icons.near_me,
-              semanticLabel: 'find in page icon',
-              color: Colors.black54,
-              size: 100,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'Find the Perfect Parking Lot',
-              style: TextStyle(
-                  color: globals.textColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Text(
-              'We can"t find perfect parking if we can"t find you',
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 20,
-                  fontWeight: FontWeight.normal
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class StayUpdated extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Icon(
-              Icons.notifications,
-              semanticLabel: 'Notifications icon',
-              color: Colors.black54,
-              size: 100,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'Stay Updated With Nearby Parking Lot',
-              style: TextStyle(
-                  color: globals.textColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Text(
-              'Only important reminders regarding the parking you choose',
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 20,
-                  fontWeight: FontWeight.normal
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Track extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Icon(
-              Icons.directions_run,
-              semanticLabel: 'Running icon',
-              color: Colors.black54,
-              size: 100,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'Always Find Your Parked Vehicle',
-              style: TextStyle(
-                  color: globals.textColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Text(
-              'We can always help you to locate your vehicle',
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 20,
-                  fontWeight: FontWeight.normal
-              ),
-            ),
-          ),
-        ],
-      ),
+        //color: Color.fromRGBO(255, 255, 255, 0.5),
+        //colorBlendMode: BlendMode.modulate
     );
   }
 }
