@@ -12,7 +12,6 @@ class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
         backgroundColor: Color(0xFF2BE9BA),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
               height: 120.0,
@@ -36,20 +35,82 @@ class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF202B30),
+                        color: Color(0xFF212832),
                         height: 1.5,
                         fontSize: 29.0))),
-            SizedBox(height: 240.0),
-            Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    color: Colors.white,
-                    height: 40.0,
-                    width: MediaQuery.of(context).size.width - 50,
-                  )
-                ])
+            SizedBox(height: 200.0),
+            Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        // Navigator.of(context).push(MaterailPageRoute(
+                        //   builder: (context) => LoginPage
+                        // ))
+                      },
+                      child: Container(
+                        height: 50.0,
+                        width: MediaQuery.of(context).size.width - 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0))),
+                        child: Center(
+                            child: Text('Login with email',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF212832)))),
+                      ),
+                    ),
+                    SizedBox(height: 15.0),
+                    InkWell(
+                        onTap: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              width:
+                                  (MediaQuery.of(context).size.width / 2) - 35,
+                              height: 50.0,
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF3C5898),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
+                              child: Center(
+                                child: Text('Facebook',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                    )),
+                              ),
+                            ),
+                            SizedBox(width: 10.0),
+                            Container(
+                              width:
+                                  (MediaQuery.of(context).size.width / 2) - 35,
+                              height: 50.0,
+                              decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.7),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25.0))),
+                              child: Center(
+                                child: Text('Google',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                    )),
+                              ),
+                            ),
+                          ],
+                        ))
+                  ]),
+            ),
           ],
         ));
   }
 }
+
+class MediaQuer {}
