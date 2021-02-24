@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import './pages/onboarding_page.dart';
-import './pages/registration_login_page.dart';
+import 'pages/login_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/registration_login',
       // home: OnBoarding Page(),
-      routes: {'/registration_login': (context) => RegistrationLoginPage()},
+      routes: {'/registration_login': (context) => LoginScreen()},
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/globals_registration_login.dart' as globals;
 
 class RegistrationLoginPage extends StatefulWidget {
   @override
@@ -6,111 +7,113 @@ class RegistrationLoginPage extends StatefulWidget {
 }
 
 class _RegistrationLoginPageState extends State<RegistrationLoginPage> {
+  //Widget function that displays the inputs
+  Widget _buildFormField(String text) {
+    return Column(children: <Widget>[
+      Container(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: TextFormField(
+            decoration: InputDecoration(
+                hintText: text,
+                hintStyle: TextStyle(color: globals.placeHolderColor)),
+          )),
+      text == 'Password'
+          ? (Align(
+              alignment: Alignment.centerRight,
+              child: FlatButton(
+                  onPressed: () {},
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: Text(
+                    'Forgot Password',
+                    style: TextStyle(color: globals.fontColor, fontSize: 15.0),
+                  )),
+            ))
+          : SizedBox(height: 0),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xFF2BE9BA),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return SafeArea(
+        child: Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            color: globals.fontColor,
+            onPressed: () {
+              Navigator.of(context).pop();
+            }),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            SizedBox(
-              height: 120.0,
+            Container(
+              child: Image(
+                image: AssetImage(
+                  'images/parking-icon.png',
+                ),
+                height: 300.0,
+              ),
             ),
             Container(
-                height: 55.0,
-                padding: const EdgeInsets.only(left: 60.0),
-                child: Transform.rotate(
-                  angle: (-360 / 30),
-                  child: Icon(
-                    Icons.lock,
-                    color: Color(0xFF202B30).withOpacity(0.2),
-                    size: 90.0,
-                  ),
-                )),
-            SizedBox(height: 100.0),
-            Padding(
-                padding: const EdgeInsets.only(left: 30.0, right: 20.0),
-                child: Text(
-                    'You need to sign in or create an account to continue',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF212832),
-                        height: 1.5,
-                        fontSize: 29.0))),
-            SizedBox(height: 200.0),
-            Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        // Navigator.of(context).push(MaterailPageRoute(
-                        //   builder: (context) => LoginPage
-                        // ))
-                      },
-                      child: Container(
+                child: Form(
+              child: Column(children: <Widget>[
+                _buildFormField('Email'),
+                SizedBox(height: 15.0),
+                _buildFormField('Password'),
+              ]),
+            )),
+            SizedBox(height: 40.0),
+            Container(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
                         height: 50.0,
                         width: MediaQuery.of(context).size.width - 50,
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: globals.backgroundColor,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(25.0))),
                         child: Center(
-                            child: Text('Login with email',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF212832)))),
+                          child: Text('Log in',
+                              style: TextStyle(
+                                  color: globals.fontColor,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold)),
+                        )),
+                  ),
+                  SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'or',
+                        style:
+                            TextStyle(color: globals.fontColor, fontSize: 18.0),
                       ),
-                    ),
-                    SizedBox(height: 15.0),
-                    InkWell(
-                        onTap: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width:
-                                  (MediaQuery.of(context).size.width / 2) - 35,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF3C5898),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(25.0))),
-                              child: Center(
-                                child: Text('Facebook',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                    )),
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Container(
-                              width:
-                                  (MediaQuery.of(context).size.width / 2) - 35,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.7),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(25.0))),
-                              child: Center(
-                                child: Text('Google',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                    )),
-                              ),
-                            ),
-                          ],
-                        ))
-                  ]),
-            ),
+                      FlatButton(
+                          padding: EdgeInsets.only(right: 10.0),
+                          onPressed: () {},
+                          child: Text(
+                            'Sign up',
+                            style: TextStyle(
+                                color: globals.backgroundColor,
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ],
+                  )
+                ])),
           ],
-        ));
+        ),
+      ),
+    ));
   }
 }
-
-class MediaQuer {}
