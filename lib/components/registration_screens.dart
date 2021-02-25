@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import '../components/globals_registration_login.dart' as globals;
+import '../config/globals.dart' as globals;
 
+/// Creates the input widgets that are displayed on each of the registration pages.
+///
+/// Requires a [title] which acts as the placeholder, [info] which gives the user.
+/// more information and finally [step] so to be displayed on the top left.
+/// Returns a [Widget].
 class RegistrationScreens extends StatelessWidget {
   final String title;
   final String info;
   final int step;
 
-  RegistrationScreens({this.title, this.info, this.step});
+  RegistrationScreens(
+      {@required this.title, @required this.info, @required this.step});
 
   @override
   Widget build(BuildContext context) {
-    //Widget function that displays the inputs
+    /// Builds out every form field depending on the [text] variable passed to it.
     Widget _buildFormField(String text) {
       return Column(children: <Widget>[
         Padding(
@@ -47,6 +53,17 @@ class RegistrationScreens extends StatelessWidget {
                   : text == 'Verification'
                       ? Column(
                           children: [
+                            /// A pub.dev library that builds out the pin code input field in step 2.
+                            ///
+                            /// makes handling of the inputs easier and has a few parameters you can play with.
+                            /// example:
+                            /// dart ```
+                            /// obscuringCharacter: '●'
+                            /// ```
+                            /// can be changed to.
+                            /// dart```
+                            /// obscuringCharacter: '*'.
+                            /// ```
                             PinCodeTextField(
                               appContext: context,
                               onChanged: (value) {
@@ -68,10 +85,12 @@ class RegistrationScreens extends StatelessWidget {
                               onCompleted: (v) {
                                 print("Completed");
                               },
+
+                              /// if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                              ///
+                              /// but you can show anything you want here, like your pop up saying wrong paste format or etc.
                               beforeTextPaste: (text) {
                                 print("Allowing to paste $text");
-                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
                                 return true;
                               },
                             ),

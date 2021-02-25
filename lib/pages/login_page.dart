@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
-import '../components/globals_registration_login.dart' as globals;
+import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
+/// Create a login page, where users can login.
+///
+/// Has an option at the bottom, where a user can choose to signup.
+/// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
-  //Widget function that displays the inputs
+  /// Builds out every form field depending on the [text] variable passed to it.
   Widget _buildFormField(String text) {
     return Column(children: <Widget>[
       Container(
@@ -55,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: Image(
                 image: AssetImage(
-                  'images/parking-icon.png',
+                  'assets/images/parking-icon.png',
                 ),
                 color: Colors.grey.withOpacity(0.6),
                 height: 300.0,

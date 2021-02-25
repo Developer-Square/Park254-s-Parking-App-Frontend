@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
-import '../components/globals_registration_login.dart' as globals;
+import '../config/globals.dart' as globals;
 
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+/// Creates a login screen, where a user can pick different options on.
+/// how to login.
+///
+/// Options include login with [Facebook] and [Google].
+/// Returns a [Widget].
 class _LoginScreenState extends State<LoginScreen> {
+  /// Builds out the social logins at the bottom
   Widget _buildSocials(String title, int buttonColor, bool opacity) {
     return Container(
       width: (MediaQuery.of(context).size.width / 2) - 35,

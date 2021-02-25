@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../components/globals_registration_login.dart' as globals;
+import '../config/globals.dart' as globals;
 import '../components/registration_screens.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -7,9 +7,19 @@ class RegistrationPage extends StatefulWidget {
   _RegistrationPageState createState() => _RegistrationPageState();
 }
 
+/// Creates a registration page, where a user can register an account.
+///
+/// The page has a three steps, email submission, email verification.
+/// and password selection.
+/// Returns a [Widget].
+
 class _RegistrationPageState extends State<RegistrationPage> {
   int _step = 1;
 
+  /// Determines which inputs will be displayed depending on the step count.
+  ///
+  /// Passes in the info to build out the different steps as parameters.
+  /// The parameters include [title], [info] and [step].
   changeScreens() {
     if (_step == 1) {
       return RegistrationScreens(
@@ -93,7 +103,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
           InkWell(
               onTap: () {
                 setState(() {
-                  _step += 1;
+                  if (_step < 3) {
+                    _step += 1;
+                  }
                 });
               },
               child: Container(

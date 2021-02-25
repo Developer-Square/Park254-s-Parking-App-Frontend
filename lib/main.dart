@@ -14,9 +14,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryColor,
       ),
-      initialRoute: '/registration_login',
-      // home: OnBoarding Page(),
-      routes: {'/registration_login': (context) => LoginScreen()},
+      home: OnBoardingPage(),
+      routes: {'/login_screen': (context) => LoginScreen()},
     );
   }
 }
