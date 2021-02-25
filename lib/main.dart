@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import './pages/onboarding_page.dart';
-import './pages/registration_login_page.dart';
+import 'pages/login_screen.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  final Color primaryColor = Color(0xff14eeb5);
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Park254 Parking App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: primaryColor,
       ),
       home: OnBoardingPage(),
-      routes: {'/registration_login': (context) => RegistrationLoginPage()},
+      routes: {'/login_screen': (context) => LoginScreen()},
     );
   }
 }
