@@ -74,14 +74,6 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Welcome',
-          style: TextStyle(
-              color: globals.textColor
-          ),
-        ),
-      ),
       body: Center(
         child: AnimatedSwitcher(
           child: changeScreens(),
@@ -117,8 +109,6 @@ class Logo extends StatelessWidget {
         image: AssetImage(
           'assets/images/Park254_logo.png',
         ),
-        //color: Color.fromRGBO(255, 255, 255, 0.5),
-        //colorBlendMode: BlendMode.modulate
     );
   }
 }
