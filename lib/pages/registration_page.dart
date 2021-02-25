@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/globals_registration_login.dart' as globals;
+import '../components/registration_screens.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -50,12 +51,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
+              icon: Icon(Icons.arrow_back_outlined),
               color: globals.fontColor,
               onPressed: () {
-                setState(() {
-                  _step -= 1;
-                });
+                _step > 1
+                    ? setState(() {
+                        _step -= 1;
+                      })
+                    : Navigator.of(context).pop();
               }),
           title: Text(
             _step == 1
@@ -83,7 +86,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           AnimatedSwitcher(
             child: changeScreens(),
             key: ValueKey(_step),
-            duration: Duration(seconds: 1),
+            duration: Duration(seconds: 2),
             transitionBuilder: (widget, animation) =>
                 ScaleTransition(scale: animation, child: widget),
           ),
@@ -111,79 +114,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ))
         ])),
       ),
-    );
-  }
-}
-
-class RegistrationScreens extends StatelessWidget {
-  final String title;
-  final String info;
-  final int step;
-
-  RegistrationScreens({this.title, this.info, this.step});
-
-  @override
-  Widget build(BuildContext context) {
-    //Widget function that displays the inputs
-    Widget _buildFormField(String text) {
-      return Column(children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Container(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: text == 'Password'
-                  ? Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                              labelText: 'Create password',
-                              labelStyle: TextStyle(
-                                  color: globals.backgroundColor,
-                                  fontSize: 19.0),
-                              hintText: text,
-                              hintStyle:
-                                  TextStyle(color: globals.placeHolderColor)),
-                        ),
-                        SizedBox(height: 15.0),
-                        TextFormField(
-                          decoration: InputDecoration(
-                              labelText: 'Confirm password',
-                              labelStyle: TextStyle(
-                                  color: globals.backgroundColor,
-                                  fontSize: 19.0),
-                              hintText: text,
-                              hintStyle:
-                                  TextStyle(color: globals.placeHolderColor)),
-                        ),
-                      ],
-                    )
-                  : TextFormField(
-                      decoration: InputDecoration(
-                          hintText: text,
-                          hintStyle:
-                              TextStyle(color: globals.placeHolderColor)),
-                    )),
-        ),
-      ]);
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 30.0, right: 30.0),
-          child: Text(
-            info,
-            style: TextStyle(
-                color: globals.fontColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0),
-          ),
-        ),
-        SizedBox(height: 35.0),
-        _buildFormField(title),
-        SizedBox(height: 40.0),
-      ],
     );
   }
 }
