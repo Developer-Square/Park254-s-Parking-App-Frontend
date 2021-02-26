@@ -2,6 +2,21 @@ import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 
 class NearByParking extends StatelessWidget {
+  final String imgPath;
+  final int parkingPrice;
+  final String parkingPlaceName;
+  final double rating;
+  final double distance;
+  final int parkingSlots;
+
+  NearByParking(
+      {@required this.imgPath,
+      @required this.parkingPrice,
+      @required this.parkingPlaceName,
+      @required this.rating,
+      @required this.distance,
+      @required this.parkingSlots});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,13 +37,12 @@ class NearByParking extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   child: Hero(
-                    tag: 'assets/images/parking_photos/parking_4.jpg',
+                    tag: imgPath,
                     child: Image(
                       height: 90.0,
                       width: 85.0,
                       fit: BoxFit.cover,
-                      image: AssetImage(
-                          'assets/images/parking_photos/parking_4.jpg'),
+                      image: AssetImage(imgPath),
                     ),
                   ),
                 ),
@@ -38,7 +52,7 @@ class NearByParking extends StatelessWidget {
                   child: Container(
                     color: Colors.blue,
                     padding: EdgeInsets.all(4.0),
-                    child: Text('Ksh 400 / hr',
+                    child: Text('Ksh $parkingPrice / hr',
                         style: globals.buildTextStyle(12.0, true, 'white')),
                   ),
                 )
@@ -50,13 +64,13 @@ class NearByParking extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Manhattan Mall',
+                parkingPlaceName,
                 style: globals.buildTextStyle(15.0, true, globals.fontColor),
               ),
               SizedBox(height: 7.0),
               Row(
                 children: [
-                  Text('4.6',
+                  Text('$rating',
                       style: globals.buildTextStyle(
                           15.0, true, globals.backgroundColor)),
                   SizedBox(width: 8.0),
@@ -70,7 +84,7 @@ class NearByParking extends StatelessWidget {
                 children: [
                   Icon(Icons.car_rental),
                   SizedBox(width: 6.0),
-                  Text('5 Spaces',
+                  Text('$parkingSlots Spaces',
                       style: globals.buildTextStyle(
                           14.0, true, globals.fontColor)),
                   SizedBox(width: 15.0),
@@ -79,7 +93,7 @@ class NearByParking extends StatelessWidget {
                     size: 17.0,
                   ),
                   SizedBox(width: 6.0),
-                  Text('234m',
+                  Text('$distance m',
                       style: globals.buildTextStyle(
                           14.0, true, globals.fontColor)),
                 ],

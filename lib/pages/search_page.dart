@@ -84,13 +84,41 @@ class _SearchPageState extends State<SearchPage> {
                           child: ListView(
                             scrollDirection: Axis.vertical,
                             children: [
-                              NearByParking(),
+                              NearByParking(
+                                  imgPath:
+                                      'assets/images/parking_photos/parking_4.jpg',
+                                  parkingPrice: 200,
+                                  parkingPlaceName: 'Parking on Wabera St',
+                                  rating: 3.5,
+                                  distance: 125,
+                                  parkingSlots: 5),
                               SizedBox(height: 30.0),
-                              NearByParking(),
+                              NearByParking(
+                                  imgPath:
+                                      'assets/images/parking_photos/parking_7.jpg',
+                                  parkingPrice: 130,
+                                  parkingPlaceName: 'First Church of Christ',
+                                  rating: 4.1,
+                                  distance: 234,
+                                  parkingSlots: 2),
                               SizedBox(height: 30.0),
-                              NearByParking(),
+                              NearByParking(
+                                  imgPath:
+                                      'assets/images/parking_photos/parking_1.jpg',
+                                  parkingPrice: 450,
+                                  parkingPlaceName: 'Parklands Ave, Nairobi',
+                                  rating: 3.9,
+                                  distance: 234,
+                                  parkingSlots: 7),
                               SizedBox(height: 30.0),
-                              NearByParking(),
+                              NearByParking(
+                                  imgPath:
+                                      'assets/images/parking_photos/parking_9.jpg',
+                                  parkingPrice: 400,
+                                  parkingPlaceName: 'Parklands Ave, Nairobi',
+                                  rating: 3.9,
+                                  distance: 234,
+                                  parkingSlots: 7),
                               SizedBox(height: 30.0),
                             ],
                           )),

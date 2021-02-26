@@ -39,7 +39,7 @@ final List<Parking> parkingPlaces = [
       locationCoords: LatLng(-1.28362, 36.8142),
       thumbNail: 'assets/images/parking_photos/parking_2.jpg'),
   Parking(
-      parkingPlaceName: 'First Church of Christ',
+      parkingPlaceName: 'Parklands Ave, Nairobi',
       type: 'PARKING MALL',
       rating: 4.1,
       parkingSlots: 3,
