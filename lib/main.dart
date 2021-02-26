@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/pages/search_page.dart';
 import './pages/onboarding_page.dart';
 import 'pages/login_screen.dart';
 
@@ -14,8 +15,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryColor,
       ),
-      home: OnBoardingPage(),
-      routes: {'/login_screen': (context) => LoginScreen()},
+      initialRoute: '/search_page',
+      // home: OnBoardingPage(),
+      routes: {
+        '/login_screen': (context) => LoginScreen(),
+        '/search_page': (context) => SearchPage()
+      },
     );
   }
 }
