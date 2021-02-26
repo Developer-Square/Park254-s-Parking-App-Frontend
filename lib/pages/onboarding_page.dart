@@ -22,7 +22,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (_start == 0) {
           setState(() {
             _start = 20;
@@ -54,7 +54,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           iconSemanticLabel: 'Notifications icon',
           heading: 'Stay Updated With Nearby Parking Lot',
           description:
-          'Only important reminders regarding the parking you choose');
+              'Only important reminders regarding the parking you choose');
     } else {
       return OnBoardingScreen(
           iconName: Icons.directions_run,
