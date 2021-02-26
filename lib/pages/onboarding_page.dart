@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'dart:async';
 import '../config/globals.dart' as globals;
 import '../components/OnBoardingScreen.dart';
@@ -39,29 +40,27 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   ///
   /// Relies on [_start] value which is set by [startTimer()]
   changeScreens() {
-    if(_start > 15){
+    if (_start > 15) {
       return Logo();
-    } else if (_start > 10 && _start < 16){
+    } else if (_start > 10 && _start < 16) {
       return OnBoardingScreen(
           iconName: Icons.near_me,
           iconSemanticLabel: 'find in page icon',
           heading: 'Find the Perfect Parking Lot',
-          description: 'We can"t find perfect parking if we can"t find you'
-      );
-    } else if (_start > 5 && _start < 11){
+          description: 'We can"t find perfect parking if we can"t find you');
+    } else if (_start > 5 && _start < 11) {
       return OnBoardingScreen(
           iconName: Icons.notifications,
           iconSemanticLabel: 'Notifications icon',
           heading: 'Stay Updated With Nearby Parking Lot',
-          description: 'Only important reminders regarding the parking you choose'
-      );
+          description:
+          'Only important reminders regarding the parking you choose');
     } else {
       return OnBoardingScreen(
           iconName: Icons.directions_run,
           iconSemanticLabel: 'Running icon',
           heading: 'Always Find Your Parked Vehicle',
-          description: 'We can always help you to locate your vehicle'
-      );
+          description: 'We can always help you to locate your vehicle');
     }
   }
 
@@ -87,14 +86,13 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       ),
       backgroundColor: globals.primaryColor,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){
-          //navigate to search page
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
         },
         label: Text(
           'Skip',
-          style: TextStyle(
-            color: globals.textColor
-          ),
+          style: TextStyle(color: globals.textColor),
         ),
         backgroundColor: globals.primaryColor,
       ),
@@ -106,9 +104,9 @@ class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image(
-        image: AssetImage(
-          'assets/images/Park254_logo.png',
-        ),
+      image: AssetImage(
+        'assets/images/Park254_logo.png',
+      ),
     );
   }
 }
