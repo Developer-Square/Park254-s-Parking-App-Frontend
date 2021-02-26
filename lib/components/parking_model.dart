@@ -38,4 +38,12 @@ final List<Parking> parkingPlaces = [
       distance: 450,
       locationCoords: LatLng(-1.28362, 36.8142),
       thumbNail: 'assets/images/parking_photos/parking_2.jpg'),
+  Parking(
+      parkingPlaceName: 'First Church of Christ',
+      type: 'PARKING MALL',
+      rating: 4.1,
+      parkingSlots: 3,
+      distance: 450,
+      locationCoords: LatLng(-1.308173, 36.823869),
+      thumbNail: 'assets/images/parking_photos/parking_3.jpg')
 ];

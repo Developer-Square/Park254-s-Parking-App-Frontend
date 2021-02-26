@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
+import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -36,25 +38,75 @@ class _SearchPageState extends State<SearchPage> {
             child: GoogleMap(
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
-                  target: LatLng(-1.286389, 36.817223), zoom: 12.0),
+                  target: LatLng(-1.286389, 36.817223), zoom: 14.0),
               markers: Set.from(allMarkers),
               onMapCreated: mapCreated,
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: InkWell(
-              onTap: movetoBoston,
+            child: Material(
+              color: Colors.transparent,
               child: Container(
-                height: 40.0,
-                width: 40.0,
+                height: MediaQuery.of(context).size.height / 2.9,
+                width: MediaQuery.of(context).size.width - 50,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.green),
-                child: Icon(Icons.forward, color: Colors.white),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(1.0, 3.0), //(x,y)
+                      blurRadius: 7.0,
+                    )
+                  ],
+                  color: Colors.white,
+                ),
+                margin: EdgeInsets.only(bottom: 70.0),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Nearest Parking',
+                              style: globals.buildTextStyle(
+                                  16.0, true, globals.fontColor)),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 19.0,
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 15.0),
+                      SizedBox(
+                          height: 205.0,
+                          child: ListView(
+                            scrollDirection: Axis.vertical,
+                            children: [
+                              NearByParking(),
+                              SizedBox(height: 30.0),
+                              NearByParking(),
+                              SizedBox(height: 30.0),
+                              NearByParking(),
+                              SizedBox(height: 30.0),
+                              NearByParking(),
+                              SizedBox(height: 30.0),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+                height: 50.0,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.white),
+          )
         ],
       ),
     ));
@@ -64,15 +116,5 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       _controller = controller;
     });
-  }
-
-  movetoBoston() {
-    _controller.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-          target: LatLng(42.3601, -71.0589),
-          zoom: 14.0,
-          bearing: 45.0,
-          tilt: 45.0),
-    ));
   }
 }

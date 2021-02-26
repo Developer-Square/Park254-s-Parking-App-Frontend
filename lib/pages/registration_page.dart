@@ -76,10 +76,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 : _step == 2
                     ? 'Verification'
                     : 'Password',
-            style: TextStyle(
-                color: globals.fontColor,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold),
+            style: globals.buildTextStyle(18.0, true, globals.fontColor),
           ),
           centerTitle: true,
         ),
@@ -117,10 +114,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Center(
                   child: Text(
                     _step == 3 ? 'Finish' : 'Next',
-                    style: TextStyle(
-                        color: globals.fontColor,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold),
+                    style:
+                        globals.buildTextStyle(18.0, true, globals.fontColor),
                   ),
                 ),
               ))

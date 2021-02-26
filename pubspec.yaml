@@ -48,6 +48,10 @@ flutter:
     - assets/images/parking-icon.png
     - assets/images/parking_photos/parking_1.jpg
     - assets/images/parking_photos/parking_2.jpg
+    - assets/images/parking_photos/parking_3.jpg
+    - assets/images/parking_photos/parking_4.jpg
+    - assets/images/parking_photos/parking_7.jpg
+    - assets/images/parking_photos/parking_9.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -89,10 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                                 BorderRadius.all(Radius.circular(25.0))),
                         child: Center(
                           child: Text('Log in',
-                              style: TextStyle(
-                                  color: globals.fontColor,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold)),
+                              style: globals.buildTextStyle(
+                                  18.0, true, globals.fontColor)),
                         )),
                   ),
                   SizedBox(height: 10.0),
@@ -112,10 +110,8 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: Text(
                             'Sign up',
-                            style: TextStyle(
-                                color: globals.backgroundColor,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold),
+                            style: globals.buildTextStyle(
+                                18.0, true, globals.backgroundColor),
                           )),
                     ],
                   )

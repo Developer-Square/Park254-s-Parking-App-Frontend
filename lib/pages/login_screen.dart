@@ -82,10 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   BorderRadius.all(Radius.circular(25.0))),
                           child: Center(
                               child: Text('Login with email',
-                                  style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: globals.fontColor))),
+                                  style: globals.buildTextStyle(
+                                      16.0, true, globals.fontColor))),
                         ),
                       ),
                       SizedBox(height: 15.0),
