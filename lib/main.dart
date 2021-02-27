@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './pages/onboarding_page.dart';
 import 'pages/login_screen.dart';
+import 'package:park254_s_parking_app/pages/booking_test.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryColor,
       ),
-      home: OnBoardingPage(),
+      home: BookingTest(),
       routes: {'/login_screen': (context) => LoginScreen()},
     );
   }
