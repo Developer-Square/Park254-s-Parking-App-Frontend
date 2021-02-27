@@ -10,6 +10,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  var _activeTab = 'home';
   List<Marker> allMarkers = [];
 
   GoogleMapController _controller;
@@ -25,6 +26,39 @@ class _SearchPageState extends State<SearchPage> {
               title: element.parkingPlaceName, snippet: element.toString()),
           position: element.locationCoords));
     });
+  }
+
+  Widget _buildNavigatorIcons(String icon, String text) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _activeTab = icon;
+        });
+      },
+      child: Column(
+        children: [
+          Icon(
+            icon == 'home'
+                ? Icons.home_filled
+                : icon == 'parking'
+                    ? Icons.local_parking
+                    : Icons.person_outline,
+            color: _activeTab == icon
+                ? globals.fontColor
+                : Colors.grey.withOpacity(0.8),
+          ),
+          Text(
+            text,
+            style: globals.buildTextStyle(
+                12.0,
+                true,
+                _activeTab == icon
+                    ? globals.fontColor
+                    : Colors.grey.withOpacity(0.8)),
+          )
+        ],
+      ),
+    );
   }
 
   Widget build(BuildContext context) {
@@ -129,12 +163,19 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-                height: 50.0,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.white),
-          )
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                  height: 50.0,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      _buildNavigatorIcons('home', 'Home'),
+                      _buildNavigatorIcons('parking', 'My Parking'),
+                      _buildNavigatorIcons('profile', 'Profile')
+                    ],
+                  ))),
         ],
       ),
     ));
