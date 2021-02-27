@@ -71,6 +71,18 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   }
 
   @override
+  void deactivate(){
+    _timer.cancel();
+    super.deactivate();
+  }
+
+  @override
+  void dispose(){
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
