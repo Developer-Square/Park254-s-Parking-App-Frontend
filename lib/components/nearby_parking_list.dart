@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 
-class NearByParking extends StatelessWidget {
+class NearByParkingList extends StatelessWidget {
   final String imgPath;
   final int parkingPrice;
   final String parkingPlaceName;
@@ -9,7 +9,7 @@ class NearByParking extends StatelessWidget {
   final double distance;
   final int parkingSlots;
 
-  NearByParking(
+  NearByParkingList(
       {@required this.imgPath,
       @required this.parkingPrice,
       @required this.parkingPlaceName,
