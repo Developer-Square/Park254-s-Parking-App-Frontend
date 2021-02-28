@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
+import 'package:park254_s_parking_app/components/recent_searches.dart';
 import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height - 300.0,
+              height: MediaQuery.of(context).size.height - 310.0,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -71,6 +72,7 @@ class _SearchPageState extends State<SearchPage> {
                     Padding(
                       padding: const EdgeInsets.only(left: 35.0, top: 25.0),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'RECENT SEARCH',
@@ -80,9 +82,21 @@ class _SearchPageState extends State<SearchPage> {
                                 fontSize: 15.0),
                           ),
                           SizedBox(height: 30.0),
-                          Row(children: <Widget>[
-                            Container(child: Icon(Icons.watch_later_outlined))
-                          ])
+                          RecentSearches(
+                              specificLocation: 'Parking on Wabera St',
+                              town: 'Nairobi'),
+                          SizedBox(height: 20.0),
+                          RecentSearches(
+                              specificLocation: 'First Church of Christ',
+                              town: 'Nairobi'),
+                          SizedBox(height: 20.0),
+                          RecentSearches(
+                              specificLocation: 'Parklands Ave, Nairobi',
+                              town: 'Nairobi'),
+                          SizedBox(height: 20.0),
+                          RecentSearches(
+                              specificLocation: 'Parklands Ave, Nairobi',
+                              town: 'Nairobi'),
                         ],
                       ),
                     )

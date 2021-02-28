@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import '../config/globals.dart' as globals;
 
-class SearchBar extends StatelessWidget {
+class SearchBar extends StatefulWidget {
   double offsetY;
   double blurRadius;
   double opacity;
+  bool searchBarTapped = false;
 
   SearchBar(
       {@required this.offsetY,
       @required this.blurRadius,
       @required this.opacity});
+  @override
+  SearchBarState createState() => SearchBarState();
+}
 
+class SearchBarState extends State<SearchBar> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
@@ -22,9 +27,9 @@ class SearchBar extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(opacity),
-              offset: Offset(0.0, offsetY), //(x,y)
-              blurRadius: blurRadius,
+              color: Colors.grey.withOpacity(widget.opacity),
+              offset: Offset(0.0, widget.offsetY), //(x,y)
+              blurRadius: widget.blurRadius,
             )
           ],
         ),
@@ -50,5 +55,11 @@ class SearchBar extends StatelessWidget {
         ]),
       ),
     );
+  }
+
+  void searchBar() {
+    setState(() {
+      widget.searchBarTapped = !widget.searchBarTapped;
+    });
   }
 }
