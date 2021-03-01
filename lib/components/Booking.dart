@@ -24,6 +24,7 @@ class Booking extends StatefulWidget {
   final String parkingLotNumber;
   final int price;
   final String imagePath;
+  static const routeName = '/booking';
 
   Booking({
     @required this.bookingNumber,
@@ -55,7 +56,7 @@ class _BookingState extends State<Booking> {
   final List<String> paymentMethodList = <String>['MPESA','Visa'];
 
   ///shows date picker for arrival date
-  _selectArrivalDate(BuildContext context) async{
+  void _selectArrivalDate(BuildContext context) async{
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: arrivalDate,
@@ -272,7 +273,7 @@ class _BookingState extends State<Booking> {
                                         widget.imagePath,
                                       ),
                                     ),
-                                    flex: 4,
+                                    flex: 3,
                                     fit: FlexFit.loose,
                                   ),
                                   Spacer(),
@@ -304,7 +305,7 @@ class _BookingState extends State<Booking> {
 
                                       ],
                                     ),
-                                    flex: 8,
+                                    flex: 6,
                                   ),
                                 ],
                               ),

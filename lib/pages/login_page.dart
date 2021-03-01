@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/bookingArguments.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
+import 'package:park254_s_parking_app/components/Booking.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -79,7 +81,19 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context,
+                          Booking.routeName,
+                        arguments: BookingArguments(
+                            bookingNumber: 'haaga5441',
+                            destination: 'Nairobi',
+                            parkingLotNumber: 'pajh5114',
+                            price: 10,
+                            imagePath: 'assets/images/Park254_logo.png'
+                        )
+                      );
+                    },
                     child: Container(
                         height: 50.0,
                         width: MediaQuery.of(context).size.width - 50,
