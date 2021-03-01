@@ -22,7 +22,7 @@ class DatePicker extends StatelessWidget{
     return Material(
       color: Colors.white,
       child: InkWell(
-        onTap: () => onSelect,
+        onTap: onSelect,
         child: Text(
           dateDisplay,
           style: TextStyle(

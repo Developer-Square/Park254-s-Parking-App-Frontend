@@ -22,7 +22,7 @@ class TimePicker extends StatelessWidget{
     return Material(
       color: Colors.white,
       child: InkWell(
-        onTap: () => onSelect,
+        onTap: onSelect,
         child: Text(
           timeDisplay,
           style: TextStyle(

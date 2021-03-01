@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './TimePicker.dart';
 import './DatePicker.dart';
+import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
 class TimeDatePicker extends StatelessWidget{
   final Function pickArrivalDate;
@@ -44,21 +45,22 @@ class TimeDatePicker extends StatelessWidget{
                         'Arriving',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16
+                            fontSize: 16,
+                          color: globals.textColor
                         ),
                       ),
                       Row(
                         children: <Widget>[
                           Expanded(
                             child: DatePicker(
-                              onSelect: () => pickArrivalDate,
+                              onSelect: pickArrivalDate,
                               dateDisplay: arrivalDate,
                             ),
                             flex: 1,
                           ),
                           Expanded(
                             child: TimePicker(
-                              onSelect: () => pickArrivalTime,
+                              onSelect: pickArrivalTime,
                               timeDisplay: arrivalTime,
                             ),
                             flex: 1,
@@ -84,21 +86,22 @@ class TimeDatePicker extends StatelessWidget{
                         'Leaving',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16
+                            fontSize: 16,
+                            color: globals.textColor
                         ),
                       ),
                       Row(
                         children: <Widget>[
                           Expanded(
                             child: DatePicker(
-                              onSelect: () => pickLeavingDate,
+                              onSelect: pickLeavingDate,
                               dateDisplay: leavingDate,
                             ),
                             flex: 1,
                           ),
                           Expanded(
                             child: TimePicker(
-                              onSelect: () => pickLeavingTime,
+                              onSelect: pickLeavingTime,
                               timeDisplay: leavingTime,
                             ),
                             flex: 1,
