@@ -235,6 +235,9 @@ class _BookingState extends State<Booking> {
               icon: Icon(Icons.arrow_back,
                 color: globals.textColor,
               ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
           ),
           body: SingleChildScrollView(
