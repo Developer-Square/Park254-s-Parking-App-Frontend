@@ -22,7 +22,7 @@ class MyText extends StatelessWidget {
       content,
       style: TextStyle(
         color: globals.textColor,
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: FontWeight.bold
       ),
     );

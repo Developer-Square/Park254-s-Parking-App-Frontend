@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 import './MyText.dart';
+import './BorderContainer.dart';
+import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 
 ///Creates a booking page
 ///
@@ -50,6 +52,7 @@ class _BookingState extends State<Booking> {
   String driver = "linus";
   String paymentMethod = 'Visa';
   int amount = 0;
+  final List<String> paymentMethodList = <String>['MPESA','Visa'];
 
   ///shows date picker for arrival date
   _selectArrivalDate(BuildContext context) async{
@@ -146,13 +149,6 @@ class _BookingState extends State<Booking> {
     });
   }
 
-  ///listens to payment method input
-  void _changePaymentMethod(){
-    setState(() {
-      paymentMethod = paymentMethodController.text;
-    });
-  }
-
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -160,7 +156,6 @@ class _BookingState extends State<Booking> {
     vehicleController.dispose();
     numberPlateController.dispose();
     driverController.dispose();
-    paymentMethodController.dispose();
     super.dispose();
   }
 
@@ -172,30 +167,29 @@ class _BookingState extends State<Booking> {
     vehicleController.text = vehicle;
     numberPlateController.text = numberPlate;
     driverController.text = driver;
-    paymentMethodController.text = paymentMethod;
 
     // Start listening to changes.
     vehicleController.addListener(_changeVehicle);
     numberPlateController.addListener(_changePlate);
     driverController.addListener(_changeDriver);
-    paymentMethodController.addListener(_changePaymentMethod);
   }
 
   @override
   Widget build(BuildContext context){
+    var padding = MediaQuery.of(context).padding;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final double finalHeight = height - padding.top - padding.bottom - kToolbarHeight;
+
     return SafeArea(
         child: Scaffold(
           backgroundColor: Colors.white,
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomPadding: true,
           appBar: AppBar(
             title: Column(
               children: <Widget>[
-                Text(
-                  'Booking',
-                  style: TextStyle(
-                    color: globals.textColor,
-                    fontSize: 20,
-                  ),
+                MyText(
+                  content: 'Booking',
                 ),
                 Text(
                   widget.bookingNumber,
@@ -208,417 +202,295 @@ class _BookingState extends State<Booking> {
             ),
             centerTitle: true,
             backgroundColor: Colors.white,
+            elevation: 0.0,
+            automaticallyImplyLeading: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back,
+                color: globals.textColor,
+              ),
+            ),
           ),
-          body: Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.only(bottom: 10, left: 20, right: 20),
-                          child: MyText(
-                            content: 'Destination',
-                          ),
-                        ),
-                        flex: 1,
-                        fit: FlexFit.loose,
-                      ),
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Flexible(
-                                child: Image(
-                                  image: AssetImage(
-                                    widget.imagePath,
-                                  ),
-                                ),
-                                flex: 4,
-                                fit: FlexFit.loose,
+          body: SingleChildScrollView(
+            child: SizedBox(
+              width: width,
+              height: finalHeight,
+              child: Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.only(bottom: 10, left: width/20, right: width/20),
+                              child: MyText(
+                                content: 'Destination',
                               ),
-                              Spacer(),
-                              Flexible(
-                                fit: FlexFit.loose,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Text(
-                                        widget.destination,
-                                        style: TextStyle(
-                                            color: globals.textColor,
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                      flex: 1,
-                                      fit: FlexFit.loose,
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        widget.parkingLotNumber,
-                                        style: TextStyle(
-                                            color: Colors.blue[400],
-                                            fontSize: 30
-                                        ),
-                                      ),
-                                      flex: 1,
-                                      fit: FlexFit.loose,
-                                    ),
-
-                                  ],
-                                ),
-                                flex: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-                        flex: 2,
-                        fit: FlexFit.loose,
-                      ),
-                    ],
-                  ),
-                  flex: 2,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(top: 0, bottom: 0),
-                    child: Stack(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Center(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black54)
-                                  ),
-                                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Text(
-                                        'Arriving',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
-                                        ),
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: Material(
-                                              color: Colors.white,
-                                              child: InkWell(
-                                                onTap: () => _selectArrivalDate(context),
-                                                child: Text(
-                                                  arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()}, ',
-                                                  style: TextStyle(
-                                                    color: Colors.black54,
-                                                  ),
-                                                  textAlign: TextAlign.right,
-                                                ),
-                                              ),
-                                            ),
-                                            flex: 1,
-                                          ),
-                                          Expanded(
-                                            child: Material(
-                                              color: Colors.white,
-                                              child: InkWell(
-                                                onTap: () => _selectArrivalTime(context),
-                                                child: Text(
-                                                  '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}',
-                                                  style: TextStyle(
-                                                      color: Colors.black54
-                                                  ),
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                            ),
-                                            flex: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              flex: 1,
                             ),
-                            Expanded(
-                              child: Center(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black54)
+                            flex: 1,
+                            fit: FlexFit.loose,
+                          ),
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.only(left: width/20, right: width/20),
+                              child: Row(
+                                //crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Image(
+                                      image: AssetImage(
+                                        widget.imagePath,
+                                      ),
+                                    ),
+                                    flex: 4,
+                                    fit: FlexFit.loose,
                                   ),
-                                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Text(
-                                        'Leaving',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
+                                  Spacer(),
+                                  Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Flexible(
+                                          child: MyText(
+                                            content: widget.destination,
+                                          ),
+                                          flex: 1,
+                                          fit: FlexFit.loose,
                                         ),
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: Material(
-                                              color: Colors.white,
-                                              child: InkWell(
-                                                onTap: () => _selectLeavingDate(context),
-                                                child: Text(
-                                                  leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()}, ',
-                                                  style: TextStyle(
-                                                      color: Colors.black54
-                                                  ),
-                                                  textAlign: TextAlign.right,
-                                                ),
-                                              ),
+                                        Flexible(
+                                          child: Text(
+                                            widget.parkingLotNumber,
+                                            style: TextStyle(
+                                                color: Colors.blue[400],
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold
                                             ),
-                                            flex: 1,
                                           ),
-                                          Expanded(
-                                            child: Material(
-                                              color: Colors.white,
-                                              child: InkWell(
-                                                onTap: () => _selectLeavingTime(context),
-                                                child: Text(
-                                                  '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}',
-                                                  style: TextStyle(
-                                                      color: Colors.black54
-                                                  ),
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                            ),
-                                            flex: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          flex: 1,
+                                          fit: FlexFit.loose,
+                                        ),
+
+                                      ],
+                                    ),
+                                    flex: 8,
                                   ),
+                                ],
+                              ),
+                            ),
+                            flex: 2,
+                            fit: FlexFit.loose,
+                          ),
+                        ],
+                      ),
+                      flex: 2,
+                    ),
+                    Expanded(
+                      child: TimeDatePicker(
+                          pickArrivalDate: () => _selectArrivalDate(context),
+                          pickArrivalTime: () => _selectArrivalTime(context),
+                          pickLeavingDate: () => _selectLeavingDate(context),
+                          pickLeavingTime: () => _selectLeavingTime(context),
+                          arrivalDate: arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()},',
+                          arrivalTime: arrivalTime.minute > 9 ? ' ' + '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}' : ' ' + '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
+                          leavingDate: leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()},',
+                          leavingTime: leavingTime.minute > 9 ? ' ' + '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}' : ' ' + '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
+                          parkingTime: _parkingTime()
+                      ),
+                      flex: 1,
+                    ),
+                    Expanded(
+                      child: BorderContainer(
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Flexible(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: MyText(
+                                  content: 'Vehicle',
                                 ),
                               ),
+                              flex: 2,
+                              fit: FlexFit.loose,
+                            ),
+                            Flexible(
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Type',
+                                    style: TextStyle(
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  Expanded(
+                                    child:TextField(
+                                      controller: vehicleController,
+                                      style: TextStyle(
+                                          color: Colors.blue[400],
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      autocorrect: true,
+                                      textCapitalization: TextCapitalization.sentences,
+                                      decoration: InputDecoration.collapsed(hintText: null),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               flex: 1,
+                              fit: FlexFit.loose,
+                            ),
+                            Flexible(
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Plate Number',
+                                    style: TextStyle(
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  Expanded(
+                                    child:TextField(
+                                      controller: numberPlateController,
+                                      style: TextStyle(
+                                          color: globals.textColor
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      textCapitalization: TextCapitalization.characters,
+                                      autocorrect: true,
+                                      decoration: InputDecoration.collapsed(hintText: null),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              flex: 1,
+                              fit: FlexFit.loose,
                             ),
                           ],
                         ),
-                        Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.blue,
+                      ),
+                      flex: 2,
+                    ),
+                    Expanded(
+                      child: BorderContainer(
+                        content: Row(
+                          children: <Widget>[
+                            MyText(
+                                content: 'Driver Info'
                             ),
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              _parkingTime(),
+                            Expanded(
+                              child:TextField(
+                                controller: driverController,
+                                style: TextStyle(
+                                    color: globals.textColor
+                                ),
+                                textAlign: TextAlign.right,
+                                textCapitalization: TextCapitalization.sentences,
+                                decoration: InputDecoration.collapsed(hintText: null),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      flex: 1,
+                    ),
+                    Expanded(
+                      child: BorderContainer(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            MyText(
+                                content: 'Payment Method'
+                            ),
+                            DropdownButton(
+                              value: paymentMethod,
+                              items: paymentMethodList.map<DropdownMenuItem<String>>((String value){
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Align(
+                                    child: Text(value),
+                                    alignment: Alignment.centerRight,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String newValue){
+                                setState(() {
+                                  paymentMethod = newValue;
+                                });
+                              },
+                              underline: Container(
+                                  height: 0
+                              ),
                               style: TextStyle(
-                                  color: Colors.white
+                                  color: Colors.blue[400],
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
+                      flex: 1,
                     ),
-                  ),
-                  flex: 1,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.black54, width: 1))
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Flexible(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: MyText(
-                              content: 'Vehicle',
+                    Expanded(
+                      child: BorderContainer(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            MyText(
+                                content: 'Price'
                             ),
-                          ),
-                          flex: 2,
-                          fit: FlexFit.loose,
+                            MyText(
+                                content: 'Kes ${amount.toString()}'
+                            ),
+                          ],
                         ),
-                        Flexible(
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                'Type',
-                                style: TextStyle(
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.bold
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Expanded(
-                                child:TextField(
-                                  controller: vehicleController,
-                                  style: TextStyle(
-                                      color: Colors.blue[400]
+                      ),
+                      flex: 1,
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 20, right: 20),
+                        child: Column(
+                          children: <Widget>[
+                            Spacer(flex: 2,),
+                            Expanded(
+                              child: Material(
+                                color: globals.primaryColor,
+                                child: InkWell(
+                                  onTap: () => {},
+                                  child: Center(
+                                    child: MyText(
+                                        content: 'Pay now'
+                                    ),
                                   ),
-                                  textAlign: TextAlign.right,
-                                  autocorrect: true,
-                                  textCapitalization: TextCapitalization.sentences,
-                                  decoration: InputDecoration.collapsed(hintText: null),
                                 ),
+                                borderRadius: BorderRadius.all(Radius.circular(25.0)),
                               ),
-                            ],
-                          ),
-                          flex: 1,
-                          fit: FlexFit.loose,
-                        ),
-                        Flexible(
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                'Plate Number',
-                                style: TextStyle(
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.bold
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                              Expanded(
-                                child:TextField(
-                                  controller: numberPlateController,
-                                  style: TextStyle(
-                                      color: globals.textColor
-                                  ),
-                                  textAlign: TextAlign.right,
-                                  textCapitalization: TextCapitalization.characters,
-                                  autocorrect: true,
-                                  decoration: InputDecoration.collapsed(hintText: null),
-                                ),
-                              ),
-                            ],
-                          ),
-                          flex: 1,
-                          fit: FlexFit.loose,
-                        ),
-                      ],
-                    ),
-                  ),
-                  flex: 2,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.black54, width: 1))
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        MyText(
-                            content: 'Driver Info'
-                        ),
-                        Expanded(
-                          child:TextField(
-                            controller: driverController,
-                            style: TextStyle(
-                                color: globals.textColor
+                              flex: 2,
                             ),
-                            textAlign: TextAlign.right,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: InputDecoration.collapsed(hintText: null),
-                          ),
+                            Spacer(),
+                          ],
                         ),
-                      ],
+                      ),
+                      flex: 2,
                     ),
-                  ),
-                  flex: 1,
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.black54))
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        MyText(
-                            content: 'Payment Method'
-                        ),
-                        Expanded(
-                          child:TextField(
-                            controller: paymentMethodController,
-                            style: TextStyle(
-                                color: Colors.blue[400]
-                            ),
-                            textAlign: TextAlign.right,
-                            decoration: InputDecoration.collapsed(hintText: null),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  flex: 1,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.black54))
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        MyText(
-                            content: 'Price'
-                        ),
-                        MyText(
-                            content: 'Kes ${amount.toString()}'
-                        ),
-                      ],
-                    ),
-                  ),
-                  flex: 1,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    child: Column(
-                      children: <Widget>[
-                        Spacer(),
-                        Expanded(
-                          child: Material(
-                            color: globals.primaryColor,
-                            child: InkWell(
-                              onTap: () => {},
-                              child: Center(
-                                child: MyText(
-                                    content: 'Pay now'
-                                ),
-                              ),
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                          ),
-                          flex: 2,
-                        ),
-                        Spacer(),
-                      ],
-                    ),
-                  ),
-                  flex: 2,
-                ),
-              ],
+              ),
             ),
-          )
+          ),
         ),
     );
   }
