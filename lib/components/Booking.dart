@@ -91,8 +91,21 @@ class _BookingState extends State<Booking> {
   ///shows date picker for arrival time
   _selectArrivalTime(BuildContext context) async{
     final TimeOfDay picked = await showTimePicker(
-        context: context,
-        initialTime: arrivalTime,
+      context: context,
+      initialTime: arrivalTime,
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: globals.textColor,
+            accentColor: globals.textColor,
+            colorScheme: ColorScheme.light(primary: globals.textColor),
+            buttonTheme: ButtonThemeData(
+                textTheme: ButtonTextTheme.primary
+            ),
+          ),
+          child: child,
+        );
+      },
     );
 
     if(picked != null && picked != arrivalTime){
@@ -107,6 +120,19 @@ class _BookingState extends State<Booking> {
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: leavingTime,
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: globals.textColor,
+            accentColor: globals.textColor,
+            colorScheme: ColorScheme.light(primary: globals.textColor),
+            buttonTheme: ButtonThemeData(
+                textTheme: ButtonTextTheme.primary
+            ),
+          ),
+          child: child,
+        );
+      },
     );
 
     if(picked != null && picked != leavingTime){
