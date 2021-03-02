@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/BackArrow.dart';
 import '../config/globals.dart' as globals;
 import './MyText.dart';
 import './BorderContainer.dart';
@@ -471,14 +472,7 @@ class _BookingState extends State<Booking> {
             backgroundColor: Colors.white,
             elevation: 0.0,
             automaticallyImplyLeading: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                color: globals.textColor,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            leading: BackArrow()
           ),
           body: SingleChildScrollView(
             child: SizedBox(
