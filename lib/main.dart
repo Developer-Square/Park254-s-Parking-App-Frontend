@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
-import 'package:park254_s_parking_app/components/bookingArguments.dart';
+import 'package:park254_s_parking_app/config/bookingArguments.dart';
 
 void main() => runApp(MyApp());
 
