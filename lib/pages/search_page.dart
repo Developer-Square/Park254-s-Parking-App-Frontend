@@ -13,6 +13,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   List<Marker> allMarkers = [];
   GoogleMapController _controller;
+  bool showRecentSearches;
 
   @override
   void initState() {
@@ -25,6 +26,7 @@ class _SearchPageState extends State<SearchPage> {
               title: element.parkingPlaceName, snippet: element.toString()),
           position: element.locationCoords));
     });
+    showRecentSearches = true;
   }
 
   Widget build(BuildContext context) {
@@ -56,7 +58,9 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height - 310.0,
+              height: showRecentSearches
+                  ? MediaQuery.of(context).size.height - 310.0
+                  : 110.0,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -71,34 +75,46 @@ class _SearchPageState extends State<SearchPage> {
                     SearchBar(offsetY: 4.0, blurRadius: 6.0, opacity: 0.5),
                     Padding(
                       padding: const EdgeInsets.only(left: 35.0, top: 25.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'RECENT SEARCH',
-                            style: TextStyle(
-                                color: Colors.grey.withOpacity(0.8),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.0),
-                          ),
-                          SizedBox(height: 30.0),
-                          RecentSearches(
-                              specificLocation: 'Parking on Wabera St',
-                              town: 'Nairobi'),
-                          SizedBox(height: 20.0),
-                          RecentSearches(
-                              specificLocation: 'First Church of Christ',
-                              town: 'Nairobi'),
-                          SizedBox(height: 20.0),
-                          RecentSearches(
-                              specificLocation: 'Parklands Ave, Nairobi',
-                              town: 'Nairobi'),
-                          SizedBox(height: 20.0),
-                          RecentSearches(
-                              specificLocation: 'Parklands Ave, Nairobi',
-                              town: 'Nairobi'),
-                        ],
-                      ),
+                      child: showRecentSearches
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'RECENT SEARCH',
+                                  style: TextStyle(
+                                      color: Colors.grey.withOpacity(0.8),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0),
+                                ),
+                                SizedBox(height: 30.0),
+                                RecentSearches(
+                                    specificLocation: 'Parking on Wabera St',
+                                    town: 'Nairobi',
+                                    setShowRecentSearches:
+                                        setShowRecentSearches),
+                                SizedBox(height: 20.0),
+                                RecentSearches(
+                                    specificLocation: 'First Church of Christ',
+                                    town: 'Nairobi',
+                                    setShowRecentSearches:
+                                        setShowRecentSearches),
+                                SizedBox(height: 20.0),
+                                RecentSearches(
+                                    specificLocation: 'Parklands Ave, Nairobi',
+                                    town: 'Nairobi',
+                                    setShowRecentSearches:
+                                        setShowRecentSearches),
+                                SizedBox(height: 20.0),
+                                RecentSearches(
+                                    specificLocation: 'Parklands Ave, Nairobi',
+                                    town: 'Nairobi',
+                                    setShowRecentSearches:
+                                        setShowRecentSearches),
+                              ],
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(bottom: 20.0),
+                            ),
                     )
                   ]),
             )
@@ -109,6 +125,12 @@ class _SearchPageState extends State<SearchPage> {
   void mapCreated(controller) {
     setState(() {
       _controller = controller;
+    });
+  }
+
+  setShowRecentSearches() {
+    setState(() {
+      showRecentSearches = false;
     });
   }
 }
