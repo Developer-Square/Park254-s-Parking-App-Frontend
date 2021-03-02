@@ -14,10 +14,18 @@ class _SearchPageState extends State<SearchPage> {
   List<Marker> allMarkers = [];
   GoogleMapController _controller;
   bool showRecentSearches;
+  String _searchText;
+  TextEditingController searchBarController = new TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    waitForMarkers(id) async {
+      await Future.delayed(Duration(seconds: 1));
+      print('here');
+      _controller.showMarkerInfoWindow(MarkerId(id));
+    }
+
     parkingPlaces.forEach((element) {
       allMarkers.add(Marker(
           markerId: MarkerId(element.parkingPlaceName),
@@ -25,8 +33,15 @@ class _SearchPageState extends State<SearchPage> {
           infoWindow: InfoWindow(
               title: element.parkingPlaceName, snippet: element.toString()),
           position: element.locationCoords));
+      waitForMarkers(element.parkingPlaceName);
     });
+
     showRecentSearches = true;
+    // Pass Initial values
+    searchBarController.text = _searchText;
+
+    // Start listening to changes.
+    searchBarController.addListener(changeSearchText);
   }
 
   Widget build(BuildContext context) {
@@ -72,7 +87,11 @@ class _SearchPageState extends State<SearchPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(height: 15.0),
-                    SearchBar(offsetY: 4.0, blurRadius: 6.0, opacity: 0.5),
+                    SearchBar(
+                        offsetY: 4.0,
+                        blurRadius: 6.0,
+                        opacity: 0.5,
+                        controller: searchBarController),
                     Padding(
                       padding: const EdgeInsets.only(left: 35.0, top: 25.0),
                       child: showRecentSearches
@@ -91,25 +110,25 @@ class _SearchPageState extends State<SearchPage> {
                                     specificLocation: 'Parking on Wabera St',
                                     town: 'Nairobi',
                                     setShowRecentSearches:
-                                        setShowRecentSearches),
+                                        _setShowRecentSearches),
                                 SizedBox(height: 20.0),
                                 RecentSearches(
                                     specificLocation: 'First Church of Christ',
                                     town: 'Nairobi',
                                     setShowRecentSearches:
-                                        setShowRecentSearches),
+                                        _setShowRecentSearches),
                                 SizedBox(height: 20.0),
                                 RecentSearches(
                                     specificLocation: 'Parklands Ave, Nairobi',
                                     town: 'Nairobi',
                                     setShowRecentSearches:
-                                        setShowRecentSearches),
+                                        _setShowRecentSearches),
                                 SizedBox(height: 20.0),
                                 RecentSearches(
                                     specificLocation: 'Parklands Ave, Nairobi',
                                     town: 'Nairobi',
                                     setShowRecentSearches:
-                                        setShowRecentSearches),
+                                        _setShowRecentSearches),
                               ],
                             )
                           : Padding(
@@ -128,9 +147,23 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  setShowRecentSearches() {
+  void _setShowRecentSearches(searchText) {
     setState(() {
+      searchBarController.text = _searchText;
       showRecentSearches = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    searchBarController.dispose();
+  }
+
+  void changeSearchText() {
+    setState(() {
+      _searchText = searchBarController.text;
     });
   }
 }

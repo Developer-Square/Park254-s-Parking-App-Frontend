@@ -12,7 +12,9 @@ class RecentSearches extends StatelessWidget {
       @required this.setShowRecentSearches});
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: setShowRecentSearches,
+      onTap: () {
+        setShowRecentSearches(specificLocation);
+      },
       child: Row(children: <Widget>[
         Container(
             height: 50.0,

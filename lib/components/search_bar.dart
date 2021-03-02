@@ -6,12 +6,14 @@ class SearchBar extends StatefulWidget {
   double offsetY;
   double blurRadius;
   double opacity;
+  TextEditingController controller;
   bool searchBarTapped = false;
 
   SearchBar(
       {@required this.offsetY,
       @required this.blurRadius,
-      @required this.opacity});
+      @required this.opacity,
+      @required this.controller});
   @override
   SearchBarState createState() => SearchBarState();
 }
@@ -40,6 +42,7 @@ class SearchBarState extends State<SearchBar> {
           Container(
             width: MediaQuery.of(context).size.width - 150,
             child: TextFormField(
+              controller: widget.controller,
               onTap: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => SearchPage()));

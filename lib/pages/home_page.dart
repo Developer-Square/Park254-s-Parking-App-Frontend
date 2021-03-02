@@ -13,7 +13,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var _activeTab = 'home';
   List<Marker> allMarkers = [];
-
+  String _searchText;
+  TextEditingController searchBarController = new TextEditingController();
   GoogleMapController _controller;
 
   @override
@@ -27,6 +28,12 @@ class _HomePageState extends State<HomePage> {
               title: element.parkingPlaceName, snippet: element.toString()),
           position: element.locationCoords));
     });
+
+    // Pass Initial values
+    searchBarController.text = _searchText;
+
+    // Start listening to changes.
+    searchBarController.addListener(changeSearchText);
   }
 
   Widget _buildNavigatorIcons(String icon, String text) {
@@ -120,7 +127,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(height: 24.0),
-                    SearchBar(offsetY: 4.0, blurRadius: 6.0, opacity: 0.9)
+                    SearchBar(
+                      offsetY: 4.0,
+                      blurRadius: 6.0,
+                      opacity: 0.9,
+                      controller: searchBarController,
+                    )
                   ]),
             ),
           )
@@ -132,6 +144,19 @@ class _HomePageState extends State<HomePage> {
   void mapCreated(controller) {
     setState(() {
       _controller = controller;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    searchBarController.dispose();
+  }
+
+  void changeSearchText() {
+    setState(() {
+      _searchText = searchBarController.text;
     });
   }
 }
