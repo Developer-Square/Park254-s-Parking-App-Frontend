@@ -379,7 +379,7 @@ class _BookingState extends State<Booking> {
               value: value,
               child: Align(
                 child: Text(value),
-                alignment: Alignment.centerRight,
+                alignment: Alignment.centerLeft,
               ),
             );
           }).toList(),
