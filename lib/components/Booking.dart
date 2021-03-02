@@ -10,12 +10,16 @@ import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 /// Requires [bookingNumber], [destination], [parkingLotNumber], [price], and [imagePath]
 /// E.g
 /// ```dart
-/// Booking(
-///   bookingNumber: 'haaga5441',
-///   destination: 'Nairobi',
-///   parkingLotNumber: 'pajh5114',
-///   price: 10,
-///   imagePath: 'assets/images/Park254_logo.png'
+/// Navigator.pushNamed(
+///   context,
+///   Booking.routeName,
+///   arguments: BookingArguments(
+///      bookingNumber: 'haaga5441',
+///      destination: 'Nairobi',
+///      parkingLotNumber: 'pajh5114',
+///      price: 10,
+///      imagePath: 'assets/images/Park254_logo.png'
+///   )
 ///);
 ///```
 class Booking extends StatefulWidget {
