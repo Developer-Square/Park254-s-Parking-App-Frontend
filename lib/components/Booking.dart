@@ -146,8 +146,15 @@ class _BookingState extends State<Booking> {
   ///Calculates the parking duration and cost
   String _parkingTime(){
     final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) - (arrivalTime.hour + (arrivalTime.minute / 60));
-    int hours = totalTime.floor();
-    int minutes = ((totalTime - totalTime.floorToDouble()) * 60).round();
+    int hours;
+    int minutes;
+    if(totalTime >= 0){
+      hours = totalTime.floor();
+      minutes = ((totalTime - totalTime.floorToDouble()) * 60).round();
+    } else {
+      hours = totalTime.ceil();
+      minutes = ((totalTime - totalTime.ceilToDouble()) * 60).round();
+    }
     int parkingHours = totalTime.ceil();
     amount = parkingHours * widget.price;
     return (hours == 0)
