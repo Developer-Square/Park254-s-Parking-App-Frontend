@@ -4,6 +4,7 @@ import '../config/globals.dart' as globals;
 import './MyText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
+import 'package:park254_s_parking_app/components/BookingTextField.dart';
 
 ///Creates a booking page
 ///
@@ -212,6 +213,234 @@ class _BookingState extends State<Booking> {
     driverController.addListener(_changeDriver);
   }
 
+  Widget _destination(){
+    final width = MediaQuery.of(context).size.width;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Flexible(
+          child: Container(
+            padding: EdgeInsets.only(bottom: 10, left: width/20, right: width/20),
+            child: MyText(
+              content: 'Destination',
+            ),
+          ),
+          flex: 1,
+          fit: FlexFit.loose,
+        ),
+        Flexible(
+          child: Container(
+            padding: EdgeInsets.only(left: width/20, right: width/20),
+            child: Row(
+              //crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Flexible(
+                  child: Image(
+                    image: AssetImage(
+                      widget.imagePath,
+                    ),
+                  ),
+                  flex: 3,
+                  fit: FlexFit.loose,
+                ),
+                Spacer(),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Flexible(
+                        child: MyText(
+                          content: widget.destination,
+                        ),
+                        flex: 1,
+                        fit: FlexFit.loose,
+                      ),
+                      Flexible(
+                        child: Text(
+                          widget.parkingLotNumber,
+                          style: TextStyle(
+                              color: Colors.blue[400],
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        flex: 1,
+                        fit: FlexFit.loose,
+                      ),
+
+                    ],
+                  ),
+                  flex: 6,
+                ),
+              ],
+            ),
+          ),
+          flex: 2,
+          fit: FlexFit.loose,
+        ),
+      ],
+    );
+  }
+
+  Widget _vehicle(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Flexible(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: MyText(
+              content: 'Vehicle',
+            ),
+          ),
+          flex: 2,
+          fit: FlexFit.loose,
+        ),
+        Flexible(
+          child: Row(
+            children: <Widget>[
+              Text(
+                'Type',
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold
+                ),
+                textAlign: TextAlign.left,
+              ),
+              Expanded(
+                child:BookingTextField(
+                  controller: vehicleController,
+                  textColor: Colors.blue[400],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          flex: 1,
+          fit: FlexFit.loose,
+        ),
+        Flexible(
+          child: Row(
+            children: <Widget>[
+              Text(
+                'Plate Number',
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold
+                ),
+                textAlign: TextAlign.left,
+              ),
+              Expanded(
+                child: BookingTextField(
+                  controller: numberPlateController,
+                  capitalize: TextCapitalization.characters,
+                ),
+              ),
+            ],
+          ),
+          flex: 1,
+          fit: FlexFit.loose,
+        ),
+      ],
+    );
+  }
+
+  Widget _driverInfo(){
+    return Row(
+      children: <Widget>[
+        MyText(
+            content: 'Driver Info'
+        ),
+        Expanded(
+          child:BookingTextField(
+            controller: driverController,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _paymentMethod(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        MyText(
+            content: 'Payment Method'
+        ),
+        DropdownButton(
+          value: paymentMethod,
+          items: paymentMethodList.map<DropdownMenuItem<String>>((String value){
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Align(
+                child: Text(value),
+                alignment: Alignment.centerRight,
+              ),
+            );
+          }).toList(),
+          onChanged: (String newValue){
+            setState(() {
+              paymentMethod = newValue;
+            });
+          },
+          underline: Container(
+              height: 0
+          ),
+          style: TextStyle(
+              color: Colors.blue[400],
+              fontWeight: FontWeight.bold,
+              fontSize: 16
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _price(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        MyText(
+            content: 'Price'
+        ),
+        MyText(
+            content: 'Kes ${amount.toString()}'
+        ),
+      ],
+    );
+  }
+
+  Widget _paymentButton(){
+    return Container(
+      padding: EdgeInsets.only(left: 20, right: 20),
+      child: Column(
+        children: <Widget>[
+          Spacer(flex: 2,),
+          Expanded(
+            child: Material(
+              color: globals.primaryColor,
+              child: InkWell(
+                onTap: () => {},
+                child: Center(
+                  child: MyText(
+                      content: 'Pay now'
+                  ),
+                ),
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+            ),
+            flex: 2,
+          ),
+          Spacer(),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context){
     var padding = MediaQuery.of(context).padding;
@@ -261,74 +490,7 @@ class _BookingState extends State<Booking> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Flexible(
-                            child: Container(
-                              padding: EdgeInsets.only(bottom: 10, left: width/20, right: width/20),
-                              child: MyText(
-                                content: 'Destination',
-                              ),
-                            ),
-                            flex: 1,
-                            fit: FlexFit.loose,
-                          ),
-                          Flexible(
-                            child: Container(
-                              padding: EdgeInsets.only(left: width/20, right: width/20),
-                              child: Row(
-                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Flexible(
-                                    child: Image(
-                                      image: AssetImage(
-                                        widget.imagePath,
-                                      ),
-                                    ),
-                                    flex: 3,
-                                    fit: FlexFit.loose,
-                                  ),
-                                  Spacer(),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Flexible(
-                                          child: MyText(
-                                            content: widget.destination,
-                                          ),
-                                          flex: 1,
-                                          fit: FlexFit.loose,
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            widget.parkingLotNumber,
-                                            style: TextStyle(
-                                                color: Colors.blue[400],
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold
-                                            ),
-                                          ),
-                                          flex: 1,
-                                          fit: FlexFit.loose,
-                                        ),
-
-                                      ],
-                                    ),
-                                    flex: 6,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            flex: 2,
-                            fit: FlexFit.loose,
-                          ),
-                        ],
-                      ),
+                      child: _destination(),
                       flex: 2,
                     ),
                     Expanded(
@@ -347,184 +509,30 @@ class _BookingState extends State<Booking> {
                     ),
                     Expanded(
                       child: BorderContainer(
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Flexible(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: MyText(
-                                  content: 'Vehicle',
-                                ),
-                              ),
-                              flex: 2,
-                              fit: FlexFit.loose,
-                            ),
-                            Flexible(
-                              child: Row(
-                                children: <Widget>[
-                                  Text(
-                                    'Type',
-                                    style: TextStyle(
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  Expanded(
-                                    child:TextField(
-                                      controller: vehicleController,
-                                      style: TextStyle(
-                                          color: Colors.blue[400],
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                      textAlign: TextAlign.right,
-                                      autocorrect: true,
-                                      textCapitalization: TextCapitalization.sentences,
-                                      decoration: InputDecoration.collapsed(hintText: null),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              flex: 1,
-                              fit: FlexFit.loose,
-                            ),
-                            Flexible(
-                              child: Row(
-                                children: <Widget>[
-                                  Text(
-                                    'Plate Number',
-                                    style: TextStyle(
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  Expanded(
-                                    child:TextField(
-                                      controller: numberPlateController,
-                                      style: TextStyle(
-                                          color: globals.textColor
-                                      ),
-                                      textAlign: TextAlign.right,
-                                      textCapitalization: TextCapitalization.characters,
-                                      autocorrect: true,
-                                      decoration: InputDecoration.collapsed(hintText: null),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              flex: 1,
-                              fit: FlexFit.loose,
-                            ),
-                          ],
-                        ),
+                        content: _vehicle(),
                       ),
                       flex: 2,
                     ),
                     Expanded(
                       child: BorderContainer(
-                        content: Row(
-                          children: <Widget>[
-                            MyText(
-                                content: 'Driver Info'
-                            ),
-                            Expanded(
-                              child:TextField(
-                                controller: driverController,
-                                style: TextStyle(
-                                    color: globals.textColor
-                                ),
-                                textAlign: TextAlign.right,
-                                textCapitalization: TextCapitalization.sentences,
-                                decoration: InputDecoration.collapsed(hintText: null),
-                              ),
-                            ),
-                          ],
-                        ),
+                        content: _driverInfo()
                       ),
                       flex: 1,
                     ),
                     Expanded(
                       child: BorderContainer(
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            MyText(
-                                content: 'Payment Method'
-                            ),
-                            DropdownButton(
-                              value: paymentMethod,
-                              items: paymentMethodList.map<DropdownMenuItem<String>>((String value){
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Align(
-                                    child: Text(value),
-                                    alignment: Alignment.centerRight,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (String newValue){
-                                setState(() {
-                                  paymentMethod = newValue;
-                                });
-                              },
-                              underline: Container(
-                                  height: 0
-                              ),
-                              style: TextStyle(
-                                  color: Colors.blue[400],
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16
-                              ),
-                            ),
-                          ],
-                        ),
+                        content: _paymentMethod()
                       ),
                       flex: 1,
                     ),
                     Expanded(
                       child: BorderContainer(
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            MyText(
-                                content: 'Price'
-                            ),
-                            MyText(
-                                content: 'Kes ${amount.toString()}'
-                            ),
-                          ],
-                        ),
+                        content: _price()
                       ),
                       flex: 1,
                     ),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(left: 20, right: 20),
-                        child: Column(
-                          children: <Widget>[
-                            Spacer(flex: 2,),
-                            Expanded(
-                              child: Material(
-                                color: globals.primaryColor,
-                                child: InkWell(
-                                  onTap: () => {},
-                                  child: Center(
-                                    child: MyText(
-                                        content: 'Pay now'
-                                    ),
-                                  ),
-                                ),
-                                borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                              ),
-                              flex: 2,
-                            ),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
+                      child: _paymentButton(),
                       flex: 2,
                     ),
                   ],
