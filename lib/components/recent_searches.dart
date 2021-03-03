@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 
+/// Creates a List of a user's recent searches.
+///
+/// Requires [specificLocation], [town] and [setShowRecentSearches].
+/// E.g.
+///```
+/// RecentSearches(
+/// specificLocation: 'Parking on Wabera St',
+/// town: 'Nairobi',
+/// setShowRecentSearches:
+/// () {})
+///```
+
 class RecentSearches extends StatelessWidget {
   final String specificLocation;
   final String town;

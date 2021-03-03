@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 
+/// Creates the single components present in nearby parking.
+///
+/// Requires [imgPath], [parkingPrice], [parkingPlaceName], [rating].
+/// [distance] and [parkingSlots].
+/// E.g.
+/// ```
+/// NearByParkingList(
+/// imgPath: 'assets/images/parking_photos/parking_4.jpg',
+/// parkingPrice: 200,
+/// parkingPlaceName: 'Parking on Wabera St',
+/// rating: 3.5,
+/// distance: 125,
+/// parkingSlots: 5)
+///```
 class NearByParkingList extends StatelessWidget {
   final String imgPath;
   final int parkingPrice;

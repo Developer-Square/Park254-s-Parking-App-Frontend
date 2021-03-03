@@ -24,6 +24,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   pin_code_fields: ^6.1.0
   google_maps_flutter: ^1.2.0
+  flutter_svg: ^0.19.0
 
 
 dev_dependencies:
@@ -52,6 +53,13 @@ flutter:
     - assets/images/parking_photos/parking_4.jpg
     - assets/images/parking_photos/parking_7.jpg
     - assets/images/parking_photos/parking_9.jpg
+    - assets/images/pin_icons/black_pin_1.png
+    - assets/images/pin_icons/green_pin_1.png
+    - assets/images/pin_icons/green_pin_2.png
+    - assets/images/pin_icons/green_pin_3.png
+    - assets/images/pin_icons/destination_map_marker.png
+    - assets/images/pin_icons/maps-and-flags.png
+    - assets/svgs/map_pinpoint.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

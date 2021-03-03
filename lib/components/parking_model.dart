@@ -1,5 +1,12 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+/// Creates a List of all the available parking place.
+///
+/// It includes all the details E.g.
+/// ```
+/// parkingPlace, rating, number of parking slots available,
+/// location of the parking places e.t.c
+/// ```
 class Parking {
   String parkingPlaceName;
   String type;

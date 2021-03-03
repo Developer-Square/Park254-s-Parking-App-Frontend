@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import '../config/globals.dart' as globals;
 
+/// Creates a widget on the homepage that shows all the nearyby parking places.
+///
+/// The nearby parking places are displayed with the nearest being the first one.
+/// Takes [NearByParkingList] as a widget.
 class NearByParking extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(

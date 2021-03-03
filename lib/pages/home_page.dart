@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
@@ -10,24 +11,24 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+/// Creates a home page with google maps and parking location markers.
+///
+/// Includes the following widgets from other components:
+/// [NearByParking], [parkingPlaces] which contains all the parking places available.
+/// [SearchBar].
+/// When a user clicks on one of the search bar he/she is directed to the search page.
+/// Has navigation at the bottom.
 class _HomePageState extends State<HomePage> {
   var _activeTab = 'home';
+  // A list that stores all the google markers to be displayed.
   List<Marker> allMarkers = [];
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  GoogleMapController _controller;
+  Completer<GoogleMapController> _controller = Completer();
 
   @override
   void initState() {
     super.initState();
-    parkingPlaces.forEach((element) {
-      allMarkers.add(Marker(
-          markerId: MarkerId(element.parkingPlaceName),
-          draggable: false,
-          infoWindow: InfoWindow(
-              title: element.parkingPlaceName, snippet: element.toString()),
-          position: element.locationCoords));
-    });
 
     // Pass Initial values
     searchBarController.text = _searchText;
@@ -36,37 +37,33 @@ class _HomePageState extends State<HomePage> {
     searchBarController.addListener(changeSearchText);
   }
 
-  Widget _buildNavigatorIcons(String icon, String text) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _activeTab = icon;
-        });
-      },
-      child: Column(
-        children: [
-          Icon(
-            icon == 'home'
-                ? Icons.home_filled
-                : icon == 'parking'
-                    ? Icons.local_parking
-                    : Icons.person_outline,
-            color: _activeTab == icon
-                ? globals.fontColor
-                : Colors.grey.withOpacity(0.8),
-          ),
-          Text(
-            text,
-            style: globals.buildTextStyle(
-                12.0,
-                true,
-                _activeTab == icon
-                    ? globals.fontColor
-                    : Colors.grey.withOpacity(0.8)),
-          )
-        ],
-      ),
-    );
+  /// A function that receives the GoogleMapController when the map is rendered on the page.
+  /// and adds google markers dynamically.
+  void mapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+    setState(() {
+      parkingPlaces.forEach((element) {
+        allMarkers.add(Marker(
+            markerId: MarkerId(element.parkingPlaceName),
+            draggable: false,
+            infoWindow: InfoWindow(
+                title: element.parkingPlaceName, snippet: element.toString()),
+            position: element.locationCoords));
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    searchBarController.dispose();
+  }
+
+  void changeSearchText() {
+    setState(() {
+      _searchText = searchBarController.text;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -132,6 +129,7 @@ class _HomePageState extends State<HomePage> {
                       blurRadius: 6.0,
                       opacity: 0.9,
                       controller: searchBarController,
+                      searchBarTapped: false,
                     )
                   ]),
             ),
@@ -141,22 +139,37 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  void mapCreated(controller) {
-    setState(() {
-      _controller = controller;
-    });
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    searchBarController.dispose();
-  }
-
-  void changeSearchText() {
-    setState(() {
-      _searchText = searchBarController.text;
-    });
+  /// Creates the navigation buttons at the bottom of the page.
+  Widget _buildNavigatorIcons(String icon, String text) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _activeTab = icon;
+        });
+      },
+      child: Column(
+        children: [
+          Icon(
+            icon == 'home'
+                ? Icons.home_filled
+                : icon == 'parking'
+                    ? Icons.local_parking
+                    : Icons.person_outline,
+            color: _activeTab == icon
+                ? globals.fontColor
+                : Colors.grey.withOpacity(0.8),
+          ),
+          Text(
+            text,
+            style: globals.buildTextStyle(
+                12.0,
+                true,
+                _activeTab == icon
+                    ? globals.fontColor
+                    : Colors.grey.withOpacity(0.8)),
+          )
+        ],
+      ),
+    );
   }
 }
