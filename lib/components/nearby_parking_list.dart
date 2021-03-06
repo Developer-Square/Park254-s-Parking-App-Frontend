@@ -79,7 +79,7 @@ class NearByParkingList extends StatelessWidget {
             children: [
               Text(
                 parkingPlaceName,
-                style: globals.buildTextStyle(15.0, true, globals.fontColor),
+                style: globals.buildTextStyle(15.0, true, globals.textColor),
               ),
               SizedBox(height: 7.0),
               Row(
@@ -100,7 +100,7 @@ class NearByParkingList extends StatelessWidget {
                   SizedBox(width: 6.0),
                   Text('$parkingSlots Spaces',
                       style: globals.buildTextStyle(
-                          14.0, true, globals.fontColor)),
+                          14.0, true, globals.textColor)),
                   SizedBox(width: 15.0),
                   Icon(
                     Icons.near_me,
@@ -109,7 +109,7 @@ class NearByParkingList extends StatelessWidget {
                   SizedBox(width: 6.0),
                   Text('$distance m',
                       style: globals.buildTextStyle(
-                          14.0, true, globals.fontColor)),
+                          14.0, true, globals.textColor)),
                 ],
               )
             ],

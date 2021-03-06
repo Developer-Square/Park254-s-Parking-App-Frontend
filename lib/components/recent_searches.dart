@@ -46,7 +46,7 @@ class RecentSearches extends StatelessWidget {
           children: <Widget>[
             Text(
               specificLocation,
-              style: globals.buildTextStyle(18.0, true, globals.fontColor),
+              style: globals.buildTextStyle(18.0, true, globals.textColor),
             ),
             SizedBox(height: 7.0),
             Text(

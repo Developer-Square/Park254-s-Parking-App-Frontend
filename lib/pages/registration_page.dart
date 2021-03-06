@@ -38,17 +38,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildSteps(String text) {
-    return Padding(
-      padding: text.contains('STEP')
-          ? EdgeInsets.only(left: 30.0)
-          : EdgeInsets.only(left: 5.0),
-      child: Text(text,
-          style: TextStyle(
-              fontSize: 19.0,
-              fontWeight: FontWeight.bold,
-              color: text.contains('STEP')
-                  ? globals.fontColor
-                  : Colors.grey.withOpacity(0.9))),
+    return Container(
+      child: Padding(
+        padding: text.contains('STEP')
+            ? EdgeInsets.only(left: 30.0, top: 40.0)
+            : EdgeInsets.only(left: 5.0, top: 40.0),
+        child: Text(text,
+            style: TextStyle(
+                fontSize: 19.0,
+                fontWeight: FontWeight.bold,
+                color: text.contains('STEP')
+                    ? globals.textColor
+                    : Colors.grey.withOpacity(0.9))),
+      ),
     );
   }
 
@@ -62,7 +64,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           elevation: 0.0,
           leading: IconButton(
               icon: Icon(Icons.arrow_back_outlined),
-              color: globals.fontColor,
+              color: globals.textColor,
               onPressed: () {
                 _step > 1
                     ? setState(() {
@@ -76,12 +78,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 : _step == 2
                     ? 'Verification'
                     : 'Password',
-            style: globals.buildTextStyle(18.0, true, globals.fontColor),
+            style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
         ),
-        body: SingleChildScrollView(
-            child: Column(children: <Widget>[
+        body: Stack(children: <Widget>[
           SizedBox(height: 40.0),
           Row(
             children: <Widget>[
@@ -97,29 +98,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
             transitionBuilder: (widget, animation) =>
                 ScaleTransition(scale: animation, child: widget),
           ),
-          InkWell(
-              onTap: () {
-                setState(() {
-                  if (_step < 3) {
-                    _step += 1;
-                  }
-                });
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width - 50,
-                height: 50.0,
-                decoration: BoxDecoration(
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_step < 3) {
+                      _step += 1;
+                    }
+                  });
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  decoration: BoxDecoration(
                     color: globals.backgroundColor,
-                    borderRadius: BorderRadius.all(Radius.circular(25.0))),
-                child: Center(
-                  child: Text(
-                    _step == 3 ? 'Finish' : 'Next',
-                    style:
-                        globals.buildTextStyle(18.0, true, globals.fontColor),
                   ),
-                ),
-              ))
-        ])),
+                  child: Center(
+                    child: Text(
+                      _step == 3 ? 'Finish' : 'Next',
+                      style:
+                          globals.buildTextStyle(18.0, true, globals.textColor),
+                    ),
+                  ),
+                )),
+          )
+        ]),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,6 +29,7 @@ class _SearchPageState extends State<SearchPage> {
   bool showRecentSearches;
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
+  Position currentPosition;
 
   @override
   void initState() {
@@ -44,6 +47,7 @@ class _SearchPageState extends State<SearchPage> {
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
     _controller.complete(controller);
+    loadLocation(_controller, currentPosition);
     setState(() {
       parkingPlaces.forEach((element) {
         allMarkers.add(Marker(
@@ -85,12 +89,12 @@ class _SearchPageState extends State<SearchPage> {
             elevation: 0.0,
             leading: IconButton(
                 icon: Icon(Icons.arrow_back_outlined),
-                color: globals.fontColor,
+                color: globals.textColor,
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
             title: Text('Search',
-                style: globals.buildTextStyle(18.0, true, globals.fontColor)),
+                style: globals.buildTextStyle(18.0, true, globals.textColor)),
             centerTitle: true,
           ),
           body: Stack(children: <Widget>[
@@ -98,15 +102,21 @@ class _SearchPageState extends State<SearchPage> {
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: GoogleMap(
+                myLocationEnabled: true,
                 myLocationButtonEnabled: true,
+                zoomGesturesEnabled: true,
+                zoomControlsEnabled: true,
                 markers: Set.from(allMarkers),
                 onMapCreated: mapCreated,
                 mapType: MapType.normal,
                 initialCameraPosition: CameraPosition(
                     target: LatLng(-1.286389, 36.817223), zoom: 14.0),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height - 370),
               ),
             ),
             Container(
+              // Hides all the recent searches if one of them are clicked.
               height: showRecentSearches
                   ? MediaQuery.of(context).size.height - 310.0
                   : 110.0,

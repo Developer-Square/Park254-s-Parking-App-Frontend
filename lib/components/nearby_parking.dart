@@ -7,13 +7,17 @@ import '../config/globals.dart' as globals;
 /// The nearby parking places are displayed with the nearest being the first one.
 /// Takes [NearByParkingList] as a widget.
 class NearByParking extends StatelessWidget {
+  Function showNearByParkingFn;
+
+  NearByParking({@required this.showNearByParkingFn});
+
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
         color: Colors.transparent,
         child: Container(
-          height: MediaQuery.of(context).size.height / 2.9,
+          height: MediaQuery.of(context).size.height / 2.8,
           width: MediaQuery.of(context).size.width - 50,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -34,16 +38,28 @@ class NearByParking extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Nearest Parking',
-                        style: globals.buildTextStyle(
-                            16.0, true, globals.fontColor)),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 19.0,
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text('Nearest Parking',
+                              style: globals.buildTextStyle(
+                                  16.0, true, globals.textColor)),
+                          SizedBox(width: 15.0),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 19.0,
+                            ),
+                          ),
+                        ]),
+                    InkWell(
+                      onTap: showNearByParkingFn,
+                      child: Icon(Icons.close),
                     )
                   ],
                 ),
-                SizedBox(height: 15.0),
+                SizedBox(height: 19.0),
                 SizedBox(
                     height: 205.0,
                     child: ListView(

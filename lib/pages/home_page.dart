@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
@@ -25,6 +27,8 @@ class _HomePageState extends State<HomePage> {
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
   Completer<GoogleMapController> _controller = Completer();
+  Position currentPosition;
+  bool showNearByParking;
 
   @override
   void initState() {
@@ -32,6 +36,7 @@ class _HomePageState extends State<HomePage> {
 
     // Pass Initial values
     searchBarController.text = _searchText;
+    showNearByParking = true;
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
@@ -41,6 +46,7 @@ class _HomePageState extends State<HomePage> {
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
     _controller.complete(controller);
+    loadLocation(_controller, currentPosition);
     setState(() {
       parkingPlaces.forEach((element) {
         allMarkers.add(Marker(
@@ -66,6 +72,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void showNearByParkingFn() {
+    setState(() {
+      showNearByParking = false;
+    });
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
@@ -77,13 +89,22 @@ class _HomePageState extends State<HomePage> {
             width: MediaQuery.of(context).size.width,
             child: GoogleMap(
               mapType: MapType.normal,
+              myLocationEnabled: true,
+              zoomGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              myLocationButtonEnabled: true,
               initialCameraPosition: CameraPosition(
                   target: LatLng(-1.286389, 36.817223), zoom: 14.0),
               markers: Set.from(allMarkers),
               onMapCreated: mapCreated,
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height - 440),
             ),
           ),
-          NearByParking(),
+          // Show the NearByParking section or show an empty container.
+          showNearByParking
+              ? NearByParking(showNearByParkingFn: showNearByParkingFn)
+              : Container(),
           Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -116,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                         width: 190.0,
                         child: Text('Where do you want to park?',
                             style: TextStyle(
-                              color: globals.fontColor,
+                              color: globals.textColor,
                               fontSize: 22.0,
                               fontWeight: FontWeight.bold,
                               height: 1.5,
@@ -156,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                     ? Icons.local_parking
                     : Icons.person_outline,
             color: _activeTab == icon
-                ? globals.fontColor
+                ? globals.textColor
                 : Colors.grey.withOpacity(0.8),
           ),
           Text(
@@ -165,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                 12.0,
                 true,
                 _activeTab == icon
-                    ? globals.fontColor
+                    ? globals.textColor
                     : Colors.grey.withOpacity(0.8)),
           )
         ],

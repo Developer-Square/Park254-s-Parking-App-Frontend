@@ -127,7 +127,9 @@ class RegistrationScreens extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 30.0, right: 30.0),
+          padding: title == 'Password'
+              ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)
+              : const EdgeInsets.only(left: 30.0, right: 30.0, top: 160.0),
           child: Text(
             info,
             style: globals.buildTextStyle(18.0, true, globals.fontColor),

@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
                   padding: EdgeInsets.only(right: 20.0),
                   child: Text(
                     'Forgot Password',
-                    style: TextStyle(color: globals.fontColor, fontSize: 15.0),
+                    style: TextStyle(color: globals.textColor, fontSize: 15.0),
                   )),
             ))
           : SizedBox(height: 0),
@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0.0,
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
-            color: globals.fontColor,
+            color: globals.textColor,
             onPressed: () {
               Navigator.of(context).pop();
             }),
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Center(
                           child: Text('Log in',
                               style: globals.buildTextStyle(
-                                  18.0, true, globals.fontColor)),
+                                  18.0, true, globals.textColor)),
                         )),
                   ),
                   SizedBox(height: 10.0),
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'or',
                         style:
-                            TextStyle(color: globals.fontColor, fontSize: 18.0),
+                            TextStyle(color: globals.textColor, fontSize: 18.0),
                       ),
                       FlatButton(
                           padding: EdgeInsets.only(right: 10.0),
