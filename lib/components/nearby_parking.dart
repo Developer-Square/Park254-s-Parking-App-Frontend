@@ -17,8 +17,8 @@ class NearByParking extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: Container(
-          height: MediaQuery.of(context).size.height / 2.8,
-          width: MediaQuery.of(context).size.width - 50,
+          height: MediaQuery.of(context).size.height / 2.7,
+          width: MediaQuery.of(context).size.width - 50.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
             boxShadow: [
@@ -30,7 +30,7 @@ class NearByParking extends StatelessWidget {
             ],
             color: Colors.white,
           ),
-          margin: EdgeInsets.only(bottom: 70.0),
+          margin: EdgeInsets.only(bottom: 65.0),
           child: Padding(
             padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
             child: Column(
@@ -73,7 +73,7 @@ class NearByParking extends StatelessWidget {
                             rating: 3.5,
                             distance: 125,
                             parkingSlots: 5),
-                        SizedBox(height: 30.0),
+                        SizedBox(height: 20.0),
                         NearByParkingList(
                             imgPath:
                                 'assets/images/parking_photos/parking_7.jpg',

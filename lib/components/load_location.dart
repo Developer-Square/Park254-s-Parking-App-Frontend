@@ -4,8 +4,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 /// Takes a user to their current location.
 ///
 /// Requires [_controller], the Google Controller from the parent component.
-/// and [currentPosition].
-void loadLocation(_controller, currentPosition) async {
+/// [currentPosition] and [load].
+void loadLocation(_controller, currentPosition, closeNearByParking) async {
+  closeNearByParking();
   final c = await _controller.future;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);

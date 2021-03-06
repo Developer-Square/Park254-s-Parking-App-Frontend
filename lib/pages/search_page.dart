@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -47,7 +46,6 @@ class _SearchPageState extends State<SearchPage> {
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
     _controller.complete(controller);
-    loadLocation(_controller, currentPosition);
     setState(() {
       parkingPlaces.forEach((element) {
         allMarkers.add(Marker(

@@ -64,6 +64,7 @@ class SearchBarState extends State<SearchBar> {
                 widget.searchBarTapped == false
                     ? Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => SearchPage()))
+                    // ignore: unnecessary_statements
                     : () {};
               },
               cursorColor: globals.backgroundColor,

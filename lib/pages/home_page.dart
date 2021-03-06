@@ -46,7 +46,6 @@ class _HomePageState extends State<HomePage> {
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
     _controller.complete(controller);
-    loadLocation(_controller, currentPosition);
     setState(() {
       parkingPlaces.forEach((element) {
         allMarkers.add(Marker(
@@ -72,9 +71,15 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void showNearByParkingFn() {
+  void closeNearByParking() {
     setState(() {
       showNearByParking = false;
+    });
+  }
+
+  void showNearByParkingFn() {
+    setState(() {
+      showNearByParking = !showNearByParking;
     });
   }
 
@@ -89,21 +94,19 @@ class _HomePageState extends State<HomePage> {
             width: MediaQuery.of(context).size.width,
             child: GoogleMap(
               mapType: MapType.normal,
-              myLocationEnabled: true,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
-              myLocationButtonEnabled: true,
               initialCameraPosition: CameraPosition(
                   target: LatLng(-1.286389, 36.817223), zoom: 14.0),
               markers: Set.from(allMarkers),
               onMapCreated: mapCreated,
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 440),
+                  top: MediaQuery.of(context).size.height - 520.0),
             ),
           ),
           // Show the NearByParking section or show an empty container.
           showNearByParking
-              ? NearByParking(showNearByParkingFn: showNearByParkingFn)
+              ? NearByParking(showNearByParkingFn: closeNearByParking)
               : Container(),
           Align(
               alignment: Alignment.bottomCenter,
@@ -120,14 +123,14 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ))),
           Container(
-            height: 220.0,
+            height: 210.0,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
                 color: globals.backgroundColor,
                 borderRadius: BorderRadius.only(
                     bottomRight: Radius.elliptical(500, 240))),
             child: Padding(
-              padding: const EdgeInsets.only(top: 50.0),
+              padding: const EdgeInsets.only(top: 40.0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -154,7 +157,35 @@ class _HomePageState extends State<HomePage> {
                     )
                   ]),
             ),
-          )
+          ),
+          Positioned(
+            bottom: showNearByParking ? 350.0 : 100.0,
+            right: 0,
+            child: Column(
+              children: <Widget>[
+                FloatingActionButton.extended(
+                  onPressed: () {
+                    loadLocation(
+                        _controller, currentPosition, closeNearByParking);
+                  },
+                  icon: Icon(Icons.location_searching),
+                  label: Text(showNearByParking ? '' : 'Current location'),
+                ),
+                SizedBox(height: 15.0),
+                showNearByParking
+                    ? Container()
+                    : FloatingActionButton.extended(
+                        heroTag: null,
+                        onPressed: () {
+                          showNearByParkingFn();
+                        },
+                        icon: Icon(Icons.car_rental),
+                        label: Text(
+                            showNearByParking ? '' : 'Show nearyby parking'),
+                      )
+              ],
+            ),
+          ),
         ],
       ),
     ));

@@ -6,7 +6,7 @@ import '../config/globals.dart' as globals;
 /// Requires [imgPath], [parkingPrice], [parkingPlaceName], [rating].
 /// [distance] and [parkingSlots].
 /// E.g.
-/// ```
+/// ```dart
 /// NearByParkingList(
 /// imgPath: 'assets/images/parking_photos/parking_4.jpg',
 /// parkingPrice: 200,
@@ -34,7 +34,7 @@ class NearByParkingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 90.0,
+        height: 80.0,
         child: Row(children: <Widget>[
           Container(
             decoration: BoxDecoration(
@@ -81,7 +81,7 @@ class NearByParkingList extends StatelessWidget {
                 parkingPlaceName,
                 style: globals.buildTextStyle(15.0, true, globals.textColor),
               ),
-              SizedBox(height: 7.0),
+              SizedBox(height: 4.0),
               Row(
                 children: [
                   Text('$rating',
@@ -92,7 +92,7 @@ class NearByParkingList extends StatelessWidget {
                       style: TextStyle(fontSize: 14.0, color: Colors.grey))
                 ],
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 14.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
