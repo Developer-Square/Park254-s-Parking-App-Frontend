@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       'You need to sign in or create an account to continue',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: globals.fontColor,
+                          color: globals.textColor,
                           height: 1.7,
                           fontSize: 31.0))),
               SizedBox(height: 160.0),
@@ -82,10 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   BorderRadius.all(Radius.circular(25.0))),
                           child: Center(
                               child: Text('Login with email',
-                                  style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: globals.fontColor))),
+                                  style: globals.buildTextStyle(
+                                      16.0, true, globals.textColor))),
                         ),
                       ),
                       SizedBox(height: 15.0),
