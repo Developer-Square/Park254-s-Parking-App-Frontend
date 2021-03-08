@@ -23,6 +23,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   pin_code_fields: ^6.1.0
+  google_maps_flutter: ^1.2.0
+  geolocator: ^6.1.14
 
 
 dev_dependencies:
@@ -45,6 +47,20 @@ flutter:
   assets:
     - assets/images/Park254_logo.png
     - assets/images/parking-icon.png
+    - assets/images/parking_photos/parking_1.jpg
+    - assets/images/parking_photos/parking_2.jpg
+    - assets/images/parking_photos/parking_3.jpg
+    - assets/images/parking_photos/parking_4.jpg
+    - assets/images/parking_photos/parking_7.jpg
+    - assets/images/parking_photos/parking_9.jpg
+    - assets/images/pin_icons/black_pin_1.png
+    - assets/images/pin_icons/green_pin_1.png
+    - assets/images/pin_icons/green_pin_2.png
+    - assets/images/pin_icons/green_pin_3.png
+    - assets/images/pin_icons/destination_map_marker.png
+    - assets/images/pin_icons/maps-and-flags.png
+    - assets/images/pin_icons/current location.png
+    - assets/svgs/map_pinpoint.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

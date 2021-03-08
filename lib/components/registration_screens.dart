@@ -108,10 +108,8 @@ class RegistrationScreens extends StatelessWidget {
                                       onPressed: () {},
                                       padding: EdgeInsets.only(right: 20.0),
                                       child: Text('Resend',
-                                          style: TextStyle(
-                                              color: globals.backgroundColor,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold)))
+                                          style: globals.buildTextStyle(16.0,
+                                              true, globals.backgroundColor)))
                                 ])
                           ],
                         )
@@ -129,13 +127,12 @@ class RegistrationScreens extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 30.0, right: 30.0),
+          padding: title == 'Password'
+              ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)
+              : const EdgeInsets.only(left: 30.0, right: 30.0, top: 160.0),
           child: Text(
             info,
-            style: TextStyle(
-                color: globals.fontColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0),
+            style: globals.buildTextStyle(18.0, true, globals.fontColor),
           ),
         ),
         SizedBox(height: 35.0),

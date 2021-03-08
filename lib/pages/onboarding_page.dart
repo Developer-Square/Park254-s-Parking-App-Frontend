@@ -14,6 +14,7 @@ class OnBoardingPage extends StatefulWidget {
 class _OnBoardingPageState extends State<OnBoardingPage> {
   Timer _timer;
   int _start = 20;
+  bool _startTimer = true;
 
   /// Runs a periodic countdown timer of type [Timer]
   ///
@@ -23,14 +24,18 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     _timer = new Timer.periodic(
       oneSec,
       (Timer timer) {
-        if (_start == 0) {
-          setState(() {
-            _start = 20;
-          });
-        } else {
-          setState(() {
-            _start--;
-          });
+        if(mounted){
+          if (_start == 0) {
+            setState(() {
+              _start = 20;
+            });
+          } else if(_startTimer == false){
+            timer.cancel();
+          } else {
+            setState(() {
+              _start--;
+            });
+          }
         }
       },
     );
@@ -66,8 +71,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   @override
   void initState() {
-    startTimer();
     super.initState();
+    startTimer();
   }
 
   @override

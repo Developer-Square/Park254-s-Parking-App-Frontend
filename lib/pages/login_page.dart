@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,31 +13,6 @@ class LoginPage extends StatefulWidget {
 /// Has an option at the bottom, where a user can choose to signup.
 /// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
-  /// Builds out every form field depending on the [text] variable passed to it.
-  Widget _buildFormField(String text) {
-    return Column(children: <Widget>[
-      Container(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: TextFormField(
-            decoration: InputDecoration(
-                hintText: text,
-                hintStyle: TextStyle(color: globals.placeHolderColor)),
-          )),
-      text == 'Password'
-          ? (Align(
-              alignment: Alignment.centerRight,
-              child: FlatButton(
-                  onPressed: () {},
-                  padding: EdgeInsets.only(right: 20.0),
-                  child: Text(
-                    'Forgot Password',
-                    style: TextStyle(color: globals.fontColor, fontSize: 15.0),
-                  )),
-            ))
-          : SizedBox(height: 0),
-    ]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0.0,
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
-            color: globals.fontColor,
+            color: globals.textColor,
             onPressed: () {
               Navigator.of(context).pop();
             }),
@@ -79,7 +55,10 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
                     child: Container(
                         height: 50.0,
                         width: MediaQuery.of(context).size.width - 50,
@@ -89,10 +68,8 @@ class _LoginPageState extends State<LoginPage> {
                                 BorderRadius.all(Radius.circular(25.0))),
                         child: Center(
                           child: Text('Log in',
-                              style: TextStyle(
-                                  color: globals.fontColor,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold)),
+                              style: globals.buildTextStyle(
+                                  18.0, true, globals.textColor)),
                         )),
                   ),
                   SizedBox(height: 10.0),
@@ -102,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'or',
                         style:
-                            TextStyle(color: globals.fontColor, fontSize: 18.0),
+                            TextStyle(color: globals.textColor, fontSize: 18.0),
                       ),
                       FlatButton(
                           padding: EdgeInsets.only(right: 10.0),
@@ -112,10 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: Text(
                             'Sign up',
-                            style: TextStyle(
-                                color: globals.backgroundColor,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold),
+                            style: globals.buildTextStyle(
+                                18.0, true, globals.backgroundColor),
                           )),
                     ],
                   )
@@ -124,5 +99,30 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     ));
+  }
+
+  /// Builds out every form field depending on the [text] variable passed to it.
+  Widget _buildFormField(String text) {
+    return Column(children: <Widget>[
+      Container(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: TextFormField(
+            decoration: InputDecoration(
+                hintText: text,
+                hintStyle: TextStyle(color: globals.placeHolderColor)),
+          )),
+      text == 'Password'
+          ? (Align(
+              alignment: Alignment.centerRight,
+              child: FlatButton(
+                  onPressed: () {},
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: Text(
+                    'Forgot Password',
+                    style: TextStyle(color: globals.textColor, fontSize: 15.0),
+                  )),
+            ))
+          : SizedBox(height: 0),
+    ]);
   }
 }
