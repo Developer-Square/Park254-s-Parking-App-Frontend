@@ -21,21 +21,22 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login_screen': (context) => LoginScreen(),
         '/homepage': (context) => HomePage()},
-      onGenerateRoute: (settings){
-        if(settings.name == Booking.routeName){
+      onGenerateRoute: (settings) {
+        if (settings.name == Booking.routeName) {
           final BookingArguments args = settings.arguments;
           return MaterialPageRoute(
-            builder: (context){
-              return Booking(
-                  bookingNumber: args.bookingNumber,
-                  destination: args.destination,
-                  parkingLotNumber: args.parkingLotNumber,
-                  price: args.price,
-                  imagePath: args.imagePath
-              );
-            }
+              builder: (context) {
+                return Booking(
+                    bookingNumber: args.bookingNumber,
+                    destination: args.destination,
+                    parkingLotNumber: args.parkingLotNumber,
+                    price: args.price,
+                    imagePath: args.imagePath
+                );
+              }
           );
         }
+      }
     );
   }
 }
