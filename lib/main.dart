@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/pages/more_info_test.dart';
 import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
+import 'package:park254_s_parking_app/components/MoreInfo.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryColor,
       ),
-      home: OnBoardingPage(),
+      home: MoreInfoTest(),
       routes: {'/login_screen': (context) => LoginScreen()},
       onGenerateRoute: (settings){
         if(settings.name == Booking.routeName){
