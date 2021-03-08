@@ -4,8 +4,8 @@ import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
-import 'config/home_page_arguements.dart';
-import 'config/search_page_arguements.dart';
+import 'config/home_page_arguments.dart';
+import 'config/search_page_arguments.dart';
 import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                   imagePath: args.imagePath);
             });
           } else if (settings.name == SearchPage.routeName) {
-            final SearchPageArguements args = settings.arguments;
+            final SearchPageArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return RecentSearches(
                 specificLocation: args.specificLocation,
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
               );
             });
           } else if (settings.name == HomePage.routeName) {
-            final HomePageArguements args = settings.arguments;
+            final HomePageArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return NearByParkingList(
                 imgPath: args.imgPath,
