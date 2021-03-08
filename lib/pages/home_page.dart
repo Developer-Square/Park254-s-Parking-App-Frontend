@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import '../config/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/homepage';
   @override
   _HomePageState createState() => _HomePageState();
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:park254_s_parking_app/components/recent_searches.dart';
 import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
+  static const routeName = '/search_page';
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -232,7 +234,15 @@ class _SearchPageState extends State<SearchPage> {
   /// from the suggestions.
   Widget _buildButtons(String text, Color _color) {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => Booking(
+                  bookingNumber: 'haaga5441',
+                  destination: 'Nairobi',
+                  parkingLotNumber: 'pajh5114',
+                  price: 11,
+                  imagePath: 'assets/images/Park254_logo.png')));
+        },
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(30.0)),
