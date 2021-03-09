@@ -206,7 +206,7 @@ class _MoreInfoState extends State<MoreInfo> {
             Spacer(),
             Expanded(
               child: Container(
-                padding: EdgeInsets.only(left: width/30, right: width/30, top: width/30, bottom: width/30),
+                padding: EdgeInsets.all(width/30),
                 decoration: BoxDecoration(
                   border: Border.all(color: Color(0xfffee49b), width: 1),
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -230,7 +230,7 @@ class _MoreInfoState extends State<MoreInfo> {
                             ),
                           ),
                           TextSpan(
-                            text: 'lots available, don"t forget to select before booking',
+                            text: "lots available, don't forget to select before booking",
                             style: TextStyle(
                                 color: globals.textColor
                             ),
@@ -271,7 +271,6 @@ class _MoreInfoState extends State<MoreInfo> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                //MyText(content: 'More Details'),
                 _secondaryText('ADDRESS'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -356,19 +355,19 @@ class _MoreInfoState extends State<MoreInfo> {
               child: BorderContainer(
                 content: _parkingDetails(),
               ),
-              flex: 1,
+              flex: 3,
             ),
             Expanded(
               child: BorderContainer(
                 content: _parkingLot(),
               ),
-              flex: 1,
+              flex: 4,
             ),
             Expanded(
               child: BorderContainer(
                 content: _moreDetails(),
               ),
-              flex: 1,
+              flex: 3,
             ),
           ],
         ),
