@@ -48,6 +48,7 @@ class MoreInfo extends StatefulWidget {
   final String address;
   final String imageOne;
   final String imageTwo;
+  static const routeName = '/moreInfo';
 
   MoreInfo({
     @required this.destination,

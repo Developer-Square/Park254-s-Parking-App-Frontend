@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -9,6 +10,7 @@ import 'config/search_page_arguments.dart';
 import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
+import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 
 void main() => runApp(MyApp());
 
@@ -57,6 +59,22 @@ class MyApp extends StatelessWidget {
                 rating: args.rating,
                 distance: args.distance,
                 parkingSlots: args.parkingSlots,
+              );
+            });
+          } else if (settings.name == MoreInfo.routeName){
+            final MoreInfoArguments args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return MoreInfo(
+                  destination: args.destination,
+                  city: args.city,
+                  distance: args.distance,
+                  price: args.price,
+                  rating: args.rating,
+                  availableSpaces: args.availableSpaces,
+                  availableLots: args.availableLots,
+                  address: args.address,
+                  imageOne: args.imageOne,
+                  imageTwo: args.imageTwo
               );
             });
           }
