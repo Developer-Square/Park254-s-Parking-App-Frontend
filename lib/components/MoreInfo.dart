@@ -5,6 +5,38 @@ import 'package:park254_s_parking_app/components/MyText.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 
+/// Creates a more info page
+///
+/// E.g
+/// ```dart
+/// Navigator.pushNamed(
+///   context,
+///   MoreInfo.routeName,
+///   arguments: MoreInfoArguments(
+///     destination: 'Industrial Area',
+///     city: 'Nairobi',
+///     distance: 200,
+///     price: 10,
+///     rating: 4.8,
+///     availableSpaces: 240,
+///     availableLots: [
+///       {
+///         "lotNumber": "P5",
+///         "emptySpaces": 23,
+///         "capacity": 50,
+///       },
+///       {
+///         "lotNumber": "P7",
+///         "emptySpaces": 28,
+///         "capacity": 50,
+///       },
+///     ],
+///     address: '100 West 33rd Street, New York, NY',
+///     imageOne: 'assets/images/Park254_logo.png',
+///     imageTwo: 'assets/images/parking-icon.png',
+///   )
+/// ):
+/// ```
 class MoreInfo extends StatefulWidget {
   final String destination;
   final String city;
@@ -14,6 +46,8 @@ class MoreInfo extends StatefulWidget {
   final int availableSpaces;
   final List availableLots;
   final String address;
+  final String imageOne;
+  final String imageTwo;
 
   MoreInfo({
     @required this.destination,
@@ -23,7 +57,9 @@ class MoreInfo extends StatefulWidget {
     @required this.rating,
     @required this.availableSpaces,
     @required this.availableLots,
-    @required this.address
+    @required this.address,
+    @required this.imageOne,
+    @required this.imageTwo
   });
 
   @override
@@ -38,7 +74,7 @@ class _MoreInfoState extends State<MoreInfo> {
         Expanded(
           child: Image(
             image: AssetImage(
-              'assets/images/Park254_logo.png'
+              widget.imageOne
             ),
             fit: BoxFit.cover,
           ),
@@ -47,7 +83,7 @@ class _MoreInfoState extends State<MoreInfo> {
         Expanded(
           child: Image(
             image: AssetImage(
-                'assets/images/parking-icon.png'
+                widget.imageTwo
             ),
             fit: BoxFit.cover,
           ),
@@ -60,7 +96,7 @@ class _MoreInfoState extends State<MoreInfo> {
   Widget _paddingContainer(Widget child){
     final double height = MediaQuery.of(context).size.height;
     return Container(
-      padding: EdgeInsets.only(top: height/90, bottom: 0),
+      padding: EdgeInsets.only(top: height/50, bottom: 0),
       child: child,
     );
   }
