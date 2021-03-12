@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/MyText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
+/// Creates a Pay Up pop up that prompts user to pay
+///
+/// ```dart
+/// PayUp(
+///   total: amount,
+///   timeDatePicker: _timeDatePicker(),
+///   toggleDisplay: () => _togglePayUp(),
+/// )
+///```
 class PayUp extends StatefulWidget {
   final int total;
   final Widget timeDatePicker;
