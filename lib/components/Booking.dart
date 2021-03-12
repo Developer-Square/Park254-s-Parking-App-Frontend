@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
+import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PayUp.dart';
 import '../config/globals.dart' as globals;
 import './MyText.dart';
@@ -497,64 +498,66 @@ class _BookingState extends State<Booking> {
             automaticallyImplyLeading: true,
             leading: BackArrow()
           ),
-          body: Stack(
-            children: <Widget>[
-              SingleChildScrollView(
-                child: SizedBox(
-                  width: width,
-                  height: finalHeight,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: _destination(),
-                          flex: 2,
-                        ),
-                        Expanded(
-                          child: _timeDatePicker(),
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: BorderContainer(
-                            content: _vehicle(),
+          body: DismissKeyboard(
+            child: Stack(
+              children: <Widget>[
+                SingleChildScrollView(
+                  child: SizedBox(
+                    width: width,
+                    height: finalHeight,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: _destination(),
+                            flex: 2,
                           ),
-                          flex: 2,
-                        ),
-                        Expanded(
-                          child: BorderContainer(
-                              content: _driverInfo()
+                          Expanded(
+                            child: _timeDatePicker(),
+                            flex: 1,
                           ),
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: BorderContainer(
-                              content: _paymentMethod()
+                          Expanded(
+                            child: BorderContainer(
+                              content: _vehicle(),
+                            ),
+                            flex: 2,
                           ),
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: BorderContainer(
-                              content: _price()
+                          Expanded(
+                            child: BorderContainer(
+                                content: _driverInfo()
+                            ),
+                            flex: 1,
                           ),
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: _paymentButton(),
-                          flex: 2,
-                        ),
-                      ],
+                          Expanded(
+                            child: BorderContainer(
+                                content: _paymentMethod()
+                            ),
+                            flex: 1,
+                          ),
+                          Expanded(
+                            child: BorderContainer(
+                                content: _price()
+                            ),
+                            flex: 1,
+                          ),
+                          Expanded(
+                            child: _paymentButton(),
+                            flex: 2,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              showPayUp ? PayUp(
-                total: amount,
-                timeDatePicker: _timeDatePicker(),
-                toggleDisplay: () => _togglePayUp(),
-              ) : Container(),
-            ],
+                showPayUp ? PayUp(
+                  total: amount,
+                  timeDatePicker: _timeDatePicker(),
+                  toggleDisplay: () => _togglePayUp(),
+                ) : Container(),
+              ],
+            ),
           ),
         ),
     );
