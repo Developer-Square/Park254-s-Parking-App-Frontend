@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
+import 'package:park254_s_parking_app/components/PayUp.dart';
 import '../config/globals.dart' as globals;
 import './MyText.dart';
 import './BorderContainer.dart';
@@ -57,9 +58,10 @@ class _BookingState extends State<Booking> {
   String vehicle = 'prius';
   String numberPlate = 'BBAGAAFAF';
   String driver = "linus";
-  String paymentMethod = 'Visa';
+  String paymentMethod = 'MPESA';
   int amount = 0;
-  final List<String> paymentMethodList = <String>['MPESA','Visa'];
+  bool showPayUp = false;
+  final List<String> paymentMethodList = <String>['MPESA'];
 
   ///shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async{
@@ -186,6 +188,13 @@ class _BookingState extends State<Booking> {
   void _changeDriver(){
     setState(() {
       driver = driverController.text;
+    });
+  }
+
+  /// Toggles the display of [PayUp] widget
+  void _togglePayUp(){
+    setState(() {
+      showPayUp = !showPayUp;
     });
   }
 
@@ -425,7 +434,7 @@ class _BookingState extends State<Booking> {
             child: Material(
               color: globals.primaryColor,
               child: InkWell(
-                onTap: () => {},
+                onTap: _togglePayUp,
                 child: Center(
                   child: MyText(
                       content: 'Pay now'
@@ -439,6 +448,20 @@ class _BookingState extends State<Booking> {
           Spacer(),
         ],
       ),
+    );
+  }
+
+  Widget _timeDatePicker(){
+    return TimeDatePicker(
+        pickArrivalDate: () => _selectArrivalDate(context),
+        pickArrivalTime: () => _selectArrivalTime(context),
+        pickLeavingDate: () => _selectLeavingDate(context),
+        pickLeavingTime: () => _selectLeavingTime(context),
+        arrivalDate: arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()},',
+        arrivalTime: arrivalTime.minute > 9 ? ' ' + '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}' : ' ' + '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
+        leavingDate: leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()},',
+        leavingTime: leavingTime.minute > 9 ? ' ' + '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}' : ' ' + '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
+        parkingTime: _parkingTime()
     );
   }
 
@@ -474,65 +497,64 @@ class _BookingState extends State<Booking> {
             automaticallyImplyLeading: true,
             leading: BackArrow()
           ),
-          body: SingleChildScrollView(
-            child: SizedBox(
-              width: width,
-              height: finalHeight,
-              child: Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: _destination(),
-                      flex: 2,
+          body: Stack(
+            children: <Widget>[
+              SingleChildScrollView(
+                child: SizedBox(
+                  width: width,
+                  height: finalHeight,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: _destination(),
+                          flex: 2,
+                        ),
+                        Expanded(
+                          child: _timeDatePicker(),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(
+                            content: _vehicle(),
+                          ),
+                          flex: 2,
+                        ),
+                        Expanded(
+                          child: BorderContainer(
+                              content: _driverInfo()
+                          ),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(
+                              content: _paymentMethod()
+                          ),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(
+                              content: _price()
+                          ),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: _paymentButton(),
+                          flex: 2,
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: TimeDatePicker(
-                          pickArrivalDate: () => _selectArrivalDate(context),
-                          pickArrivalTime: () => _selectArrivalTime(context),
-                          pickLeavingDate: () => _selectLeavingDate(context),
-                          pickLeavingTime: () => _selectLeavingTime(context),
-                          arrivalDate: arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()},',
-                          arrivalTime: arrivalTime.minute > 9 ? ' ' + '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}' : ' ' + '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
-                          leavingDate: leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()},',
-                          leavingTime: leavingTime.minute > 9 ? ' ' + '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}' : ' ' + '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
-                          parkingTime: _parkingTime()
-                      ),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: BorderContainer(
-                        content: _vehicle(),
-                      ),
-                      flex: 2,
-                    ),
-                    Expanded(
-                      child: BorderContainer(
-                        content: _driverInfo()
-                      ),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: BorderContainer(
-                        content: _paymentMethod()
-                      ),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: BorderContainer(
-                        content: _price()
-                      ),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: _paymentButton(),
-                      flex: 2,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              showPayUp ? PayUp(
+                total: amount,
+                timeDatePicker: _timeDatePicker(),
+                toggleDisplay: () => _togglePayUp(),
+              ) : Container(),
+            ],
           ),
         ),
     );
