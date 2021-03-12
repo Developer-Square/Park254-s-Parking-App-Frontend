@@ -64,25 +64,7 @@ class _PayUpState extends State<PayUp> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         MyText(content: 'Total'),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              WidgetSpan(
-                                  child: Icon(
-                                    Icons.attach_money,
-                                    color: globals.textColor,
-                                  )
-                              ),
-                              TextSpan(
-                                text: '${widget.total.toString()}'
-                              ),
-                            ],
-                            style: TextStyle(
-                              color: globals.textColor,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
+                        MyText(content: "Kes ${widget.total.toString()}"),
                       ],
                     ),
                   ),
