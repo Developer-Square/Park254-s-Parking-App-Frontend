@@ -193,7 +193,7 @@ class _BookingState extends State<Booking> {
   }
 
   /// Toggles the display of [PayUp] widget
-  void _togglePayUp(){
+  void _togglePayUp() {
     setState(() {
       showPayUp = !showPayUp;
     });
