@@ -43,7 +43,7 @@ class _PayUpState extends State<PayUp> {
               children: <Widget>[
                 Expanded(
                   child: Align(
-                    alignment: Alignment.centerRight,
+                    alignment: Alignment.center,
                     child: Material(
                       color: Colors.white,
                       child: InkWell(
