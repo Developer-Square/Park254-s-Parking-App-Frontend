@@ -230,6 +230,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   /// A widget that builds the buttons in the bottom widget that appears
+  ///
   /// when a user clicks on recent searches or selects a their ideal parking place.
   /// from the suggestions.
   Widget _buildButtons(String text, Color _color) {
