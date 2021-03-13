@@ -109,7 +109,7 @@ Widget buildVerificationField(context) {
       Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
         Text('Didn\'t receive the code?',
             style: TextStyle(
-                color: globals.fontColor.withOpacity(0.75),
+                color: globals.textColor.withOpacity(0.75),
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold)),
         FlatButton(

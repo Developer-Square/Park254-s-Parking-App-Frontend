@@ -17,19 +17,21 @@ class BoxShadowWrapper extends StatelessWidget {
   final blurRadius;
   final opacity;
   final content;
+  final height;
 
   BoxShadowWrapper(
       {@required this.offsetY,
       @required this.offsetX,
       @required this.blurRadius,
       @required this.opacity,
-      @required this.content});
+      @required this.content,
+      this.height});
 
   Widget build(BuildContext context) {
     return Center(
       child: Container(
         width: MediaQuery.of(context).size.width - 40.0,
-        height: 60.0,
+        height: height,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
