@@ -73,6 +73,8 @@ class MyParkingState extends State<MyParkingScreen> {
   }
 
   /// Builds out the different containers on the page
+  ///
+  /// Requires [parkingLotNumber], [parkingPrice], [parkingLocation], [paymentStatus] and [paymentColor].
   Widget buildParkingContainer(parkingLotNumber, parkingPrice, parkingLocation,
       paymentStatus, paymentColor) {
     return BoxShadowWrapper(
