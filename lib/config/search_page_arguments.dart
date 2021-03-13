@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class SearchPageArguements {
+class SearchPageArguments {
   final String specificLocation;
   final String town;
   final Function setShowRecentSearches;
 
-  SearchPageArguements({
+  SearchPageArguments({
     @required this.specificLocation,
     @required this.town,
     @required this.setShowRecentSearches,
