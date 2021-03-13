@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/search_bar.dart';
 
+/// Creates the top UI widget in [home_screen.dart], [profile_screen.dart] and [myparking.dart].
+///
+/// Requires [searchBarController], [currentPage] and [widget].
+/// dart```
+/// TopPageStyling(
+/// searchBarController: controller,
+/// currentPage: 'home'
+/// )
 class TopPageStyling extends StatelessWidget {
   final searchBarController;
   final currentPage;

@@ -37,6 +37,9 @@ Widget buildFormField(String text, context, placeholder, _controller) {
   ]);
 }
 
+/// Creates a form field with more features e.g. [labelText and labelStyle].
+///
+/// Requires [label or context], [placeholder], [text] and [controller].
 Widget buildSingleTextField(label, placeholder, text, _controller) {
   return TextFormField(
     controller: _controller,
@@ -54,6 +57,10 @@ Widget buildSingleTextField(label, placeholder, text, _controller) {
   );
 }
 
+/// Creates a verification text field with all the necessary functions.
+///
+/// It also has a text widget and flat button at the bottom.
+/// Requires [context].
 Widget buildVerificationField(context) {
   return Column(
     children: [
@@ -116,6 +123,9 @@ Widget buildVerificationField(context) {
   );
 }
 
+/// Creates a international number field with a prefix e.g. [+254]
+///
+/// Requires [_controller] and [placeholder].
 Widget buildInternationalNumberField(_controller, placeholder) {
   return Row(
     children: [

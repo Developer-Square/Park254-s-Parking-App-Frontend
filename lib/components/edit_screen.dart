@@ -3,6 +3,9 @@ import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import '../config/globals.dart' as globals;
 
+/// Creates a dynamic edit screen page for user profiles and adding vehicles.
+///
+/// Requires [currentScreen].
 class EditScreen extends StatefulWidget {
   final profileImgPath;
   final fullName;
@@ -12,7 +15,7 @@ class EditScreen extends StatefulWidget {
   final currentScreen;
 
   EditScreen(
-      {@required this.profileImgPath,
+      {this.profileImgPath,
       this.fullName,
       this.email,
       this.phone,
@@ -61,6 +64,7 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
+  /// Builds out an edit profile screen
   Widget buildEditProfile() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

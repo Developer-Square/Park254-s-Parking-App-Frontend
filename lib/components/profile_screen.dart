@@ -5,6 +5,10 @@ import 'package:park254_s_parking_app/components/edit_screen.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import '../config/globals.dart' as globals;
 
+/// Creates a profile screen.
+///
+/// Requires [profileImgPath], [logo1Path] and [logo2Path].
+/// Updates the edit profile page fields.
 class ProfileScreen extends StatefulWidget {
   final profileImgPath;
   final logo1Path;
@@ -116,6 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ]));
   }
 
+  /// Builds out the card widget.
+  ///
+  /// Requires a [card] variable.
   Widget _buildCardDetails(card) {
     return Row(
       children: [
@@ -130,6 +137,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  /// Builds out the wallet section
+  ///
+  /// Requires [logo] and [card] variables.
   Widget _buildWalletItem(logo, card) {
     return Row(children: <Widget>[
       SvgPicture.asset(
@@ -143,6 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ]);
   }
 
+  /// Builds out the vehicle section.
   Widget _buildVehicleItem() {
     return Expanded(
       child: Row(
@@ -161,6 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  /// Builds out the different containers on the page e.g. the vehicle container.
+  ///
+  /// Requires the [logo], [card] and [type] variables.
   Widget _buildContainer(logo, card, type) {
     return BoxShadowWrapper(
         offsetY: 0.0,
@@ -180,6 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ));
   }
 
+  /// Returns dots or numbers.
   Widget _buildDots(number, card) {
     return Text(
       //If it's  card display card details else display phone details.
