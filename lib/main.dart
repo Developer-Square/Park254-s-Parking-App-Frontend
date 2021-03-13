@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
                 setShowRecentSearches: args.setShowRecentSearches,
               );
             });
-          } else if (settings.name == HomePage.routeName) {
+          } else if (settings.name == HomeScreen.routeName) {
             final HomePageArguements args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return NearByParkingList(
