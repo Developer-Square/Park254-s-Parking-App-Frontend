@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import '../config/globals.dart' as globals;
 
 /// A custom text widget
 ///
 /// Example
 /// ```dart
-/// PrimaryText(
+/// SecondaryText(
 ///   content:'Words to live by'
 /// );
 /// ```
-class PrimaryText extends StatelessWidget {
+class SecondaryText extends StatelessWidget {
   final String content;
 
-  PrimaryText({
+  SecondaryText({
     @required this.content
   });
 
@@ -21,9 +20,7 @@ class PrimaryText extends StatelessWidget {
     return Text(
       content,
       style: TextStyle(
-        color: globals.textColor,
-        fontSize: 18,
-        fontWeight: FontWeight.bold
+        color: Colors.black54,
       ),
     );
   }

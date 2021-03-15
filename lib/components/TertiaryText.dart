@@ -5,14 +5,14 @@ import '../config/globals.dart' as globals;
 ///
 /// Example
 /// ```dart
-/// PrimaryText(
+/// TertiaryText(
 ///   content:'Words to live by'
 /// );
 /// ```
-class PrimaryText extends StatelessWidget {
+class TertiaryText extends StatelessWidget {
   final String content;
 
-  PrimaryText({
+  TertiaryText({
     @required this.content
   });
 
@@ -22,8 +22,6 @@ class PrimaryText extends StatelessWidget {
       content,
       style: TextStyle(
         color: globals.textColor,
-        fontSize: 18,
-        fontWeight: FontWeight.bold
       ),
     );
   }
