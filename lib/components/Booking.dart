@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PayUp.dart';
+import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
 import './BorderContainer.dart';
@@ -32,6 +34,7 @@ class Booking extends StatefulWidget {
   final String parkingLotNumber;
   final int price;
   final String imagePath;
+  final String address;
   static const routeName = '/booking';
 
   Booking({
@@ -40,6 +43,7 @@ class Booking extends StatefulWidget {
     @required this.parkingLotNumber,
     @required this.price,
     @required this.imagePath,
+    @required this.address
   });
 
   @override
@@ -197,6 +201,21 @@ class _BookingState extends State<Booking> {
     setState(() {
       showPayUp = !showPayUp;
     });
+  }
+
+  /// Generates receipt
+  void _generateReceipt(){
+    Navigator.pushNamed(
+      context,
+      PaymentSuccessful.routeName,
+      arguments: ReceiptArguments(
+        bookingNumber: widget.bookingNumber,
+        parkingSpace: widget.parkingLotNumber,
+        price: amount,
+        destination: widget.destination,
+        address: widget.address,
+      )
+    );
   }
 
   @override
@@ -555,6 +574,7 @@ class _BookingState extends State<Booking> {
                   total: amount,
                   timeDatePicker: _timeDatePicker(),
                   toggleDisplay: () => _togglePayUp(),
+                  receiptGenerator: () => _generateReceipt(),
                 ) : Container(),
               ],
             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
+import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: primaryColor,
         ),
-        home: OnBoardingPage(),
+        home: HomePage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
           '/homepage': (context) => HomePage()
@@ -34,11 +36,13 @@ class MyApp extends StatelessWidget {
             final BookingArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return Booking(
-                  bookingNumber: args.bookingNumber,
-                  destination: args.destination,
-                  parkingLotNumber: args.parkingLotNumber,
-                  price: args.price,
-                  imagePath: args.imagePath);
+                bookingNumber: args.bookingNumber,
+                destination: args.destination,
+                parkingLotNumber: args.parkingLotNumber,
+                price: args.price,
+                imagePath: args.imagePath,
+                address: args.address,
+              );
             });
           } else if (settings.name == SearchPage.routeName) {
             final SearchPageArguments args = settings.arguments;
@@ -75,6 +79,17 @@ class MyApp extends StatelessWidget {
                   address: args.address,
                   imageOne: args.imageOne,
                   imageTwo: args.imageTwo
+              );
+            });
+          } else if (settings.name == PaymentSuccessful.routeName){
+            final ReceiptArguments args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return PaymentSuccessful(
+                bookingNumber: args.bookingNumber,
+                parkingSpace: args.parkingSpace,
+                price: args.price,
+                destination: args.destination,
+                address: args.address,
               );
             });
           }

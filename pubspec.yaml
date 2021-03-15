@@ -61,6 +61,7 @@ flutter:
     - assets/images/pin_icons/maps-and-flags.png
     - assets/images/pin_icons/current location.png
     - assets/svgs/map_pinpoint.svg
+    - assets/images/qrcode.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
