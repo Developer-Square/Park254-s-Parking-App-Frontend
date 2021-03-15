@@ -4,7 +4,7 @@ import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PayUp.dart';
 import '../config/globals.dart' as globals;
-import './MyText.dart';
+import './PrimaryText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 import 'package:park254_s_parking_app/components/BookingTextField.dart';
@@ -232,7 +232,7 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: Container(
             padding: EdgeInsets.only(bottom: 10, left: width/20, right: width/20),
-            child: MyText(
+            child: PrimaryText(
               content: 'Destination',
             ),
           ),
@@ -263,7 +263,7 @@ class _BookingState extends State<Booking> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Flexible(
-                        child: MyText(
+                        child: PrimaryText(
                           content: widget.destination,
                         ),
                         flex: 1,
@@ -304,7 +304,7 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: Align(
             alignment: Alignment.centerLeft,
-            child: MyText(
+            child: PrimaryText(
               content: 'Vehicle',
             ),
           ),
@@ -363,7 +363,7 @@ class _BookingState extends State<Booking> {
   Widget _driverInfo(){
     return Row(
       children: <Widget>[
-        MyText(
+        PrimaryText(
             content: 'Driver Info'
         ),
         Expanded(
@@ -379,7 +379,7 @@ class _BookingState extends State<Booking> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MyText(
+        PrimaryText(
             content: 'Payment Method'
         ),
         DropdownButton(
@@ -415,10 +415,10 @@ class _BookingState extends State<Booking> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MyText(
+        PrimaryText(
             content: 'Price'
         ),
-        MyText(
+        PrimaryText(
             content: 'Kes ${amount.toString()}'
         ),
       ],
@@ -437,7 +437,7 @@ class _BookingState extends State<Booking> {
               child: InkWell(
                 onTap: _togglePayUp,
                 child: Center(
-                  child: MyText(
+                  child: PrimaryText(
                       content: 'Pay now'
                   ),
                 ),
@@ -480,7 +480,7 @@ class _BookingState extends State<Booking> {
           appBar: AppBar(
             title: Column(
               children: <Widget>[
-                MyText(
+                PrimaryText(
                   content: 'Booking',
                 ),
                 Text(

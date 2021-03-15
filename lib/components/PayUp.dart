@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/components/MyText.dart';
+import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
 /// Creates a Pay Up pop up that prompts user to pay
@@ -63,8 +63,8 @@ class _PayUpState extends State<PayUp> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        MyText(content: 'Total'),
-                        MyText(content: "Kes ${widget.total.toString()}"),
+                        PrimaryText(content: 'Total'),
+                        PrimaryText(content: "Kes ${widget.total.toString()}"),
                       ],
                     ),
                   ),
@@ -87,7 +87,7 @@ class _PayUpState extends State<PayUp> {
                           child: InkWell(
                             onTap: () => {},
                             child: Center(
-                              child: MyText(
+                              child: PrimaryText(
                                   content: 'Pay Up'
                               ),
                             ),

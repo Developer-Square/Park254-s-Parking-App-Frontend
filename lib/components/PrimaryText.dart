@@ -9,10 +9,10 @@ import '../config/globals.dart' as globals;
 ///   content:'Words to live by'
 /// );
 /// ```
-class MyText extends StatelessWidget {
+class PrimaryText extends StatelessWidget {
   final String content;
 
-  MyText({
+  PrimaryText({
     @required this.content
   });
 
