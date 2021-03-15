@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(25.0))),
                           child: Center(
-                              child: Text('Login with email',
+                              child: Text('Login with phone number',
                                   style: globals.buildTextStyle(
                                       16.0, true, globals.textColor))),
                         ),

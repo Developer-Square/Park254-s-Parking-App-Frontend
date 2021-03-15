@@ -35,16 +35,16 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: Image(
                 image: AssetImage(
-                  'assets/images/parking-icon.png',
+                  'assets/images/Park254_logo.png',
                 ),
-                color: Colors.grey.withOpacity(0.6),
-                height: 300.0,
+                height: 190.0,
               ),
             ),
+            SizedBox(height: 75.0),
             Container(
                 child: Form(
               child: Column(children: <Widget>[
-                _buildFormField('Email'),
+                _buildFormField('Phone number'),
                 SizedBox(height: 15.0),
                 _buildFormField('Password'),
               ]),
