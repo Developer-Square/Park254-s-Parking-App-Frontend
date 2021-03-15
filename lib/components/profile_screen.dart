@@ -47,6 +47,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    fullNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
         color: Colors.grey[200],
@@ -181,6 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         offsetX: 0.0,
         blurRadius: 4.0,
         opacity: 0.6,
+        height: 60.0,
         content: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 15.0),
           child: Row(
@@ -207,6 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  /// Builds out the profile tab at the top of the page.
   Widget buildProfileTab() {
     return Center(
       child: Container(

@@ -19,12 +19,14 @@ class TopPageStyling extends StatelessWidget {
       {this.searchBarController, @required this.currentPage, this.widget});
   Widget build(BuildContext context) {
     return Container(
-      height: 210.0,
+      height: currentPage == 'myparking' ? 260.0 : 210.0,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           color: globals.backgroundColor,
-          borderRadius:
-              BorderRadius.only(bottomRight: Radius.elliptical(500, 240))),
+          borderRadius: BorderRadius.only(
+              bottomRight: currentPage == 'myparking'
+                  ? Radius.elliptical(400, 270)
+                  : Radius.elliptical(500, 240))),
       child: Padding(
         padding: const EdgeInsets.only(top: 40.0),
         child: Column(
@@ -37,7 +39,9 @@ class TopPageStyling extends StatelessWidget {
                   child: Text(
                       currentPage == 'home'
                           ? 'Where do you want to park?'
-                          : 'Profile',
+                          : currentPage == 'profile'
+                              ? 'Profile'
+                              : 'My Parking',
                       style: TextStyle(
                         color: globals.textColor,
                         fontSize: 22.0,
@@ -46,7 +50,10 @@ class TopPageStyling extends StatelessWidget {
                       )),
                 ),
               ),
-              SizedBox(height: currentPage == 'profile' ? 37.0 : 24.0),
+              SizedBox(
+                  height: currentPage == 'profile' || currentPage == 'myparking'
+                      ? 37.0
+                      : 24.0),
               currentPage == 'home'
                   ? SearchBar(
                       offsetY: 4.0,
