@@ -15,11 +15,13 @@ class PayUp extends StatefulWidget {
   final int total;
   final Widget timeDatePicker;
   final Function toggleDisplay;
+  final Function receiptGenerator;
 
   PayUp({
     @required this.total,
     @required this.timeDatePicker,
     @required this.toggleDisplay,
+    @required this.receiptGenerator
   });
   @override
   _PayUpState createState() => _PayUpState();
@@ -85,7 +87,7 @@ class _PayUpState extends State<PayUp> {
                         child: Material(
                           color: globals.primaryColor,
                           child: InkWell(
-                            onTap: () => {},
+                            onTap: widget.receiptGenerator,
                             child: Center(
                               child: PrimaryText(
                                   content: 'Pay Up'
