@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
                 setShowRecentSearches: args.setShowRecentSearches,
               );
             });
-          } else if (settings.name == HomePage.routeName) {
+          } else if (settings.name == HomeScreen.routeName) {
             final HomePageArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return NearByParkingList(
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
                 parkingSlots: args.parkingSlots,
               );
             });
-          } else if (settings.name == MoreInfo.routeName){
+          } else if (settings.name == MoreInfo.routeName) {
             final MoreInfoArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return MoreInfo(
@@ -74,8 +75,7 @@ class MyApp extends StatelessWidget {
                   availableLots: args.availableLots,
                   address: args.address,
                   imageOne: args.imageOne,
-                  imageTwo: args.imageTwo
-              );
+                  imageTwo: args.imageTwo);
             });
           }
         });
