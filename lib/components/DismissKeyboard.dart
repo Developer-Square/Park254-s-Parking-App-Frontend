@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// Dismisses keyboard when user touches a stateless widget
+///
+/// Wrap around the desired widget
+/// E.g.
+/// ```dart
+/// DismissKeyboard(
+///   child: Container()
+/// );
+/// ```
 class DismissKeyboard extends StatelessWidget {
   final Widget child;
 

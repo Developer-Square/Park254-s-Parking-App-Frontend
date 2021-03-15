@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: primaryColor,
         ),
-        home: HomePage(),
+        home: OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
           '/homepage': (context) => HomePage()

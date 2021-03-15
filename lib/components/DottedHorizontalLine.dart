@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
+/// Creates a dotted horizontal line
+///
+/// E.g.
+/// ```dart
+/// Center(
+///   child: CustomPaint(painter: DotedHorizontalLine(),),
+/// ),
+/// ```
 class DotedHorizontalLine extends CustomPainter {
   Paint _paint;
   DotedHorizontalLine() {

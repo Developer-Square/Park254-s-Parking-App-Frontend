@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/config/globals.dart' as globals;
 ///   total: amount,
 ///   timeDatePicker: _timeDatePicker(),
 ///   toggleDisplay: () => _togglePayUp(),
+///   receiptGenerator: () => _generateReceipt(),
 /// )
 ///```
 class PayUp extends StatefulWidget {

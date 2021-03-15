@@ -246,6 +246,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
+  /// Creates a circle with icon at center
   Widget _circleWithIcon(IconData icon, Color bgColor, Color iconColor, double sizeFactor){
     return Container(
       decoration: BoxDecoration(
