@@ -4,6 +4,8 @@ import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
+import 'package:park254_s_parking_app/components/SecondaryText.dart';
+import 'package:park254_s_parking_app/components/TertiaryText.dart';
 
 /// Creates a more info page
 ///
@@ -102,24 +104,6 @@ class _MoreInfoState extends State<MoreInfo> {
     );
   }
 
-  Widget _secondaryText(String content){
-    return Text(
-      content,
-      style: TextStyle(
-        color: Colors.black54,
-      ),
-    );
-  }
-
-  Widget _tertiaryText(String content){
-    return Text(
-      content,
-      style: TextStyle(
-        color: globals.textColor
-      ),
-    );
-  }
-
   Widget _popUpMenu(){
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
@@ -175,7 +159,7 @@ class _MoreInfoState extends State<MoreInfo> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  _secondaryText('PARKING MALL'),
+                  SecondaryText(content: 'PARKING MALL'),
                   _popUpMenu()
                 ],
               ),
@@ -187,7 +171,7 @@ class _MoreInfoState extends State<MoreInfo> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   PrimaryText(content: widget.destination),
-                  _secondaryText(widget.city)
+                  SecondaryText(content: widget.city)
                 ],
               ),
               flex: 2,
@@ -218,7 +202,7 @@ class _MoreInfoState extends State<MoreInfo> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          _secondaryText(lotNumber),
+          SecondaryText(content: lotNumber),
           PrimaryText(
             content: '${emptySpaces.toString()}/${capacity.toString()}',
           ),
@@ -308,12 +292,12 @@ class _MoreInfoState extends State<MoreInfo> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                _secondaryText('ADDRESS'),
+                SecondaryText(content: 'ADDRESS'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Expanded(
-                      child: _tertiaryText('${widget.address}'),
+                      child: TertiaryText(content:'${widget.address}'),
                       flex: 5,
                     ),
                     Spacer(),
