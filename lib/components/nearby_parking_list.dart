@@ -50,14 +50,11 @@ class NearByParkingList extends StatelessWidget {
               children: <Widget>[
                 ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  child: Hero(
-                    tag: imgPath,
-                    child: Image(
-                      height: 90.0,
-                      width: 85.0,
-                      fit: BoxFit.cover,
-                      image: AssetImage(imgPath),
-                    ),
+                  child: Image(
+                    height: 90.0,
+                    width: 85.0,
+                    fit: BoxFit.cover,
+                    image: AssetImage(imgPath),
                   ),
                 ),
                 Positioned(
