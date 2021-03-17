@@ -22,6 +22,7 @@ class _NearByParkingState extends State<NearByParking>
     with TickerProviderStateMixin {
   double _size;
   bool _large;
+  String selectedCard = 'Nearby Parking';
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _NearByParkingState extends State<NearByParking>
     _large = false;
   }
 
+  /// Increases the size of the nearby and recommended widget.
   void _updateSize() {
     setState(() {
       widget.hideDetails();
@@ -47,32 +49,41 @@ class _NearByParkingState extends State<NearByParking>
     });
   }
 
+  /// Adds opacity to make the selected widget more visible.
+  void selectCard(cardTitle) {
+    if (!_large) {
+      _updateSize();
+    }
+    setState(() {
+      selectedCard = cardTitle;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
           color: Colors.transparent,
-          child: GestureDetector(
-              onTap: () => _updateSize(),
-              child: AnimatedSize(
-                  curve: Curves.easeInOut,
-                  vsync: this,
-                  duration: Duration(seconds: 2),
-                  child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        buildNearbyContainer(),
-                        SizedBox(width: 20.0),
-                        buildNearbyContainer()
-                      ])))),
+          child: AnimatedSize(
+              curve: Curves.easeInOut,
+              vsync: this,
+              duration: Duration(seconds: 2),
+              child:
+                  ListView(scrollDirection: Axis.horizontal, children: <Widget>[
+                SizedBox(width: 12.0),
+                buildNearbyContainer('Nearby Parking'),
+                SizedBox(width: 15.0),
+                buildNearbyContainer('Recommeded Parking'),
+                SizedBox(width: 12.0),
+              ]))),
     );
   }
 
   /// Builds out the title at the top when the nearyby parking expands.
-  Widget buildTitle() {
+  Widget buildTitle(String title) {
     return Column(children: <Widget>[
       SizedBox(height: 50.0),
-      Text('Nearby Parking',
+      Text(title,
           style: globals.buildTextStyle(
               18.0, true, Colors.white.withOpacity(0.9))),
       SizedBox(height: 30.0),
@@ -97,100 +108,121 @@ class _NearByParkingState extends State<NearByParking>
     );
   }
 
-  Widget buildNearbyContainer() {
+  Widget buildNearbyContainer(String title) {
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-      _large ? buildTitle() : Container(),
-      Container(
-        height: _size,
-        width: MediaQuery.of(context).size.width - 50.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              offset: Offset(1.0, 3.0), //(x,y)
-              blurRadius: 7.0,
-            )
-          ],
-          color: Colors.white,
-        ),
-        margin: EdgeInsets.only(bottom: _large ? 15.0 : 30.0),
-        child: Padding(
-          padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Text('Nearest Parking',
-                            style: globals.buildTextStyle(
-                                16.0, true, globals.textColor)),
-                        SizedBox(width: 15.0),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 19.0,
-                          ),
-                        ),
-                      ]),
-                  InkWell(
-                    onTap: widget.showNearByParkingFn,
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-              SizedBox(height: 19.0),
-              SizedBox(
-                  height: _large ? 420.0 : 205.0,
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      NearByParkingList(
-                          imgPath: 'assets/images/parking_photos/parking_4.jpg',
-                          parkingPrice: 200,
-                          parkingPlaceName: 'Parking on Wabera St',
-                          rating: 3.5,
-                          distance: 125,
-                          parkingSlots: 5),
-                      SizedBox(height: 20.0),
-                      NearByParkingList(
-                          imgPath: 'assets/images/parking_photos/parking_7.jpg',
-                          parkingPrice: 130,
-                          parkingPlaceName: 'First Church of Christ',
-                          rating: 4.1,
-                          distance: 234,
-                          parkingSlots: 2),
-                      SizedBox(height: 30.0),
-                      NearByParkingList(
-                          imgPath: 'assets/images/parking_photos/parking_1.jpg',
-                          parkingPrice: 450,
-                          parkingPlaceName: 'Parklands Ave, Nairobi',
-                          rating: 3.9,
-                          distance: 234,
-                          parkingSlots: 7),
-                      SizedBox(height: 30.0),
-                      NearByParkingList(
-                          imgPath: 'assets/images/parking_photos/parking_9.jpg',
-                          parkingPrice: 400,
-                          parkingPlaceName: 'Parklands Ave, Nairobi',
-                          rating: 3.9,
-                          distance: 234,
-                          parkingSlots: 7),
-                      SizedBox(height: 30.0),
-                      NearByParkingList(
-                          imgPath: 'assets/images/parking_photos/parking_2.jpg',
-                          parkingPrice: 200,
-                          parkingPlaceName: 'Parking on Wabera St',
-                          rating: 3.5,
-                          distance: 125,
-                          parkingSlots: 5),
-                    ],
-                  )),
+      _large ? buildTitle(title) : Container(),
+      InkWell(
+        onTap: () => selectCard(title),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeIn,
+          height: _size,
+          width: MediaQuery.of(context).size.width - 50.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            boxShadow: [
+              BoxShadow(
+                color: title == selectedCard ? Colors.grey : Colors.transparent,
+                offset: Offset(1.0, 3.0), //(x,y)
+                blurRadius: 7.0,
+              )
             ],
+            color: title == selectedCard
+                ? Colors.white
+                : Colors.white.withOpacity(0.8),
+          ),
+          margin: EdgeInsets.only(bottom: _large ? 15.0 : 30.0),
+          child: Padding(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 20.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text(title,
+                              style: globals.buildTextStyle(
+                                  16.0,
+                                  true,
+                                  title == selectedCard
+                                      ? globals.textColor
+                                      : globals.textColor.withOpacity(0.7))),
+                          SizedBox(width: 15.0),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 19.0,
+                            ),
+                          ),
+                        ]),
+                    InkWell(
+                      onTap: widget.showNearByParkingFn,
+                      child: Icon(Icons.close),
+                    )
+                  ],
+                ),
+                SizedBox(height: 19.0),
+                SizedBox(
+                    height: _large ? 420.0 : 205.0,
+                    child: ListView(
+                      scrollDirection: Axis.vertical,
+                      children: [
+                        NearByParkingList(
+                            activeCard: title == selectedCard ? true : false,
+                            imgPath:
+                                'assets/images/parking_photos/parking_4.jpg',
+                            parkingPrice: 200,
+                            parkingPlaceName: 'Parking on Wabera St',
+                            rating: 3.5,
+                            distance: 125,
+                            parkingSlots: 5),
+                        SizedBox(height: 20.0),
+                        NearByParkingList(
+                            activeCard: title == selectedCard ? true : false,
+                            imgPath:
+                                'assets/images/parking_photos/parking_7.jpg',
+                            parkingPrice: 130,
+                            parkingPlaceName: 'First Church of Christ',
+                            rating: 4.1,
+                            distance: 234,
+                            parkingSlots: 2),
+                        SizedBox(height: 30.0),
+                        NearByParkingList(
+                            activeCard: title == selectedCard ? true : false,
+                            imgPath:
+                                'assets/images/parking_photos/parking_1.jpg',
+                            parkingPrice: 450,
+                            parkingPlaceName: 'Parklands Ave, Nairobi',
+                            rating: 3.9,
+                            distance: 234,
+                            parkingSlots: 7),
+                        SizedBox(height: 30.0),
+                        NearByParkingList(
+                            activeCard: title == selectedCard ? true : false,
+                            imgPath:
+                                'assets/images/parking_photos/parking_9.jpg',
+                            parkingPrice: 400,
+                            parkingPlaceName: 'Parklands Ave, Nairobi',
+                            rating: 3.9,
+                            distance: 234,
+                            parkingSlots: 7),
+                        SizedBox(height: 30.0),
+                        NearByParkingList(
+                            activeCard: title == selectedCard ? true : false,
+                            imgPath:
+                                'assets/images/parking_photos/parking_2.jpg',
+                            parkingPrice: 200,
+                            parkingPlaceName: 'Parking on Wabera St',
+                            rating: 3.5,
+                            distance: 125,
+                            parkingSlots: 5),
+                      ],
+                    )),
+              ],
+            ),
           ),
         ),
       ),
