@@ -56,6 +56,7 @@ class MyApp extends StatelessWidget {
             final HomePageArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return NearByParkingList(
+                activeCard: false,
                 imgPath: args.imgPath,
                 parkingPrice: args.parkingPrice,
                 parkingPlaceName: args.parkingPlaceName,
