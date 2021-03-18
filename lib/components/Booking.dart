@@ -158,7 +158,8 @@ class _BookingState extends State<Booking> {
 
   ///Calculates the parking duration and cost
   String _parkingTime(){
-    final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) - (arrivalTime.hour + (arrivalTime.minute / 60));
+    final Duration parkingDays = leavingDate.difference(arrivalDate);
+    final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) - (arrivalTime.hour + (arrivalTime.minute / 60)) + parkingDays.inHours;
     int hours;
     int minutes;
     if(totalTime >= 0){
@@ -169,30 +170,18 @@ class _BookingState extends State<Booking> {
       minutes = ((totalTime - totalTime.ceilToDouble()) * 60).round();
     }
     int parkingHours = totalTime.ceil();
-    amount = parkingHours * widget.price;
+    amount = (parkingHours < 0) ? 0 :parkingHours * widget.price;
     return (hours == 0)
         ? '${minutes}m'
-        : (minutes == 0) ? '${hours}h' : '${hours}h ${minutes}m';
+        : (minutes == 0) ? '${hours}h'
+        : (hours < 0 && minutes < 0) ? '${hours}h ${minutes.abs()}m'
+        : '${hours}h ${minutes}m';
   }
 
-  ///listens to vehicle type input
-  void _changeVehicle(){
+  /// Changes Text Editing Input
+  _changeInput(String title, TextEditingController _controller){
     setState(() {
-      vehicle = vehicleController.text;
-    });
-  }
-
-  ///listens to number plate input
-  void _changePlate(){
-    setState(() {
-      numberPlate = numberPlateController.text;
-    });
-  }
-
-  ///listens to driver input
-  void _changeDriver(){
-    setState(() {
-      driver = driverController.text;
+      title = _controller.text;
     });
   }
 
@@ -238,9 +227,9 @@ class _BookingState extends State<Booking> {
     driverController.text = driver;
 
     // Start listening to changes.
-    vehicleController.addListener(_changeVehicle);
-    numberPlateController.addListener(_changePlate);
-    driverController.addListener(_changeDriver);
+    vehicleController.addListener(_changeInput(vehicle, vehicleController));
+    numberPlateController.addListener(_changeInput(numberPlate, numberPlateController));
+    driverController.addListener(_changeInput(driver, driverController));
   }
 
   Widget _destination(){
