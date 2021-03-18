@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
@@ -33,11 +35,15 @@ class _SearchPageState extends State<SearchPage> {
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
   Position currentPosition;
+  int ratingCount;
+  var clickedStars;
 
   @override
   void initState() {
     super.initState();
 
+    ratingCount = 0;
+    clickedStars = [];
     showRecentSearches = true;
     showBookNowTab = false;
     showRatingTab = false;
@@ -64,6 +70,8 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+// Hides the recent searches when one of them is clicked and.
+// sets the searchbar text to the clicked recent search.
   void _setShowRecentSearches(searchText) {
     setState(() {
       searchBarController.text = searchText;
@@ -86,12 +94,52 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // Shows the rating tab and hides all other widgets.
   void showRatingTabFn() {
     setState(() {
       showRecentSearches = false;
       showBookNowTab = false;
       showRatingTab = true;
     });
+  }
+
+  // Hide the rating tab and go back to the homepage.
+  void hideRatingTabFn() {
+    setState(() {
+      showRatingTab = false;
+    });
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => HomePage()));
+  }
+
+  // Changes the rating in the rating tab.
+  // also helps to identify which stars were clicked.
+  void setStar(title) {
+    setState(() {
+      if (title == 'star1') {
+        addToClickedStars(title);
+      } else if (title == 'star2') {
+        addToClickedStars(title);
+      } else if (title == 'star3') {
+        addToClickedStars(title);
+      } else if (title == 'star4') {
+        addToClickedStars(title);
+      } else {
+        addToClickedStars(title);
+      }
+    });
+  }
+
+// Adds the title passed on as a param to a list.
+// so that we can know which stars were clicked.
+// If the title is already there it's removed.
+  void addToClickedStars(title) {
+    if (clickedStars.contains(title)) {
+      clickedStars.remove(title);
+    } else {
+      clickedStars.add(title);
+    }
+    clickedStars.map((star) => star == true ? ratingCount += 1 : null);
   }
 
   Widget build(BuildContext context) {
@@ -158,31 +206,11 @@ class _SearchPageState extends State<SearchPage> {
                                 SizedBox(height: 17.0),
                                 Row(
                                   children: <Widget>[
-                                    Icon(
-                                      Icons.star_border,
-                                      color: Colors.grey.withOpacity(0.7),
-                                      size: 53.0,
-                                    ),
-                                    Icon(
-                                      Icons.star_border,
-                                      color: Colors.grey.withOpacity(0.7),
-                                      size: 53.0,
-                                    ),
-                                    Icon(
-                                      Icons.star_border,
-                                      color: Colors.grey.withOpacity(0.7),
-                                      size: 53.0,
-                                    ),
-                                    Icon(
-                                      Icons.star_border,
-                                      color: Colors.grey.withOpacity(0.7),
-                                      size: 53.0,
-                                    ),
-                                    Icon(
-                                      Icons.star_border,
-                                      color: Colors.grey.withOpacity(0.7),
-                                      size: 53.0,
-                                    ),
+                                    _buildStars('star1'),
+                                    _buildStars('star2'),
+                                    _buildStars('star3'),
+                                    _buildStars('star4'),
+                                    _buildStars('star5')
                                   ],
                                 ),
                                 SizedBox(height: 15.0),
@@ -198,7 +226,7 @@ class _SearchPageState extends State<SearchPage> {
                         Container(
                             height: 1.0, color: Colors.grey.withOpacity(0.4)),
                         InkWell(
-                          onTap: () {},
+                          onTap: () => hideRatingTabFn(),
                           child: Column(
                             children: [
                               SizedBox(height: 20.0),
@@ -333,6 +361,26 @@ class _SearchPageState extends State<SearchPage> {
                   )
                 : Container(),
           ])),
+    );
+  }
+
+  /// Builds out the star icons.
+  ///
+  /// The icons change when clicked.
+  Widget _buildStars(title) {
+    return InkWell(
+      onTap: () => setStar(title),
+      child: clickedStars.contains(title)
+          ? Icon(
+              Icons.star,
+              color: Colors.yellow,
+              size: 53.0,
+            )
+          : Icon(
+              Icons.star_border,
+              color: Colors.grey.withOpacity(0.7),
+              size: 53.0,
+            ),
     );
   }
 
