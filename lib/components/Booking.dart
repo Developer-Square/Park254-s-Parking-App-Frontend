@@ -54,6 +54,7 @@ class _BookingState extends State<Booking> {
   DateTime leavingDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
   DateTime lastDate = DateTime.now().add(Duration(days: 30));
+  DateTime today = DateTime.now();
   TimeOfDay arrivalTime = TimeOfDay.now();
   TimeOfDay leavingTime = TimeOfDay.now();
   TextEditingController vehicleController = new TextEditingController();
@@ -73,7 +74,7 @@ class _BookingState extends State<Booking> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: arrivalDate,
-      firstDate: arrivalDate,
+      firstDate: today,
       lastDate: lastDate,
     );
 
@@ -91,8 +92,8 @@ class _BookingState extends State<Booking> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: leavingDate,
-      firstDate: leavingDate,
-      lastDate: arrivalDate,
+      firstDate: today,
+      lastDate: lastDate,
     );
 
     if(picked !=null && picked != leavingDate){
