@@ -100,23 +100,28 @@ class _BookingState extends State<Booking> {
     }
   }
 
+  /// custom theme for the timePicker
+  Theme _timeTheme(Widget child){
+    return Theme(
+      data: ThemeData.light().copyWith(
+        primaryColor: globals.textColor,
+        accentColor: globals.textColor,
+        colorScheme: ColorScheme.light(primary: globals.textColor),
+        buttonTheme: ButtonThemeData(
+            textTheme: ButtonTextTheme.primary
+        ),
+      ),
+      child: child,
+    );
+  }
+
   ///shows date picker for arrival time
   _selectArrivalTime(BuildContext context) async{
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: arrivalTime,
       builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: globals.textColor,
-            accentColor: globals.textColor,
-            colorScheme: ColorScheme.light(primary: globals.textColor),
-            buttonTheme: ButtonThemeData(
-                textTheme: ButtonTextTheme.primary
-            ),
-          ),
-          child: child,
-        );
+        return _timeTheme(child);
       },
     );
 
@@ -133,17 +138,7 @@ class _BookingState extends State<Booking> {
       context: context,
       initialTime: leavingTime,
       builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: globals.textColor,
-            accentColor: globals.textColor,
-            colorScheme: ColorScheme.light(primary: globals.textColor),
-            buttonTheme: ButtonThemeData(
-                textTheme: ButtonTextTheme.primary
-            ),
-          ),
-          child: child,
-        );
+        return _timeTheme(child);
       },
     );
 
