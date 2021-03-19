@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
+import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PayUp.dart';
 import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
@@ -9,7 +10,7 @@ import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
-import 'package:park254_s_parking_app/components/BookingTextField.dart';
+import 'package:park254_s_parking_app/components/SimpleTextField.dart';
 
 ///Creates a booking page
 ///
@@ -57,10 +58,6 @@ class _BookingState extends State<Booking> {
   DateTime today = DateTime.now();
   TimeOfDay arrivalTime = TimeOfDay.now();
   TimeOfDay leavingTime = TimeOfDay.now();
-  TextEditingController vehicleController = new TextEditingController();
-  TextEditingController numberPlateController = new TextEditingController();
-  TextEditingController driverController = new TextEditingController();
-  TextEditingController paymentMethodController = new TextEditingController();
   String vehicle = 'prius';
   String numberPlate = 'BBAGAAFAF';
   String driver = "linus";
@@ -179,13 +176,6 @@ class _BookingState extends State<Booking> {
         : '${hours}h ${minutes}m';
   }
 
-  /// Changes Text Editing Input
-  _changeInput(String title, TextEditingController _controller){
-    setState(() {
-      title = _controller.text;
-    });
-  }
-
   /// Toggles the display of [PayUp] widget
   void _togglePayUp() {
     setState(() {
@@ -206,31 +196,6 @@ class _BookingState extends State<Booking> {
         address: widget.address,
       )
     );
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    vehicleController.dispose();
-    numberPlateController.dispose();
-    driverController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Pass Initial values
-    vehicleController.text = vehicle;
-    numberPlateController.text = numberPlate;
-    driverController.text = driver;
-
-    // Start listening to changes.
-    vehicleController.addListener(_changeInput(vehicle, vehicleController));
-    numberPlateController.addListener(_changeInput(numberPlate, numberPlateController));
-    driverController.addListener(_changeInput(driver, driverController));
   }
 
   Widget _destination(){
@@ -261,7 +226,7 @@ class _BookingState extends State<Booking> {
                       widget.imagePath,
                     ),
                   ),
-                  flex: 3,
+                  flex: 2,
                   fit: FlexFit.loose,
                 ),
                 Spacer(),
@@ -305,6 +270,25 @@ class _BookingState extends State<Booking> {
     );
   }
 
+  /// Creates a row with title and value
+  Widget _vehicleRow(String title, Widget child){
+    return Row(
+      children: <Widget>[
+        Text(
+          title,
+          style: TextStyle(
+              color: Colors.black54,
+              fontWeight: FontWeight.bold
+          ),
+          textAlign: TextAlign.left,
+        ),
+        Expanded(
+          child: child,
+        ),
+      ],
+    );
+  }
+
   Widget _vehicle(){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,46 +305,24 @@ class _BookingState extends State<Booking> {
           fit: FlexFit.loose,
         ),
         Flexible(
-          child: Row(
-            children: <Widget>[
-              Text(
-                'Type',
-                style: TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold
-                ),
-                textAlign: TextAlign.left,
-              ),
-              Expanded(
-                child:BookingTextField(
-                  controller: vehicleController,
-                  textColor: Colors.blue[400],
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          child: _vehicleRow(
+            'Type',
+            SimpleTextField(
+              textColor: Colors.blue[400],
+              fontWeight: FontWeight.bold,
+              initialValue: vehicle,
+            ),
           ),
           flex: 1,
           fit: FlexFit.loose,
         ),
         Flexible(
-          child: Row(
-            children: <Widget>[
-              Text(
-                'Plate Number',
-                style: TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold
-                ),
-                textAlign: TextAlign.left,
-              ),
-              Expanded(
-                child: BookingTextField(
-                  controller: numberPlateController,
-                  capitalize: TextCapitalization.characters,
-                ),
-              ),
-            ],
+          child: _vehicleRow(
+            'Plate Number',
+            SimpleTextField(
+              capitalize: TextCapitalization.characters,
+              initialValue: numberPlate,
+            ),
           ),
           flex: 1,
           fit: FlexFit.loose,
@@ -376,8 +338,8 @@ class _BookingState extends State<Booking> {
             content: 'Driver Info'
         ),
         Expanded(
-          child:BookingTextField(
-            controller: driverController,
+          child:SimpleTextField(
+            initialValue: driver,
           ),
         ),
       ],
@@ -436,28 +398,8 @@ class _BookingState extends State<Booking> {
 
   Widget _paymentButton(){
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20),
-      child: Column(
-        children: <Widget>[
-          Spacer(flex: 2,),
-          Expanded(
-            child: Material(
-              color: globals.primaryColor,
-              child: InkWell(
-                onTap: _togglePayUp,
-                child: Center(
-                  child: PrimaryText(
-                      content: 'Pay now'
-                  ),
-                ),
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
-            ),
-            flex: 2,
-          ),
-          Spacer(),
-        ],
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+      child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
     );
   }
 
@@ -467,9 +409,9 @@ class _BookingState extends State<Booking> {
         pickArrivalTime: () => _selectArrivalTime(context),
         pickLeavingDate: () => _selectLeavingDate(context),
         pickLeavingTime: () => _selectLeavingTime(context),
-        arrivalDate: arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()},',
+        arrivalDate: arrivalDate.day == DateTime.now().day ? 'Today, ' : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()},',
         arrivalTime: arrivalTime.minute > 9 ? ' ' + '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}' : ' ' + '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
-        leavingDate: leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()},',
+        leavingDate: leavingDate.day == DateTime.now().day ? 'Today, ' : '${leavingDate.day.toString()}/${leavingDate.month.toString()},',
         leavingTime: leavingTime.minute > 9 ? ' ' + '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}' : ' ' + '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
         parkingTime: _parkingTime()
     );
