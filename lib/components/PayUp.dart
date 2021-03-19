@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
@@ -81,27 +82,7 @@ class _PayUpState extends State<PayUp> {
                   flex: 1,
                 ),
                 Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      Spacer(),
-                      Expanded(
-                        child: Material(
-                          color: globals.primaryColor,
-                          child: InkWell(
-                            onTap: widget.receiptGenerator,
-                            child: Center(
-                              child: PrimaryText(
-                                  content: 'Pay Up'
-                              ),
-                            ),
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                        ),
-                        flex: 2,
-                      ),
-                      Spacer(),
-                    ],
-                  ),
+                  child: GoButton(onTap: () => widget.receiptGenerator(), title: 'Pay Up'),
                   flex: 2,
                 ),
               ],

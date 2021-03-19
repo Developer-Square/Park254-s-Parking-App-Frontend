@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
+import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
@@ -317,27 +318,7 @@ class _MoreInfoState extends State<MoreInfo> {
             flex: 2,
           ),
           Expanded(
-            child: Column(
-              children: <Widget>[
-                Spacer(flex: 1,),
-                Expanded(
-                  child: Material(
-                    color: globals.primaryColor,
-                    child: InkWell(
-                      onTap: () => {},
-                      child: Center(
-                        child: PrimaryText(
-                            content: 'Book now'
-                        ),
-                      ),
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                  ),
-                  flex: 2,
-                ),
-                Spacer(),
-              ],
-            ),
+            child: GoButton(onTap: () => {}, title: 'Book now'),
             flex: 2,
           ),
         ],
