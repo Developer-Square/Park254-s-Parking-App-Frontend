@@ -27,7 +27,7 @@ class RegistrationScreens extends StatelessWidget {
               : const EdgeInsets.only(left: 30.0, right: 30.0, top: 160.0),
           child: Text(
             info,
-            style: globals.buildTextStyle(18.0, true, globals.fontColor),
+            style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
         ),
         SizedBox(height: 35.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
+import 'package:park254_s_parking_app/components/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/profile_screen.dart';
 import '../config/globals.dart' as globals;
 
@@ -49,6 +50,8 @@ class _HomePageState extends State<HomePage> {
         logo1Path: 'assets/images/profile/visa_2.svg',
         logo2Path: 'assets/images/profile/mpesa.svg',
       );
+    } else {
+      return MyParkingScreen();
     }
   }
 

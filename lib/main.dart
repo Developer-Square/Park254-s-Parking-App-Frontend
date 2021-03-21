@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
+import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
@@ -41,6 +43,7 @@ class MyApp extends StatelessWidget {
                 price: args.price,
                 imagePath: args.imagePath,
                 showRatingTabFn: () {},
+                address: args.address,
               );
             });
           } else if (settings.name == SearchPage.routeName) {
@@ -79,6 +82,17 @@ class MyApp extends StatelessWidget {
                   address: args.address,
                   imageOne: args.imageOne,
                   imageTwo: args.imageTwo);
+            });
+          } else if (settings.name == PaymentSuccessful.routeName) {
+            final ReceiptArguments args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return PaymentSuccessful(
+                bookingNumber: args.bookingNumber,
+                parkingSpace: args.parkingSpace,
+                price: args.price,
+                destination: args.destination,
+                address: args.address,
+              );
             });
           }
         });
