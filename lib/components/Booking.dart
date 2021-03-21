@@ -12,6 +12,8 @@ import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 import 'package:park254_s_parking_app/components/SimpleTextField.dart';
 
+import 'SecondaryText.dart';
+
 ///Creates a booking page
 ///
 /// Requires [bookingNumber], [destination], [parkingLotNumber], [price], and [imagePath]
@@ -65,6 +67,9 @@ class _BookingState extends State<Booking> {
   int amount = 0;
   bool showPayUp = false;
   final List<String> paymentMethodList = <String>['MPESA'];
+  final List<String> vehicleList = <String>['Camri', 'Prius'];
+  final List<String> numberPlateList = <String>['KCZ 123T', 'KDB 234T', 'KDA 345Y'];
+  final List<String> driverList = <String>['Linus', 'Ryan'];
 
   ///shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async{
@@ -193,6 +198,34 @@ class _BookingState extends State<Booking> {
     );
   }
 
+  Widget _dropDown(String value, List<String> valueList, Color textColor, FontWeight fontWeight,){
+    return DropdownButton(
+      value: valueList[0],
+      items: valueList.map<DropdownMenuItem<String>>((String value){
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Align(
+            child: Text(value),
+            alignment: Alignment.centerLeft,
+          ),
+        );
+      }).toList(),
+      onChanged: (String newValue){
+        setState(() {
+          value = newValue;
+        });
+      },
+      underline: Container(
+          height: 0
+      ),
+      style: TextStyle(
+          color: textColor,
+          fontWeight: fontWeight,
+          fontSize: 16
+      ),
+    );
+  }
+
   Widget _destination(){
     final width = MediaQuery.of(context).size.width;
     return Column(
@@ -268,18 +301,12 @@ class _BookingState extends State<Booking> {
   /// Creates a row with title and value
   Widget _vehicleRow(String title, Widget child){
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(
-          title,
-          style: TextStyle(
-              color: Colors.black54,
-              fontWeight: FontWeight.bold
-          ),
-          textAlign: TextAlign.left,
+        SecondaryText(
+          content: title,
         ),
-        Expanded(
-          child: child,
-        ),
+        child,
       ],
     );
   }
@@ -302,11 +329,7 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: _vehicleRow(
             'Type',
-            SimpleTextField(
-              textColor: Colors.blue[400],
-              fontWeight: FontWeight.bold,
-              initialValue: vehicle,
-            ),
+            _dropDown(vehicle, vehicleList, Colors.blue[400], FontWeight.bold),
           ),
           flex: 1,
           fit: FlexFit.loose,
@@ -314,10 +337,7 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: _vehicleRow(
             'Plate Number',
-            SimpleTextField(
-              capitalize: TextCapitalization.characters,
-              initialValue: numberPlate,
-            ),
+            _dropDown(numberPlate, numberPlateList, globals.textColor, FontWeight.normal),
           ),
           flex: 1,
           fit: FlexFit.loose,
@@ -328,15 +348,12 @@ class _BookingState extends State<Booking> {
 
   Widget _driverInfo(){
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         PrimaryText(
             content: 'Driver Info'
         ),
-        Expanded(
-          child:SimpleTextField(
-            initialValue: driver,
-          ),
-        ),
+        _dropDown(driver, driverList, globals.textColor, FontWeight.normal),
       ],
     );
   }
@@ -348,31 +365,7 @@ class _BookingState extends State<Booking> {
         PrimaryText(
             content: 'Payment Method'
         ),
-        DropdownButton(
-          value: paymentMethod,
-          items: paymentMethodList.map<DropdownMenuItem<String>>((String value){
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Align(
-                child: Text(value),
-                alignment: Alignment.centerLeft,
-              ),
-            );
-          }).toList(),
-          onChanged: (String newValue){
-            setState(() {
-              paymentMethod = newValue;
-            });
-          },
-          underline: Container(
-              height: 0
-          ),
-          style: TextStyle(
-              color: Colors.blue[400],
-              fontWeight: FontWeight.bold,
-              fontSize: 16
-          ),
-        ),
+        _dropDown(paymentMethod, paymentMethodList, Colors.blue[400], FontWeight.bold),
       ],
     );
   }
