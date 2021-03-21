@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
-import 'package:park254_s_parking_app/components/MyText.dart';
+import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 
@@ -117,7 +117,7 @@ class _MoreInfoState extends State<MoreInfo> {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          child: MyText(content: 'Share Spot'),
+          child: PrimaryText(content: 'Share Spot'),
         ),
         PopupMenuItem(
           value: 2,
@@ -164,7 +164,7 @@ class _MoreInfoState extends State<MoreInfo> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              MyText(content: widget.destination),
+              PrimaryText(content: widget.destination),
               _secondaryText(widget.city)
             ],
           ),
@@ -177,7 +177,7 @@ class _MoreInfoState extends State<MoreInfo> {
               _textWithIcon(Icons.near_me, '${widget.distance.toString()} ft'),
               _textWithIcon(
                   Icons.attach_money, '${widget.price.toString()} / Hour'),
-              MyText(content: '${widget.rating.toString()}'),
+              PrimaryText(content: '${widget.rating.toString()}'),
             ],
           ),
           flex: 3,
@@ -197,7 +197,7 @@ class _MoreInfoState extends State<MoreInfo> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           _secondaryText(lotNumber),
-          MyText(
+          PrimaryText(
             content: '${emptySpaces.toString()}/${capacity.toString()}',
           ),
         ],
@@ -213,7 +213,7 @@ class _MoreInfoState extends State<MoreInfo> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
-            child: MyText(
+            child: PrimaryText(
               content: 'Space or Parking Lot',
             ),
             flex: 2,
@@ -314,7 +314,7 @@ class _MoreInfoState extends State<MoreInfo> {
                     child: InkWell(
                       onTap: () => {},
                       child: Center(
-                        child: MyText(content: 'Book now'),
+                        child: PrimaryText(content: 'Book now'),
                       ),
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(25.0)),
