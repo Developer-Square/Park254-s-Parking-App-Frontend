@@ -230,6 +230,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   /// A widget that builds the buttons in the bottom widget that appears
+  ///
   /// when a user clicks on recent searches or selects a their ideal parking place.
   /// from the suggestions.
   Widget _buildButtons(String text, Color _color) {
@@ -237,11 +238,13 @@ class _SearchPageState extends State<SearchPage> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => Booking(
-                  bookingNumber: 'haaga5441',
-                  destination: 'Nairobi',
-                  parkingLotNumber: 'pajh5114',
-                  price: 11,
-                  imagePath: 'assets/images/Park254_logo.png')));
+                bookingNumber: 'No.EP-242232332',
+                destination: 'Nairobi Industrial Area',
+                parkingLotNumber: 'P5.6A',
+                price: 11,
+                imagePath: 'assets/images/Park254_logo.png',
+                address: '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
+              )));
         },
         child: Container(
           decoration: BoxDecoration(
