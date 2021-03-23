@@ -40,10 +40,11 @@ class _LoginPageState extends State<LoginPage> {
                 height: 290.0,
               ),
             ),
+            SizedBox(height: 75.0),
             Container(
                 child: Form(
               child: Column(children: <Widget>[
-                _buildFormField('Email'),
+                _buildFormField('Phone number'),
                 SizedBox(height: 15.0),
                 _buildFormField('Password'),
               ]),

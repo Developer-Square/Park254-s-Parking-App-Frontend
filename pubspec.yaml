@@ -46,6 +46,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/Park254_logo.png
+    - assets/images/Park254_logo.svg
     - assets/images/parking-icon.png
     - assets/images/parking_photos/parking_1.jpg
     - assets/images/parking_photos/parking_2.jpg
@@ -59,6 +60,7 @@ flutter:
     - assets/images/profile/visa.svg
     - assets/images/profile/visa_2.svg
     - assets/images/profile/mpesa.svg
+    - assets/images/Onboarding/running.svg
     - assets/images/Logo/PARK_254_600x600.jpg
     - assets/images/Logo/PARK_254_1000x400.jpg
     - assets/images/Logo/PARK_254_1000x400_blk.jpg

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a screen for the onboarding section
@@ -20,12 +21,11 @@ class OnBoardingScreen extends StatelessWidget {
   final String heading;
   final String description;
 
-  OnBoardingScreen({
-    @required this.iconName,
-    @required this.iconSemanticLabel,
-    @required this.heading,
-    @required this.description
-  });
+  OnBoardingScreen(
+      {@required this.iconName,
+      @required this.iconSemanticLabel,
+      @required this.heading,
+      @required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +36,30 @@ class OnBoardingScreen extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Container(
-              child: Icon(
-                iconName,
-                semanticLabel: iconSemanticLabel,
-                color: Colors.black54,
-                size: 100,
-              ),
+              child: iconSemanticLabel == 'find in page icon'
+                  ? Icon(
+                      iconName,
+                      semanticLabel: iconSemanticLabel,
+                      color: Colors.black54.withOpacity(0.2),
+                      size: 100,
+                    )
+                  : iconSemanticLabel == 'Running icon'
+                      ? Transform.rotate(
+                          angle: (-360 / 28.8),
+                          child: SvgPicture.asset(
+                            'assets/images/Onboarding/running.svg',
+                            color: Colors.black54.withOpacity(0.2),
+                            width: 90,
+                          ))
+                      : Transform.rotate(
+                          angle: (-360 / 29.5),
+                          child: Icon(
+                            iconName,
+                            semanticLabel: iconSemanticLabel,
+                            color: Colors.black54.withOpacity(0.2),
+                            size: 100,
+                          ),
+                        ),
             ),
             flex: 2,
           ),
@@ -52,8 +70,7 @@ class OnBoardingScreen extends StatelessWidget {
                 style: TextStyle(
                     color: globals.textColor,
                     fontSize: 30,
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
             ),
             flex: 1,
@@ -65,8 +82,7 @@ class OnBoardingScreen extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.black54,
                     fontSize: 20,
-                    fontWeight: FontWeight.normal
-                ),
+                    fontWeight: FontWeight.normal),
               ),
             ),
             flex: 1,
