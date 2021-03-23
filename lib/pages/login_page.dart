@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
 import 'home_page.dart';
@@ -33,12 +34,10 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Container(
-              child: Image(
-                image: AssetImage(
-                  'assets/images/parking-icon.png',
-                ),
-                color: Colors.grey.withOpacity(0.6),
-                height: 300.0,
+              child: SvgPicture.asset(
+                'assets/images/Logo/PARK_254_1000x400-01.svg',
+                width: 290.0,
+                height: 290.0,
               ),
             ),
             Container(

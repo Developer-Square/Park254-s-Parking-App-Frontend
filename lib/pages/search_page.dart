@@ -5,8 +5,10 @@ import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
@@ -28,15 +30,23 @@ class _SearchPageState extends State<SearchPage> {
   List<Marker> allMarkers = [];
   Completer<GoogleMapController> _controller = Completer();
   bool showRecentSearches;
+  bool showBookNowTab;
+  bool showRatingTab;
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
   Position currentPosition;
+  int ratingCount;
+  var clickedStars;
 
   @override
   void initState() {
     super.initState();
 
+    ratingCount = 0;
+    clickedStars = [];
     showRecentSearches = true;
+    showBookNowTab = false;
+    showRatingTab = false;
     // Pass Initial values.
     searchBarController.text = _searchText;
 
@@ -60,10 +70,13 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+// Hides the recent searches when one of them is clicked and.
+// sets the searchbar text to the clicked recent search.
   void _setShowRecentSearches(searchText) {
     setState(() {
       searchBarController.text = searchText;
       showRecentSearches = false;
+      showBookNowTab = true;
     });
   }
 
@@ -81,22 +94,45 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // Shows the rating tab and hides all other widgets.
+  void showRatingTabFn() {
+    setState(() {
+      showRecentSearches = false;
+      showBookNowTab = false;
+      showRatingTab = true;
+      print('here');
+    });
+  }
+
+  // Hide the rating tab and go back to the homepage.
+  void hideRatingTabFn() {
+    setState(() {
+      showRatingTab = false;
+    });
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => HomePage()));
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0.0,
-            leading: IconButton(
-                icon: Icon(Icons.arrow_back_outlined),
-                color: globals.textColor,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            title: Text('Search',
-                style: globals.buildTextStyle(18.0, true, globals.textColor)),
-            centerTitle: true,
-          ),
+          //Hide the appbar when showing the rating tab
+          appBar: !showRatingTab
+              ? AppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 0.0,
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back_outlined),
+                      color: globals.textColor,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      }),
+                  title: Text('Search',
+                      style: globals.buildTextStyle(
+                          18.0, true, globals.textColor)),
+                  centerTitle: true,
+                )
+              : null,
           body: Stack(children: <Widget>[
             Container(
               height: MediaQuery.of(context).size.height,
@@ -115,75 +151,90 @@ class _SearchPageState extends State<SearchPage> {
                     top: MediaQuery.of(context).size.height - 370),
               ),
             ),
-            Container(
-              // Hides all the recent searches if one of them are clicked.
-              height: showRecentSearches
-                  ? MediaQuery.of(context).size.height - 310.0
-                  : 110.0,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0)),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(height: 15.0),
-                    SearchBar(
-                      offsetY: 4.0,
-                      blurRadius: 6.0,
-                      opacity: 0.5,
-                      controller: searchBarController,
-                      searchBarTapped: true,
+            // The rating pop up shown at the end of the parking session.
+            showRatingTab
+                ? RatingTab(
+                    hideRatingTabFn: hideRatingTabFn,
+                    parkingPlaceName: searchBarController.text)
+                : Container(),
+            // Hide the search bar when showing the ratings tab
+            !showRatingTab
+                ? Container(
+                    // Hides all the recent searches if one of them are clicked.
+                    height: showRecentSearches
+                        ? MediaQuery.of(context).size.height - 310.0
+                        : 110.0,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0)),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 35.0, top: 25.0),
-                      child: showRecentSearches
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'RECENT SEARCH',
-                                  style: TextStyle(
-                                      color: Colors.grey.withOpacity(0.8),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.0),
-                                ),
-                                SizedBox(height: 30.0),
-                                RecentSearches(
-                                    specificLocation: 'Parking on Wabera St',
-                                    town: 'Nairobi',
-                                    setShowRecentSearches:
-                                        _setShowRecentSearches),
-                                SizedBox(height: 20.0),
-                                RecentSearches(
-                                    specificLocation: 'First Church of Christ',
-                                    town: 'Nairobi',
-                                    setShowRecentSearches:
-                                        _setShowRecentSearches),
-                                SizedBox(height: 20.0),
-                                RecentSearches(
-                                    specificLocation: 'Parklands Ave, Nairobi',
-                                    town: 'Nairobi',
-                                    setShowRecentSearches:
-                                        _setShowRecentSearches),
-                                SizedBox(height: 20.0),
-                                RecentSearches(
-                                    specificLocation: 'Parklands Ave, Nairobi',
-                                    town: 'Nairobi',
-                                    setShowRecentSearches:
-                                        _setShowRecentSearches),
-                              ],
-                            )
-                          : Padding(
-                              padding: EdgeInsets.only(bottom: 20.0),
-                            ),
-                    )
-                  ]),
-            ),
-            !showRecentSearches
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: 15.0),
+                          SearchBar(
+                            offsetY: 4.0,
+                            blurRadius: 6.0,
+                            opacity: 0.5,
+                            controller: searchBarController,
+                            searchBarTapped: true,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 35.0, top: 25.0),
+                            child: showRecentSearches
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'RECENT SEARCH',
+                                        style: TextStyle(
+                                            color: Colors.grey.withOpacity(0.8),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15.0),
+                                      ),
+                                      SizedBox(height: 30.0),
+                                      RecentSearches(
+                                          specificLocation:
+                                              'Parking on Wabera St',
+                                          town: 'Nairobi',
+                                          setShowRecentSearches:
+                                              _setShowRecentSearches),
+                                      SizedBox(height: 20.0),
+                                      RecentSearches(
+                                          specificLocation:
+                                              'First Church of Christ',
+                                          town: 'Nairobi',
+                                          setShowRecentSearches:
+                                              _setShowRecentSearches),
+                                      SizedBox(height: 20.0),
+                                      RecentSearches(
+                                          specificLocation:
+                                              'Parklands Ave, Nairobi',
+                                          town: 'Nairobi',
+                                          setShowRecentSearches:
+                                              _setShowRecentSearches),
+                                      SizedBox(height: 20.0),
+                                      RecentSearches(
+                                          specificLocation:
+                                              'Parklands Ave, Nairobi',
+                                          town: 'Nairobi',
+                                          setShowRecentSearches:
+                                              _setShowRecentSearches),
+                                    ],
+                                  )
+                                : Padding(
+                                    padding: EdgeInsets.only(bottom: 20.0),
+                                  ),
+                          )
+                        ]),
+                  )
+                : Container(),
+            showBookNowTab
                 ? Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
@@ -205,6 +256,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: Column(
                           children: <Widget>[
                             NearByParkingList(
+                                activeCard: false,
                                 imgPath:
                                     'assets/images/parking_photos/parking_9.jpg',
                                 parkingPrice: 400,
@@ -238,13 +290,13 @@ class _SearchPageState extends State<SearchPage> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => Booking(
-                bookingNumber: 'No.EP-242232332',
-                destination: 'Nairobi Industrial Area',
-                parkingLotNumber: 'P5.6A',
-                price: 11,
-                imagePath: 'assets/images/Park254_logo.png',
-                address: '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
-              )));
+                  address:
+                      '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
+                  bookingNumber: 'haaga5441',
+                  destination: 'Nairobi',
+                  parkingLotNumber: 'pajh5114',
+                  price: 11,
+                  imagePath: 'assets/images/Park254_logo.png')));
         },
         child: Container(
           decoration: BoxDecoration(
