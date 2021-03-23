@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
-import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -101,6 +100,7 @@ class _SearchPageState extends State<SearchPage> {
       showRecentSearches = false;
       showBookNowTab = false;
       showRatingTab = true;
+      print('here');
     });
   }
 
@@ -290,7 +290,6 @@ class _SearchPageState extends State<SearchPage> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => Booking(
-                  showRatingTabFn: showRatingTabFn,
                   address:
                       '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
                   bookingNumber: 'haaga5441',

@@ -36,7 +36,6 @@ class Booking extends StatefulWidget {
   final String parkingLotNumber;
   final int price;
   final String imagePath;
-  final Function showRatingTabFn;
   final String address;
   static const routeName = '/booking';
 
@@ -47,7 +46,6 @@ class Booking extends StatefulWidget {
     @required this.price,
     @required this.imagePath,
     @required this.address,
-    @required this.showRatingTabFn,
   });
 
   @override

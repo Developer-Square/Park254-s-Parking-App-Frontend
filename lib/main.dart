@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
                 parkingLotNumber: args.parkingLotNumber,
                 price: args.price,
                 imagePath: args.imagePath,
-                showRatingTabFn: () {},
                 address: args.address,
               );
             });
