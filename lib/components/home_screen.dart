@@ -10,6 +10,9 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
+  final Function showBottomNavigation;
+
+  HomeScreen({@required this.showBottomNavigation});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -30,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Completer<GoogleMapController> _controller = Completer();
   Position currentPosition;
   bool showNearByParking;
+  bool showTopPageStyling;
+  bool showMap;
 
   @override
   void initState() {
@@ -38,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Pass Initial values
     searchBarController.text = _searchText;
     showNearByParking = true;
+    showMap = true;
+    showTopPageStyling = true;
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
@@ -85,63 +92,84 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// When a user clicks on the nearest parking widget.
+  /// everything else should hide and the widget should expand and vice versa.
+  void showFullParkingWidget() {
+    setState(() {
+      showTopPageStyling = !showTopPageStyling;
+      showMap = !showMap;
+      widget.showBottomNavigation();
+    });
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
+            backgroundColor: showMap ? Colors.transparent : Color(0xFF16346c),
             body: Stack(children: [
-              Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: GoogleMap(
-                  mapType: MapType.normal,
-                  zoomGesturesEnabled: true,
-                  zoomControlsEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                      target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                  markers: Set.from(allMarkers),
-                  onMapCreated: mapCreated,
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height - 520.0),
-                ),
-              ),
+              showMap
+                  ? Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: GoogleMap(
+                        mapType: MapType.normal,
+                        zoomGesturesEnabled: true,
+                        zoomControlsEnabled: true,
+                        initialCameraPosition: CameraPosition(
+                            target: LatLng(-1.286389, 36.817223), zoom: 14.0),
+                        markers: Set.from(allMarkers),
+                        onMapCreated: mapCreated,
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height - 520.0),
+                      ),
+                    )
+                  : Container(),
               // Show the NearByParking section or show an empty container.
               showNearByParking
-                  ? NearByParking(showNearByParkingFn: closeNearByParking)
+                  ? NearByParking(
+                      showNearByParkingFn: closeNearByParking,
+                      hideDetails: showFullParkingWidget,
+                    )
                   : Container(),
-              TopPageStyling(
-                searchBarController: searchBarController,
-                currentPage: 'home',
-              ),
-              Positioned(
-                bottom: showNearByParking ? 350.0 : 100.0,
-                right: 0,
-                child: Column(
-                  children: <Widget>[
-                    FloatingActionButton.extended(
-                      onPressed: () {
-                        loadLocation(
-                            _controller, currentPosition, closeNearByParking);
-                      },
-                      icon: Icon(Icons.location_searching),
-                      label: Text(showNearByParking ? '' : 'Current location'),
-                    ),
-                    SizedBox(height: 15.0),
-                    showNearByParking
-                        ? Container()
-                        : FloatingActionButton.extended(
-                            heroTag: null,
+              showTopPageStyling
+                  ? TopPageStyling(
+                      searchBarController: searchBarController,
+                      currentPage: 'home',
+                    )
+                  : Container(),
+              showMap
+                  ? Positioned(
+                      bottom: showNearByParking ? 350.0 : 100.0,
+                      right: 0,
+                      child: Column(
+                        children: <Widget>[
+                          FloatingActionButton.extended(
                             onPressed: () {
-                              showNearByParkingFn();
+                              loadLocation(_controller, currentPosition,
+                                  closeNearByParking);
                             },
-                            icon: Icon(Icons.car_rental),
-                            label: Text(showNearByParking
-                                ? ''
-                                : 'Show nearyby parking'),
-                          )
-                  ],
-                ),
-              ),
+                            icon: Icon(Icons.location_searching),
+                            label: Text(
+                                showNearByParking ? '' : 'Current location'),
+                          ),
+                          SizedBox(height: 15.0),
+                          showNearByParking
+                              ? Container()
+                              : FloatingActionButton.extended(
+                                  heroTag: null,
+                                  onPressed: () {
+                                    showNearByParkingFn();
+                                  },
+                                  icon: Icon(Icons.car_rental),
+                                  label: Text(showNearByParking
+                                      ? ''
+                                      : 'Show nearyby parking'),
+                                )
+                        ],
+                      ),
+                    )
+                  : Container(),
             ])));
   }
 }

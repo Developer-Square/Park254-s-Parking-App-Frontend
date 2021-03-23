@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'dart:async';
 import '../config/globals.dart' as globals;
@@ -121,10 +122,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Image(
-      image: AssetImage(
-        'assets/images/Park254_logo.png',
-      ),
+    return SvgPicture.asset(
+      'assets/images/Logo/PARK_254_1000x400-01.svg',
     );
   }
 }

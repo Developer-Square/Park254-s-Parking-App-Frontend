@@ -6,6 +6,7 @@ class BookingArguments {
   final String parkingLotNumber;
   final int price;
   final String imagePath;
+  final String address;
 
   BookingArguments({
     @required this.bookingNumber,
@@ -13,5 +14,6 @@ class BookingArguments {
     @required this.parkingLotNumber,
     @required this.price,
     @required this.imagePath,
+    @required this.address
   });
 }

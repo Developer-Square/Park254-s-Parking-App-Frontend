@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
+import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
+import 'package:park254_s_parking_app/components/GoButton.dart';
+import 'package:park254_s_parking_app/components/PayUp.dart';
+import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import '../config/globals.dart' as globals;
-import './MyText.dart';
+import './PrimaryText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
-import 'package:park254_s_parking_app/components/BookingTextField.dart';
+
+import 'SecondaryText.dart';
 
 ///Creates a booking page
 ///
@@ -30,6 +36,7 @@ class Booking extends StatefulWidget {
   final String parkingLotNumber;
   final int price;
   final String imagePath;
+  final String address;
   static const routeName = '/booking';
 
   Booking({
@@ -38,6 +45,7 @@ class Booking extends StatefulWidget {
     @required this.parkingLotNumber,
     @required this.price,
     @required this.imagePath,
+    @required this.address,
   });
 
   @override
@@ -48,25 +56,30 @@ class _BookingState extends State<Booking> {
   DateTime leavingDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
   DateTime lastDate = DateTime.now().add(Duration(days: 30));
+  DateTime today = DateTime.now();
   TimeOfDay arrivalTime = TimeOfDay.now();
   TimeOfDay leavingTime = TimeOfDay.now();
-  TextEditingController vehicleController = new TextEditingController();
-  TextEditingController numberPlateController = new TextEditingController();
-  TextEditingController driverController = new TextEditingController();
-  TextEditingController paymentMethodController = new TextEditingController();
   String vehicle = 'prius';
   String numberPlate = 'BBAGAAFAF';
   String driver = "linus";
-  String paymentMethod = 'Visa';
+  String paymentMethod = 'MPESA';
   int amount = 0;
-  final List<String> paymentMethodList = <String>['MPESA', 'Visa'];
+  bool showPayUp = false;
+  final List<String> paymentMethodList = <String>['MPESA'];
+  final List<String> vehicleList = <String>['Camri', 'Prius'];
+  final List<String> numberPlateList = <String>[
+    'KCZ 123T',
+    'KDB 234T',
+    'KDA 345Y'
+  ];
+  final List<String> driverList = <String>['Linus', 'Ryan'];
 
   ///shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: arrivalDate,
-      firstDate: arrivalDate,
+      firstDate: today,
       lastDate: lastDate,
     );
 
@@ -84,8 +97,8 @@ class _BookingState extends State<Booking> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: leavingDate,
-      firstDate: leavingDate,
-      lastDate: arrivalDate,
+      firstDate: today,
+      lastDate: lastDate,
     );
 
     if (picked != null && picked != leavingDate) {
@@ -95,21 +108,26 @@ class _BookingState extends State<Booking> {
     }
   }
 
+  /// custom theme for the timePicker
+  Theme _timeTheme(Widget child) {
+    return Theme(
+      data: ThemeData.light().copyWith(
+        primaryColor: globals.textColor,
+        accentColor: globals.textColor,
+        colorScheme: ColorScheme.light(primary: globals.textColor),
+        buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+      ),
+      child: child,
+    );
+  }
+
   ///shows date picker for arrival time
   _selectArrivalTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: arrivalTime,
       builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: globals.textColor,
-            accentColor: globals.textColor,
-            colorScheme: ColorScheme.light(primary: globals.textColor),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
+        return _timeTheme(child);
       },
     );
 
@@ -126,15 +144,7 @@ class _BookingState extends State<Booking> {
       context: context,
       initialTime: leavingTime,
       builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: globals.textColor,
-            accentColor: globals.textColor,
-            colorScheme: ColorScheme.light(primary: globals.textColor),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
+        return _timeTheme(child);
       },
     );
 
@@ -147,8 +157,10 @@ class _BookingState extends State<Booking> {
 
   ///Calculates the parking duration and cost
   String _parkingTime() {
+    final Duration parkingDays = leavingDate.difference(arrivalDate);
     final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
-        (arrivalTime.hour + (arrivalTime.minute / 60));
+        (arrivalTime.hour + (arrivalTime.minute / 60)) +
+        parkingDays.inHours;
     int hours;
     int minutes;
     if (totalTime >= 0) {
@@ -159,58 +171,60 @@ class _BookingState extends State<Booking> {
       minutes = ((totalTime - totalTime.ceilToDouble()) * 60).round();
     }
     int parkingHours = totalTime.ceil();
-    amount = parkingHours * widget.price;
+    amount = (parkingHours < 0) ? 0 : parkingHours * widget.price;
     return (hours == 0)
         ? '${minutes}m'
         : (minutes == 0)
             ? '${hours}h'
-            : '${hours}h ${minutes}m';
+            : (hours < 0 && minutes < 0)
+                ? '${hours}h ${minutes.abs()}m'
+                : '${hours}h ${minutes}m';
   }
 
-  ///listens to vehicle type input
-  void _changeVehicle() {
+  /// Toggles the display of [PayUp] widget
+  void _togglePayUp() {
     setState(() {
-      vehicle = vehicleController.text;
+      showPayUp = !showPayUp;
     });
   }
 
-  ///listens to number plate input
-  void _changePlate() {
-    setState(() {
-      numberPlate = numberPlateController.text;
-    });
+  /// Generates receipt
+  void _generateReceipt() {
+    Navigator.pushNamed(context, PaymentSuccessful.routeName,
+        arguments: ReceiptArguments(
+          bookingNumber: widget.bookingNumber,
+          parkingSpace: widget.parkingLotNumber,
+          price: amount,
+          destination: widget.destination,
+          address: widget.address,
+        ));
   }
 
-  ///listens to driver input
-  void _changeDriver() {
-    setState(() {
-      driver = driverController.text;
-    });
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    vehicleController.dispose();
-    numberPlateController.dispose();
-    driverController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Pass Initial values
-    vehicleController.text = vehicle;
-    numberPlateController.text = numberPlate;
-    driverController.text = driver;
-
-    // Start listening to changes.
-    vehicleController.addListener(_changeVehicle);
-    numberPlateController.addListener(_changePlate);
-    driverController.addListener(_changeDriver);
+  Widget _dropDown(
+    String value,
+    List<String> valueList,
+    Color textColor,
+    FontWeight fontWeight,
+  ) {
+    return DropdownButton(
+      value: valueList[0],
+      items: valueList.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Align(
+            child: Text(value),
+            alignment: Alignment.centerLeft,
+          ),
+        );
+      }).toList(),
+      onChanged: (String newValue) {
+        setState(() {
+          value = newValue;
+        });
+      },
+      underline: Container(height: 0),
+      style: TextStyle(color: textColor, fontWeight: fontWeight, fontSize: 16),
+    );
   }
 
   Widget _destination() {
@@ -222,7 +236,7 @@ class _BookingState extends State<Booking> {
           child: Container(
             padding: EdgeInsets.only(
                 bottom: 10, left: width / 20, right: width / 20),
-            child: MyText(
+            child: PrimaryText(
               content: 'Destination',
             ),
           ),
@@ -242,7 +256,7 @@ class _BookingState extends State<Booking> {
                       widget.imagePath,
                     ),
                   ),
-                  flex: 3,
+                  flex: 2,
                   fit: FlexFit.loose,
                 ),
                 Spacer(),
@@ -253,7 +267,7 @@ class _BookingState extends State<Booking> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Flexible(
-                        child: MyText(
+                        child: PrimaryText(
                           content: widget.destination,
                         ),
                         flex: 1,
@@ -284,6 +298,19 @@ class _BookingState extends State<Booking> {
     );
   }
 
+  /// Creates a row with title and value
+  Widget _vehicleRow(String title, Widget child) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        SecondaryText(
+          content: title,
+        ),
+        child,
+      ],
+    );
+  }
+
   Widget _vehicle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +319,7 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: Align(
             alignment: Alignment.centerLeft,
-            child: MyText(
+            child: PrimaryText(
               content: 'Vehicle',
             ),
           ),
@@ -300,42 +327,18 @@ class _BookingState extends State<Booking> {
           fit: FlexFit.loose,
         ),
         Flexible(
-          child: Row(
-            children: <Widget>[
-              Text(
-                'Type',
-                style: TextStyle(
-                    color: Colors.black54, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
-              ),
-              Expanded(
-                child: BookingTextField(
-                  controller: vehicleController,
-                  textColor: Colors.blue[400],
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          child: _vehicleRow(
+            'Type',
+            _dropDown(vehicle, vehicleList, Colors.blue[400], FontWeight.bold),
           ),
           flex: 1,
           fit: FlexFit.loose,
         ),
         Flexible(
-          child: Row(
-            children: <Widget>[
-              Text(
-                'Plate Number',
-                style: TextStyle(
-                    color: Colors.black54, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
-              ),
-              Expanded(
-                child: BookingTextField(
-                  controller: numberPlateController,
-                  capitalize: TextCapitalization.characters,
-                ),
-              ),
-            ],
+          child: _vehicleRow(
+            'Plate Number',
+            _dropDown(numberPlate, numberPlateList, globals.textColor,
+                FontWeight.normal),
           ),
           flex: 1,
           fit: FlexFit.loose,
@@ -346,13 +349,10 @@ class _BookingState extends State<Booking> {
 
   Widget _driverInfo() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MyText(content: 'Driver Info'),
-        Expanded(
-          child: BookingTextField(
-            controller: driverController,
-          ),
-        ),
+        PrimaryText(content: 'Driver Info'),
+        _dropDown(driver, driverList, globals.textColor, FontWeight.normal),
       ],
     );
   }
@@ -361,30 +361,9 @@ class _BookingState extends State<Booking> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MyText(content: 'Payment Method'),
-        DropdownButton(
-          value: paymentMethod,
-          items:
-              paymentMethodList.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Align(
-                child: Text(value),
-                alignment: Alignment.centerLeft,
-              ),
-            );
-          }).toList(),
-          onChanged: (String newValue) {
-            setState(() {
-              paymentMethod = newValue;
-            });
-          },
-          underline: Container(height: 0),
-          style: TextStyle(
-              color: Colors.blue[400],
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
-        ),
+        PrimaryText(content: 'Payment Method'),
+        _dropDown(paymentMethod, paymentMethodList, Colors.blue[400],
+            FontWeight.bold),
       ],
     );
   }
@@ -393,37 +372,42 @@ class _BookingState extends State<Booking> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MyText(content: 'Price'),
-        MyText(content: 'Kes ${amount.toString()}'),
+        PrimaryText(content: 'Price'),
+        PrimaryText(content: 'Kes ${amount.toString()}'),
       ],
     );
   }
 
   Widget _paymentButton() {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20),
-      child: Column(
-        children: <Widget>[
-          Spacer(
-            flex: 2,
-          ),
-          Expanded(
-            child: Material(
-              color: globals.primaryColor,
-              child: InkWell(
-                onTap: () => {},
-                child: Center(
-                  child: MyText(content: 'Pay now'),
-                ),
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
-            ),
-            flex: 2,
-          ),
-          Spacer(),
-        ],
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+      child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
     );
+  }
+
+  Widget _timeDatePicker() {
+    return TimeDatePicker(
+        pickArrivalDate: () => _selectArrivalDate(context),
+        pickArrivalTime: () => _selectArrivalTime(context),
+        pickLeavingDate: () => _selectLeavingDate(context),
+        pickLeavingTime: () => _selectLeavingTime(context),
+        arrivalDate: arrivalDate.day == DateTime.now().day
+            ? 'Today, '
+            : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()},',
+        arrivalTime: arrivalTime.minute > 9
+            ? ' ' +
+                '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}'
+            : ' ' +
+                '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
+        leavingDate: leavingDate.day == DateTime.now().day
+            ? 'Today, '
+            : '${leavingDate.day.toString()}/${leavingDate.month.toString()},',
+        leavingTime: leavingTime.minute > 9
+            ? ' ' +
+                '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}'
+            : ' ' +
+                '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
+        parkingTime: _parkingTime());
   }
 
   @override
@@ -441,7 +425,7 @@ class _BookingState extends State<Booking> {
         appBar: AppBar(
             title: Column(
               children: <Widget>[
-                MyText(
+                PrimaryText(
                   content: 'Booking',
                 ),
                 Text(
@@ -458,69 +442,62 @@ class _BookingState extends State<Booking> {
             elevation: 0.0,
             automaticallyImplyLeading: true,
             leading: BackArrow()),
-        body: SingleChildScrollView(
-          child: SizedBox(
-            width: width,
-            height: finalHeight,
-            child: Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: _destination(),
-                    flex: 2,
-                  ),
-                  Expanded(
-                    child: TimeDatePicker(
-                        pickArrivalDate: () => _selectArrivalDate(context),
-                        pickArrivalTime: () => _selectArrivalTime(context),
-                        pickLeavingDate: () => _selectLeavingDate(context),
-                        pickLeavingTime: () => _selectLeavingTime(context),
-                        arrivalDate: arrivalDate.day == DateTime.now().day
-                            ? 'Today, '
-                            : '${arrivalDate.day.toString()}/${arrivalDate.month.toString()}/${arrivalDate.year.toString()},',
-                        arrivalTime: arrivalTime.minute > 9
-                            ? ' ' +
-                                '${arrivalTime.hour.toString()}:${arrivalTime.minute.toString()}'
-                            : ' ' +
-                                '${arrivalTime.hour.toString()}:0${arrivalTime.minute.toString()}',
-                        leavingDate: leavingDate.day == DateTime.now().day
-                            ? 'Today, '
-                            : '${leavingDate.day.toString()}/${leavingDate.month.toString()}/${leavingDate.year.toString()},',
-                        leavingTime: leavingTime.minute > 9
-                            ? ' ' +
-                                '${leavingTime.hour.toString()}:${leavingTime.minute.toString()}'
-                            : ' ' +
-                                '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
-                        parkingTime: _parkingTime()),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: BorderContainer(
-                      content: _vehicle(),
+        body: DismissKeyboard(
+          child: Stack(
+            children: <Widget>[
+              SingleChildScrollView(
+                child: SizedBox(
+                  width: width,
+                  height: finalHeight,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: _destination(),
+                          flex: 2,
+                        ),
+                        Expanded(
+                          child: _timeDatePicker(),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(
+                            content: _vehicle(),
+                          ),
+                          flex: 2,
+                        ),
+                        Expanded(
+                          child: BorderContainer(content: _driverInfo()),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(content: _paymentMethod()),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(content: _price()),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: _paymentButton(),
+                          flex: 2,
+                        ),
+                      ],
                     ),
-                    flex: 2,
                   ),
-                  Expanded(
-                    child: BorderContainer(content: _driverInfo()),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: BorderContainer(content: _paymentMethod()),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: BorderContainer(content: _price()),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: _paymentButton(),
-                    flex: 2,
-                  ),
-                ],
+                ),
               ),
-            ),
+              showPayUp
+                  ? PayUp(
+                      total: amount,
+                      timeDatePicker: _timeDatePicker(),
+                      toggleDisplay: () => _togglePayUp(),
+                      receiptGenerator: () => _generateReceipt(),
+                    )
+                  : Container(),
+            ],
           ),
         ),
       ),

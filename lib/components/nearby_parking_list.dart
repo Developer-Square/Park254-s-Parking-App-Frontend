@@ -22,6 +22,7 @@ class NearByParkingList extends StatelessWidget {
   final double rating;
   final double distance;
   final int parkingSlots;
+  bool activeCard;
 
   NearByParkingList(
       {@required this.imgPath,
@@ -29,7 +30,8 @@ class NearByParkingList extends StatelessWidget {
       @required this.parkingPlaceName,
       @required this.rating,
       @required this.distance,
-      @required this.parkingSlots});
+      @required this.parkingSlots,
+      @required this.activeCard});
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +52,11 @@ class NearByParkingList extends StatelessWidget {
               children: <Widget>[
                 ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  child: Hero(
-                    tag: imgPath,
-                    child: Image(
-                      height: 90.0,
-                      width: 85.0,
-                      fit: BoxFit.cover,
-                      image: AssetImage(imgPath),
-                    ),
+                  child: Image(
+                    height: 90.0,
+                    width: 85.0,
+                    fit: BoxFit.cover,
+                    image: AssetImage(imgPath),
                   ),
                 ),
                 Positioned(
@@ -79,7 +78,12 @@ class NearByParkingList extends StatelessWidget {
             children: [
               Text(
                 parkingPlaceName,
-                style: globals.buildTextStyle(15.0, true, globals.textColor),
+                style: globals.buildTextStyle(
+                    15.0,
+                    true,
+                    activeCard
+                        ? globals.textColor
+                        : globals.textColor.withOpacity(0.7)),
               ),
               SizedBox(height: 4.0),
               Row(
