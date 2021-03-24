@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
 /// Creates a circle with icon
+///
+/// E.g
+/// ```dart
+/// CircleWithIcon(
+///   icon: Icons.close,
+///   bgColor: Colors.white,
+///   iconColour: Colours.blue,
+///   sizeFactor: 2,
+/// );
+/// ```
 class CircleWithIcon extends StatelessWidget {
   final IconData icon;
   final Color bgColor;

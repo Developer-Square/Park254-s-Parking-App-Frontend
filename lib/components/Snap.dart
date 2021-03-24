@@ -7,6 +7,12 @@ import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Creates a camera widget
+///
+/// E.g.
+/// ```dart
+/// Snap();
+/// ```
 class Snap extends StatefulWidget {
 
   Snap({

@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
+/// Creates an extended floating action button
+///
+/// E.g.
+/// ```dart
+/// CustomFloatingActionButton(
+///   onPressed: () => _onButtonPressed(),
+///   label: 'Skip',
+///   heroTag: 0,
+/// );
+/// ```
 class CustomFloatingActionButton extends StatelessWidget {
   final Function onPressed;
   final String label;
