@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
                   imageOne: args.imageOne,
                   imageTwo: args.imageTwo);
             });
-          } else if (settings.name == PaymentSuccessful.routeName){
+          } else if (settings.name == PaymentSuccessful.routeName) {
             final ReceiptArguments args = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return PaymentSuccessful(
