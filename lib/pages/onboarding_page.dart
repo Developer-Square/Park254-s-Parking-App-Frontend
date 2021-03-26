@@ -24,12 +24,12 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     _timer = new Timer.periodic(
       oneSec,
       (Timer timer) {
-        if(mounted){
+        if (mounted) {
           if (_start == 0) {
             setState(() {
               _start = 20;
             });
-          } else if(_startTimer == false){
+          } else if (_startTimer == false) {
             timer.cancel();
           } else {
             setState(() {
@@ -76,13 +76,13 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   }
 
   @override
-  void deactivate(){
+  void deactivate() {
     _timer.cancel();
     super.deactivate();
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _timer.cancel();
     super.dispose();
   }
