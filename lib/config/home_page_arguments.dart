@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class HomePageArguements {
+class HomePageArguments {
   final String imgPath;
   final int parkingPrice;
   final String parkingPlaceName;
@@ -8,7 +8,7 @@ class HomePageArguements {
   final double distance;
   final int parkingSlots;
 
-  HomePageArguements(
+  HomePageArguments(
       {@required this.imgPath,
       @required this.parkingPrice,
       @required this.parkingPlaceName,
