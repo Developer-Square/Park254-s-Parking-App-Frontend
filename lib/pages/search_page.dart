@@ -100,7 +100,6 @@ class _SearchPageState extends State<SearchPage> {
       showRecentSearches = false;
       showBookNowTab = false;
       showRatingTab = true;
-      print('here');
     });
   }
 

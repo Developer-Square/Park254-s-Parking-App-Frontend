@@ -102,8 +102,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           ),
         ),
       ),
-      backgroundColor:
-          _start > 15 ? Color(0xFF241f20) : globals.backgroundColor,
+      backgroundColor: globals.backgroundColor,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context)
