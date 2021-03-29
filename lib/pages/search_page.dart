@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
@@ -9,6 +11,8 @@ import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 import '../config/globals.dart' as globals;
 
 class SearchPage extends StatefulWidget {
@@ -37,6 +41,9 @@ class _SearchPageState extends State<SearchPage> {
   Position currentPosition;
   int ratingCount;
   var clickedStars;
+  var uuid = new Uuid();
+  String _sessionToken = new Uuid().toString();
+  List<dynamic> _placeList = [];
 
   @override
   void initState() {
@@ -91,7 +98,37 @@ class _SearchPageState extends State<SearchPage> {
   void changeSearchText() {
     setState(() {
       _searchText = searchBarController.text;
+      // First create the session token since it's required when sending the Api.
+      if (_sessionToken == null) {
+        setState(() {
+          _sessionToken = uuid.v4();
+        });
+      }
+      // Gets the suggestion by making an api call to the Places Api.
+      getSuggestion(searchBarController.text);
     });
+  }
+
+  void getSuggestion(String input) async {
+    String kPLACES_API_KEY = 'AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0';
+    String type = '(regions)';
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request =
+        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+
+    var response = await http.get(request);
+    if (response.statusCode == 200) {
+      setState(() {
+        // If successfull store all the suggestions in a list to display below the search bar.
+        _placeList = json.decode(response.body)['predictions'];
+        // Hide the recent searches when the user starts typing on the search bar input.
+        // ignore: unnecessary_statements
+        _placeList.length > 0 ? showRecentSearches = false : null;
+      });
+    } else {
+      throw Exception('Failed to load predictions');
+    }
   }
 
   // Shows the rating tab and hides all other widgets.
@@ -162,7 +199,9 @@ class _SearchPageState extends State<SearchPage> {
                     // Hides all the recent searches if one of them are clicked.
                     height: showRecentSearches
                         ? MediaQuery.of(context).size.height - 310.0
-                        : 110.0,
+                        : _placeList.length > 0
+                            ? 400.0
+                            : 110.0,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -226,9 +265,29 @@ class _SearchPageState extends State<SearchPage> {
                                               _setShowRecentSearches),
                                     ],
                                   )
-                                : Padding(
-                                    padding: EdgeInsets.only(bottom: 20.0),
-                                  ),
+                                // Display suggestions available.
+                                : _placeList.length > 0
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: _placeList.length,
+                                        itemBuilder: (context, index) {
+                                          return ListTile(
+                                              title: Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                  'assets/images/pin_icons/location-pin.svg',
+                                                  width: 20.0,
+                                                  color: Colors.grey
+                                                      .withOpacity(0.8)),
+                                              SizedBox(width: 10.0),
+                                              // If the location has more than 25 letters, slice the word and add '...'
+                                              _buildSinglePlace(index),
+                                            ],
+                                          ));
+                                        })
+                                    : Padding(
+                                        padding: EdgeInsets.only(bottom: 20.0),
+                                      ),
                           )
                         ]),
                   )
@@ -308,5 +367,32 @@ class _SearchPageState extends State<SearchPage> {
                   style:
                       globals.buildTextStyle(15.0, true, globals.textColor))),
         ));
+  }
+
+  /// A widget that builds and displays the suggestions from google.
+  ///
+  /// When a user clicks on one of the places they're directed to that specific area.
+  /// on the map.
+  Widget _buildSinglePlace(index) {
+    var placeDescription = _placeList[index]['description'].toString();
+    // Split the location string e.g. from Nairobi, Kenya to Nairobi as the specific location.
+    // and Kenya as the general location.
+    var split = placeDescription.split(',');
+    Map<int, String> values = {};
+    for (int i = 0; i < split.length; i++) {
+      values[i] = split[i];
+    }
+
+    /// Re-using Recent searches widget to display user's suggestions
+    // return RecentSearches(
+    //     specificLocation: values[index],
+    //     town: values[index + 1],
+    //     setShowRecentSearches: () {});
+    return Text(
+      placeDescription.length > 25
+          ? placeDescription.substring(0, 25) + '...'
+          : placeDescription,
+      style: globals.buildTextStyle(17.5, true, globals.textColor),
+    );
   }
 }

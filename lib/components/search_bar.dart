@@ -1,8 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import '../config/globals.dart' as globals;
 
@@ -20,16 +16,12 @@ import '../config/globals.dart' as globals;
 /// )
 ///```
 
-const kgoogleApiKey = 'AIzaSyDj86ulRLNgLprWrU4YfeIwuwyHHfLKiiQ';
-
 class SearchBar extends StatefulWidget {
   final double offsetY;
   final double blurRadius;
   final double opacity;
   final TextEditingController controller;
   final bool searchBarTapped;
-  List<PlacesSearchResult> places = [];
-  String _text = '';
 
   SearchBar(
       {@required this.offsetY,
@@ -42,16 +34,6 @@ class SearchBar extends StatefulWidget {
 }
 
 class SearchBarState extends State<SearchBar> {
-  Future<http.Response> _handleSearch(String placeName) async {
-    print(widget._text);
-    String autoCompleteUrl = 'maps.googleapis.com/maps/api/place/autocomplete/';
-    String requestParams =
-        'json?input=$placeName&key=$kgoogleApiKey&sessiontoken=1234567890';
-    var res = await http.get(Uri.https(autoCompleteUrl, requestParams));
-    print('here');
-    print(res);
-  }
-
   Widget build(BuildContext context) {
     return Center(
       child: Container(
@@ -77,11 +59,7 @@ class SearchBarState extends State<SearchBar> {
             // If the user is on the search page then the search bar should auto focus.
             child: TextField(
               autofocus: widget.searchBarTapped ? true : false,
-              // controller: widget.controller,
-              //If the user is on the search page then show a list of address predictions
-              onChanged: (val) {
-                print('here');
-              },
+              controller: widget.controller,
               // If the user is on the home page, navigate to the search page.
               onTap: () {
                 widget.searchBarTapped == false
