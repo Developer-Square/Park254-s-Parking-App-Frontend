@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:park254_s_parking_app/components/Booking.dart';
-import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
+import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
@@ -38,12 +35,12 @@ class _SearchPageState extends State<SearchPage> {
   bool showRatingTab;
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  Position currentPosition;
   int ratingCount;
   var clickedStars;
   var uuid = new Uuid();
   String _sessionToken = new Uuid().toString();
   List<dynamic> _placeList = [];
+  bool showSuggestion;
 
   @override
   void initState() {
@@ -54,6 +51,7 @@ class _SearchPageState extends State<SearchPage> {
     showRecentSearches = true;
     showBookNowTab = false;
     showRatingTab = false;
+    showSuggestion = true;
     // Pass Initial values.
     searchBarController.text = _searchText;
 
@@ -104,18 +102,26 @@ class _SearchPageState extends State<SearchPage> {
           _sessionToken = uuid.v4();
         });
       }
-      // Gets the suggestion by making an api call to the Places Api.
-      getSuggestion(searchBarController.text);
+
+      print(showSuggestion);
+      // If a user has clicked on one of the suggestions.
+      // No more suggestions should be shown.
+      showSuggestion
+          ?
+          // Gets the suggestions by making an api call to the Places Api.
+          getSuggestion(searchBarController.text)
+          // ignore: unnecessary_statements
+          : () {};
     });
   }
 
   void getSuggestion(String input) async {
     String kPLACES_API_KEY = 'AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0';
-    String type = '(regions)';
+    String country = 'country:ke';
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+        '$baseURL?input=$input&components=$country&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
 
     var response = await http.get(request);
     if (response.statusCode == 200) {
@@ -147,6 +153,21 @@ class _SearchPageState extends State<SearchPage> {
     });
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => HomePage()));
+  }
+
+  void showSuggestionFn() {
+    setState(() {
+      showSuggestion = true;
+    });
+  }
+
+  // Clears the suggestions when a user clicks on one of them.
+  void clearPlaceList(address) {
+    setState(() {
+      showSuggestion = false;
+      _placeList.clear();
+      searchBarController.text = address;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -219,6 +240,8 @@ class _SearchPageState extends State<SearchPage> {
                             opacity: 0.5,
                             controller: searchBarController,
                             searchBarTapped: true,
+                            showSuggestion: showSuggestion,
+                            showSuggestionFn: showSuggestionFn,
                           ),
                           Padding(
                             padding:
@@ -274,12 +297,6 @@ class _SearchPageState extends State<SearchPage> {
                                           return ListTile(
                                               title: Row(
                                             children: [
-                                              SvgPicture.asset(
-                                                  'assets/images/pin_icons/location-pin.svg',
-                                                  width: 20.0,
-                                                  color: Colors.grey
-                                                      .withOpacity(0.8)),
-                                              SizedBox(width: 10.0),
                                               // If the location has more than 25 letters, slice the word and add '...'
                                               _buildSinglePlace(index),
                                             ],
@@ -293,80 +310,12 @@ class _SearchPageState extends State<SearchPage> {
                   )
                 : Container(),
             showBookNowTab
-                ? Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                        height: 180.0,
-                        width: MediaQuery.of(context).size.width - 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0.0, 6.0), //(x,y)
-                              blurRadius: 8.0,
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.only(bottom: 20.0),
-                        padding: EdgeInsets.all(15.0),
-                        child: Column(
-                          children: <Widget>[
-                            NearByParkingList(
-                                activeCard: false,
-                                imgPath:
-                                    'assets/images/parking_photos/parking_9.jpg',
-                                parkingPrice: 400,
-                                parkingPlaceName: searchBarController.text,
-                                rating: 4.2,
-                                distance: 350,
-                                parkingSlots: 6),
-                            SizedBox(height: 20.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildButtons(
-                                    'Book Now', globals.backgroundColor),
-                                _buildButtons('More Info', Colors.white),
-                              ],
-                            )
-                          ],
-                        )),
+                ? BookingTab(
+                    searchBarControllerText: searchBarController.text,
                   )
                 : Container(),
           ])),
     );
-  }
-
-  /// A widget that builds the buttons in the bottom widget that appears
-  ///
-  /// when a user clicks on recent searches or selects a their ideal parking place.
-  /// from the suggestions.
-  Widget _buildButtons(String text, Color _color) {
-    return InkWell(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => Booking(
-                  address:
-                      '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
-                  bookingNumber: 'haaga5441',
-                  destination: 'Nairobi',
-                  parkingLotNumber: 'pajh5114',
-                  price: 11,
-                  imagePath: 'assets/images/Park254_logo.png')));
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(30.0)),
-              color: _color),
-          height: 40.0,
-          width: 140.0,
-          child: Center(
-              child: Text(text,
-                  style:
-                      globals.buildTextStyle(15.0, true, globals.textColor))),
-        ));
   }
 
   /// A widget that builds and displays the suggestions from google.
@@ -383,16 +332,20 @@ class _SearchPageState extends State<SearchPage> {
       values[i] = split[i];
     }
 
-    /// Re-using Recent searches widget to display user's suggestions
-    // return RecentSearches(
-    //     specificLocation: values[index],
-    //     town: values[index + 1],
-    //     setShowRecentSearches: () {});
-    return Text(
-      placeDescription.length > 25
-          ? placeDescription.substring(0, 25) + '...'
-          : placeDescription,
-      style: globals.buildTextStyle(17.5, true, globals.textColor),
-    );
+    // Cut the words in the suggestion so that they don't overflow.
+    // on the page.
+    if (values[0].length > 22) {
+      values[0] = values[0].substring(0, 22) + '...';
+    }
+
+    // Re-using Recent searches widget to display user's suggestions
+    return RecentSearches(
+        specificLocation: values[0],
+        town: values[1] == null ? 'None' : values[1],
+        setShowRecentSearches: () {},
+        controller: _controller,
+        newSearch: true,
+        clearPlaceListFn: clearPlaceList,
+        context: context);
   }
 }

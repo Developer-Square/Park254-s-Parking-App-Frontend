@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import '../config/globals.dart' as globals;
 
@@ -22,13 +23,17 @@ class SearchBar extends StatefulWidget {
   final double opacity;
   final TextEditingController controller;
   final bool searchBarTapped;
+  final bool showSuggestion;
+  final Function showSuggestionFn;
 
   SearchBar(
       {@required this.offsetY,
       @required this.blurRadius,
       @required this.opacity,
       @required this.controller,
-      @required this.searchBarTapped});
+      @required this.searchBarTapped,
+      this.showSuggestion,
+      this.showSuggestionFn});
   @override
   SearchBarState createState() => SearchBarState();
 }
@@ -65,8 +70,12 @@ class SearchBarState extends State<SearchBar> {
                 widget.searchBarTapped == false
                     ? Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => SearchPage()))
-                    // ignore: unnecessary_statements
-                    : () {};
+                    // If the show suggestions are set to false then the user taps on the.
+                    // search bar suggestions should be set to true.t
+                    : widget.showSuggestion == false
+                        ? widget.showSuggestionFn()
+                        // ignore: unnecessary_statements
+                        : () {};
               },
               cursorColor: globals.backgroundColor,
               decoration: InputDecoration.collapsed(

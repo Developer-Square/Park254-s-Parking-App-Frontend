@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:geocode/geocode.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -15,4 +17,26 @@ void loadLocation(_controller, currentPosition, closeNearByParking) async {
   CameraPosition cameraPosition =
       new CameraPosition(target: latLngPosition, zoom: 14.0);
   c.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+}
+
+/// Gets the coordinates of the suggestion a user has selected from the suggestion.
+/// list that appears below the search bar.
+///
+/// Requires [address], Map [controller] and [placeList]
+void getLocation(address, _controller, _clearPlaceList, _context) async {
+  GeoCode geoCode = GeoCode();
+  final c = await _controller.future;
+
+  try {
+    Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
+
+    _clearPlaceList(address);
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    LatLng latLngPosition = LatLng(coordinates.latitude, coordinates.longitude);
+    CameraPosition cameraPosition =
+        new CameraPosition(target: latLngPosition, zoom: 14.0);
+    c.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  } catch (e) {
+    print(e);
+  }
 }
