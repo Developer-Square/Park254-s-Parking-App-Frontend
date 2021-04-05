@@ -103,7 +103,6 @@ class _SearchPageState extends State<SearchPage> {
         });
       }
 
-      print(showSuggestion);
       // If a user has clicked on one of the suggestions.
       // No more suggestions should be shown.
       showSuggestion
@@ -129,7 +128,6 @@ class _SearchPageState extends State<SearchPage> {
         // If successfull store all the suggestions in a list to display below the search bar.
         _placeList = json.decode(response.body)['predictions'];
         // Hide the recent searches when the user starts typing on the search bar input.
-        // ignore: unnecessary_statements
         _placeList.length > 0 ? showRecentSearches = false : null;
       });
     } else {
@@ -332,10 +330,19 @@ class _SearchPageState extends State<SearchPage> {
       values[i] = split[i];
     }
 
-    // Cut the words in the suggestion so that they don't overflow.
-    // on the page.
-    if (values[0].length > 22) {
-      values[0] = values[0].substring(0, 22) + '...';
+    // First check if the value is there before cutting it.
+    if (values[0] != null) {
+      // Cut the words in the suggestion so that they don't overflow.
+      // on the page.
+      if (values[0].length > 19) {
+        values[0] = values[0].substring(0, 19) + '...';
+      }
+    }
+
+    if (values[1] != null) {
+      if (values[1].length > 19) {
+        values[1] = values[1].substring(0, 19) + '...';
+      }
     }
 
     // Re-using Recent searches widget to display user's suggestions
