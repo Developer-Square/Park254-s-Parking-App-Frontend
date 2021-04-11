@@ -24,6 +24,7 @@ class _InfoWidgetRouteLayout<T> extends SingleChildLayoutDelegate {
 //    if (Platform.isIOS) {
     return Offset(
       mapsWidgetSize.center.dx - childSize.width / 2,
+      // ToDo: Check if this runs perfectly in IOS.
       mapsWidgetSize.center.dy - childSize.height + 75.0,
     );
 //    } else {
