@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 /// [currentPosition] and [load].
 void loadLocation(_controller, currentPosition, closeNearByParking) async {
   closeNearByParking();
-  final c = await _controller.future;
+  final c = await _controller;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
   currentPosition = position;

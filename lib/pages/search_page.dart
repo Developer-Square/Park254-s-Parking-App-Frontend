@@ -41,6 +41,7 @@ class _SearchPageState extends State<SearchPage> {
   String _sessionToken = new Uuid().toString();
   List<dynamic> _placeList = [];
   bool showSuggestion;
+  BitmapDescriptor customIcon;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _SearchPageState extends State<SearchPage> {
 
     ratingCount = 0;
     clickedStars = [];
-    showRecentSearches = true;
+    showRecentSearches = false;
     showBookNowTab = false;
     showRatingTab = false;
     showSuggestion = true;
@@ -66,11 +67,13 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       parkingPlaces.forEach((element) {
         allMarkers.add(Marker(
-            markerId: MarkerId(element.parkingPlaceName),
-            draggable: false,
-            infoWindow: InfoWindow(
-                title: element.parkingPlaceName, snippet: element.toString()),
-            position: element.locationCoords));
+          markerId: MarkerId('1'),
+          icon: customIcon,
+          position: LatLng(-1.308173, 36.823869),
+          draggable: false,
+          infoWindow: InfoWindow(
+              title: element.parkingPlaceName, snippet: element.toString()),
+        ));
       });
     });
   }
@@ -168,7 +171,19 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  createMarker(context) {
+    ImageConfiguration configuration = createLocalImageConfiguration(context);
+    BitmapDescriptor.fromAssetImage(
+            configuration, 'assets/images/pin_icons/destination_map_marker.png')
+        .then((icon) {
+      setState() {
+        customIcon = icon;
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
+    createMarker(context);
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab

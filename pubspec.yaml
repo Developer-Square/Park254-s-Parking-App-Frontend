@@ -29,6 +29,8 @@ dependencies:
   geocoding: ^1.0.5
   http: ^0.12.2
   uuid: ^2.2.2
+  provider: ^4.3.3
+  clippy_flutter: ^1.1.1
   
 dev_dependencies:
   flutter_test:
