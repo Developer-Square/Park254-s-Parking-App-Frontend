@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
-import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:park254_s_parking_app/components/info_window.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
-import 'package:park254_s_parking_app/components/marker_info.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
@@ -36,22 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Marker> allMarkers = [];
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  // Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
   Position currentPosition;
   bool showNearByParking;
   bool showTopPageStyling;
   bool showMap;
   BitmapDescriptor customIcon;
-  final Map<String, User> _userList = {
-    "Parking on Wabera St":
-        User('P', '\$10 / Hr', 'dark blue', LatLng(-1.285128, 36.821934), 4)
-  };
-
-  final double _infoWindowWidth = 250;
-  final double _markerOffset = 170;
-  User _currentMarkerData =
-      User('P', '\$10 / Hr', 'dark blue', LatLng(-1.285128, 36.821934), 4);
   StreamSubscription _mapIdleSubscription;
   InfoWidgetRoute infoWidgetRoute;
 
@@ -72,18 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
-    // _controller.complete(controller);
     mapController = controller;
-    // setState(() {
-    //   parkingPlaces.forEach((element) {
-    //     allMarkers.add(Marker(
-    //       markerId: MarkerId(element.locationCoords.toString()),
-    //       position: element.locationCoords,
-    //       onTap: _onTap(_currentMarkerData),
-    //       draggable: false,
-    //     ));
-    //   });
-    // });
   }
 
   @override
@@ -122,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Fetching the custom icon and adding it to state.
   createMarker(context) {
     if (customIcon == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
@@ -135,15 +112,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // First it creates the Info Widget Route and then
+  // animates the Camera twice:
+  // First to a place near the marker, then to the marker.
+  // This is done to ensure that onCameraMove is always called
+  // ToDo: How to remove the custom info window on map move.
   _onTap(Parking parkingData, _context) async {
     final RenderBox renderBox = _context.findRenderObject();
     Rect _itemRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
 
     infoWidgetRoute = InfoWidgetRoute(
         child: Text(
-          'P',
+          parkingData.parkingPlaceName.substring(0, 1),
           style: globals.buildTextStyle(17.0, true, globals.textColor),
         ),
+        searched: parkingData.searched,
+        rating: parkingData.rating,
+        price: parkingData.price,
         buildContext: _context,
         textStyle: const TextStyle(fontSize: 14.0, color: Colors.black),
         mapsWidgetSize: _itemRect);
@@ -164,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // createMarker(context);
-    final providerObject = Provider.of<InfoWindowModel>(context, listen: false);
+    // Display all the available markers from the
     parkingPlaces.forEach((value) {
       allMarkers.add(
         Marker(
@@ -172,11 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
             position: value.locationCoords,
             onTap: () {
               _onTap(value, context);
-              providerObject.updateInfowindow(context, mapController,
-                  value.locationCoords, _infoWindowWidth, _markerOffset);
-              // providerObject.updateUser(value.parkingPlaceName);
-              providerObject.updateVisibility(true);
-              providerObject.rebuildInfowindow();
             }),
       );
     });
@@ -199,10 +179,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         onMapCreated: mapCreated,
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height - 520.0),
+                        // This fakes the onMapIdle, as the googleMaps on Map Idle does not always work
+                        // (see: https://github.com/flutter/flutter/issues/37682)
+                        // When the Map Idles and a _infoWidgetRoute exists, it gets displayed.
                         onCameraMove: (newPosition) {
                           _mapIdleSubscription?.cancel();
                           _mapIdleSubscription =
-                              Future.delayed(Duration(milliseconds: 150))
+                              Future.delayed(Duration(milliseconds: 100))
                                   .asStream()
                                   .listen((_) {
                             if (infoWidgetRoute != null) {

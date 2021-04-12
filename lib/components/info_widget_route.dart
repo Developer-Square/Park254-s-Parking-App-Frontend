@@ -2,17 +2,24 @@ import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:meta/meta.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../config/globals.dart' as globals;
 
 class _InfoWidgetRouteLayout<T> extends SingleChildLayoutDelegate {
   final Rect mapsWidgetSize;
   final double width;
   final double height;
+  final bool searched;
+  final double rating;
+  final String price;
 
   _InfoWidgetRouteLayout(
       {@required this.mapsWidgetSize,
       @required this.height,
-      @required this.width});
+      @required this.width,
+      this.searched,
+      this.rating,
+      this.price});
 
   /// Depending of the size of the marker or the widget, the offset in y direction has to be adjusted;
   /// If the appear to be of different size, the commented code can be uncommented and
@@ -51,6 +58,9 @@ class InfoWidgetRoute extends PopupRoute {
   final child;
   final double width;
   final double height;
+  final bool searched;
+  final double rating;
+  final String price;
   final BuildContext buildContext;
   final TextStyle textStyle;
   final Rect mapsWidgetSize;
@@ -60,6 +70,9 @@ class InfoWidgetRoute extends PopupRoute {
     @required this.buildContext,
     @required this.textStyle,
     @required this.mapsWidgetSize,
+    this.searched,
+    this.rating,
+    this.price,
     this.width = 150,
     this.height = 46,
     this.barrierLabel,
@@ -89,8 +102,16 @@ class InfoWidgetRoute extends PopupRoute {
       child: Builder(builder: (BuildContext context) {
         return CustomSingleChildLayout(
           delegate: _InfoWidgetRouteLayout(
-              mapsWidgetSize: mapsWidgetSize, width: width, height: height),
+              mapsWidgetSize: mapsWidgetSize,
+              width: width,
+              height: height,
+              searched: searched,
+              rating: rating,
+              price: price),
           child: InfoWidgetPopUp(
+            searched: searched,
+            rating: rating,
+            price: price,
             infoWidgetRoute: this,
           ),
         );
@@ -100,10 +121,16 @@ class InfoWidgetRoute extends PopupRoute {
 }
 
 class InfoWidgetPopUp extends StatefulWidget {
-  const InfoWidgetPopUp({
-    Key key,
-    @required this.infoWidgetRoute,
-  })  : assert(infoWidgetRoute != null),
+  final bool searched;
+  final double rating;
+  final String price;
+  const InfoWidgetPopUp(
+      {Key key,
+      @required this.infoWidgetRoute,
+      this.searched,
+      this.rating,
+      this.price})
+      : assert(infoWidgetRoute != null),
         super(key: key);
 
   final InfoWidgetRoute infoWidgetRoute;
@@ -143,36 +170,51 @@ class _InfoWidgetPopUpState extends State<InfoWidgetPopUp> {
                   height: 40.0,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
-                      color: globals.textColor),
+                      color:
+                          widget.searched ? globals.textColor : Colors.white),
                   child: Center(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Container(
-                            height: 28.0,
-                            width: 28.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Colors.white),
-                            child: Center(child: widget.infoWidgetRoute.child)),
-                      ),
+                          padding: const EdgeInsets.only(left: 5.0),
+                          child: CircularPercentIndicator(
+                            radius: 30.0,
+                            lineWidth: 2.0,
+                            percent: (widget.rating / 5),
+                            center: Container(
+                                width: 26.0,
+                                height: 26.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                    color: Colors.white),
+                                child: Center(
+                                    child: widget.infoWidgetRoute.child)),
+                            progressColor: widget.rating > 3.5
+                                ? globals.backgroundColor
+                                : widget.rating == 0.0
+                                    ? Colors.grey[400]
+                                    : Colors.red,
+                          )),
                       SizedBox(
                         width: 15.0,
                       ),
-                      Text('\$10 / Hr',
+                      Text(widget.price,
                           style: TextStyle(
                               fontSize: 15.0,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.white)),
+                              fontWeight: FontWeight.bold,
+                              color: widget.searched
+                                  ? Colors.white
+                                  : globals.textColor)),
                     ],
                   )),
                 ),
                 Triangle.isosceles(
                   edge: Edge.BOTTOM,
                   child: Container(
-                      color: globals.textColor, height: 6.0, width: 10.0),
+                      color: widget.searched ? globals.textColor : Colors.white,
+                      height: 6.0,
+                      width: 10.0),
                 )
               ],
             ),
