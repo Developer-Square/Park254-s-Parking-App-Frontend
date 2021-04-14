@@ -1,3 +1,4 @@
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
@@ -8,7 +9,7 @@ import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import '../config/globals.dart' as globals;
-import 'info_widget_route.dart';
+import 'package:park254_s_parking_app/components/info_window.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -40,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showMap;
   BitmapDescriptor customIcon;
   StreamSubscription _mapIdleSubscription;
-  InfoWidgetRoute infoWidgetRoute;
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
 
   @override
   void initState() {
@@ -60,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
     mapController = controller;
+    _customInfoWindowController.googleMapController = controller;
   }
 
   @override
@@ -67,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -117,34 +121,23 @@ class _HomeScreenState extends State<HomeScreen> {
   // First to a place near the marker, then to the marker.
   // This is done to ensure that onCameraMove is always called
   // ToDo: How to remove the custom info window on map move.
-  _onTap(Parking parkingData, _context) async {
-    final RenderBox renderBox = _context.findRenderObject();
-    Rect _itemRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
+  // _onTap(Parking parkingData, _context) async {
+  //   final RenderBox renderBox = _context.findRenderObject();
+  //   Rect _itemRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
 
-    infoWidgetRoute = InfoWidgetRoute(
-        child: Text(
-          parkingData.parkingPlaceName.substring(0, 1),
-          style: globals.buildTextStyle(17.0, true, globals.textColor),
-        ),
-        searched: parkingData.searched,
-        rating: parkingData.rating,
-        price: parkingData.price,
-        buildContext: _context,
-        textStyle: const TextStyle(fontSize: 14.0, color: Colors.black),
-        mapsWidgetSize: _itemRect);
-
-    await mapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-            target: LatLng(parkingData.locationCoords.latitude - 0.0001,
-                parkingData.locationCoords.latitude),
-            zoom: 14.0)));
-
-    await mapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-            target: LatLng(parkingData.locationCoords.latitude,
-                parkingData.locationCoords.longitude),
-            zoom: 14.0)));
-  }
+  //   infoWidgetRoute = InfoWidgetRoute(
+  //       child: Text(
+  //         parkingData.parkingPlaceName.substring(0, 1),
+  //         style: globals.buildTextStyle(17.0, true, globals.textColor),
+  //       ),
+  //       searched: parkingData.searched,
+  //       rating: parkingData.rating,
+  //       price: parkingData.price,
+  //       buildContext: _context,
+  //       textStyle: const TextStyle(fontSize: 14.0, color: Colors.black),
+  //       mapsWidgetSize: _itemRect);
+  //   cameraAnimate(mapController, parkingData);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
             markerId: MarkerId(value.parkingPlaceName),
             position: value.locationCoords,
             onTap: () {
-              _onTap(value, context);
+              _customInfoWindowController.addInfoWindow(
+                  InfoWindowWidget(value: value), value.locationCoords);
             }),
       );
     });
@@ -179,32 +173,36 @@ class _HomeScreenState extends State<HomeScreen> {
                         onMapCreated: mapCreated,
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height - 520.0),
-                        // This fakes the onMapIdle, as the googleMaps on Map Idle does not always work
-                        // (see: https://github.com/flutter/flutter/issues/37682)
-                        // When the Map Idles and a _infoWidgetRoute exists, it gets displayed.
-                        onCameraMove: (newPosition) {
+                        onTap: (position) {
+                          _customInfoWindowController.hideInfoWindow();
+                        },
+                        // To give that smooth scroll when moving to a new location.
+                        onCameraMove: (position) {
                           _mapIdleSubscription?.cancel();
                           _mapIdleSubscription =
                               Future.delayed(Duration(milliseconds: 100))
                                   .asStream()
-                                  .listen((_) {
-                            if (infoWidgetRoute != null) {
-                              Navigator.of(context, rootNavigator: true)
-                                  .push(infoWidgetRoute)
-                                  .then<void>(
-                                      (newValue) => {infoWidgetRoute = null});
-                            }
-                          });
+                                  .listen((_) {});
+                          _customInfoWindowController.onCameraMove();
                         },
                       ),
                     )
                   : Container(),
+              // Add CustomInfoWindow as next child to float this on top GoogleMap.
+              showMap
+                  ? CustomInfoWindow(
+                      controller: _customInfoWindowController,
+                      height: 50,
+                      width: 150,
+                      offset: 32)
+                  : Container(),
               // Show the NearByParking section or show an empty container.
               showNearByParking
                   ? NearByParking(
+                      mapController: mapController,
+                      customInfoWindowController: _customInfoWindowController,
                       showNearByParkingFn: closeNearByParking,
-                      hideDetails: showFullParkingWidget,
-                    )
+                      hideDetails: showFullParkingWidget)
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(

@@ -1,5 +1,8 @@
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
+import 'package:park254_s_parking_app/components/parking_model.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -10,9 +13,14 @@ class NearByParking extends StatefulWidget {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
+  final GoogleMapController mapController;
+  final CustomInfoWindowController customInfoWindowController;
 
   NearByParking(
-      {@required this.showNearByParkingFn, @required this.hideDetails});
+      {@required this.showNearByParkingFn,
+      @required this.hideDetails,
+      this.mapController,
+      this.customInfoWindowController});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -171,14 +179,19 @@ class _NearByParkingState extends State<NearByParking>
                       scrollDirection: Axis.vertical,
                       children: [
                         NearByParkingList(
-                            activeCard: title == selectedCard ? true : false,
-                            imgPath:
-                                'assets/images/parking_photos/parking_4.jpg',
-                            parkingPrice: 200,
-                            parkingPlaceName: 'Parking on Wabera St',
-                            rating: 3.5,
-                            distance: 125,
-                            parkingSlots: 5),
+                          activeCard: title == selectedCard ? true : false,
+                          imgPath: 'assets/images/parking_photos/parking_4.jpg',
+                          parkingPrice: 200,
+                          parkingPlaceName: 'Parking on Wabera St',
+                          rating: 3.5,
+                          distance: 125,
+                          parkingSlots: 5,
+                          mapController: widget.mapController,
+                          customInfoWindowController:
+                              widget.customInfoWindowController,
+                          parkingData: parkingPlaces[0],
+                          showNearbyParking: widget.showNearByParkingFn,
+                        ),
                         SizedBox(height: 20.0),
                         NearByParkingList(
                             activeCard: title == selectedCard ? true : false,
@@ -188,7 +201,12 @@ class _NearByParkingState extends State<NearByParking>
                             parkingPlaceName: 'First Church of Christ',
                             rating: 4.1,
                             distance: 234,
-                            parkingSlots: 2),
+                            parkingSlots: 2,
+                            mapController: widget.mapController,
+                            customInfoWindowController:
+                                widget.customInfoWindowController,
+                            parkingData: parkingPlaces[1],
+                            showNearbyParking: widget.showNearByParkingFn),
                         SizedBox(height: 30.0),
                         NearByParkingList(
                             activeCard: title == selectedCard ? true : false,
@@ -198,7 +216,12 @@ class _NearByParkingState extends State<NearByParking>
                             parkingPlaceName: 'Parklands Ave, Nairobi',
                             rating: 3.9,
                             distance: 234,
-                            parkingSlots: 7),
+                            parkingSlots: 7,
+                            mapController: widget.mapController,
+                            customInfoWindowController:
+                                widget.customInfoWindowController,
+                            parkingData: parkingPlaces[2],
+                            showNearbyParking: widget.showNearByParkingFn),
                         SizedBox(height: 30.0),
                         NearByParkingList(
                             activeCard: title == selectedCard ? true : false,
@@ -208,7 +231,12 @@ class _NearByParkingState extends State<NearByParking>
                             parkingPlaceName: 'Parklands Ave, Nairobi',
                             rating: 3.9,
                             distance: 234,
-                            parkingSlots: 7),
+                            parkingSlots: 7,
+                            mapController: widget.mapController,
+                            customInfoWindowController:
+                                widget.customInfoWindowController,
+                            parkingData: parkingPlaces[2],
+                            showNearbyParking: widget.showNearByParkingFn),
                         SizedBox(height: 30.0),
                         NearByParkingList(
                             activeCard: title == selectedCard ? true : false,
@@ -218,7 +246,12 @@ class _NearByParkingState extends State<NearByParking>
                             parkingPlaceName: 'Parking on Wabera St',
                             rating: 3.5,
                             distance: 125,
-                            parkingSlots: 5),
+                            parkingSlots: 5,
+                            mapController: widget.mapController,
+                            customInfoWindowController:
+                                widget.customInfoWindowController,
+                            parkingData: parkingPlaces[0],
+                            showNearbyParking: widget.showNearByParkingFn),
                       ],
                     )),
               ],
