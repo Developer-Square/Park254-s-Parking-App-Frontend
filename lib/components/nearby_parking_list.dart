@@ -51,6 +51,7 @@ class NearByParkingList extends StatelessWidget {
   Widget build(BuildContext context) {
     // Redirects the user to the specific parking location.
     // that he/she clicked on the Nearby parking widget or Recommended parking.
+    // Opens up the infoWindow.
     void redirectToLocation() {
       cameraAnimate(mapController, parkingData);
       showNearbyParking();

@@ -1,14 +1,12 @@
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
-import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/info_window.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showTopPageStyling;
   bool showMap;
   BitmapDescriptor customIcon;
-  StreamSubscription _mapIdleSubscription;
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
 
@@ -116,29 +113,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // First it creates the Info Widget Route and then
-  // animates the Camera twice:
-  // First to a place near the marker, then to the marker.
-  // This is done to ensure that onCameraMove is always called
-  // ToDo: How to remove the custom info window on map move.
-  // _onTap(Parking parkingData, _context) async {
-  //   final RenderBox renderBox = _context.findRenderObject();
-  //   Rect _itemRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
-
-  //   infoWidgetRoute = InfoWidgetRoute(
-  //       child: Text(
-  //         parkingData.parkingPlaceName.substring(0, 1),
-  //         style: globals.buildTextStyle(17.0, true, globals.textColor),
-  //       ),
-  //       searched: parkingData.searched,
-  //       rating: parkingData.rating,
-  //       price: parkingData.price,
-  //       buildContext: _context,
-  //       textStyle: const TextStyle(fontSize: 14.0, color: Colors.black),
-  //       mapsWidgetSize: _itemRect);
-  //   cameraAnimate(mapController, parkingData);
-  // }
-
   @override
   Widget build(BuildContext context) {
     // createMarker(context);
@@ -178,11 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         // To give that smooth scroll when moving to a new location.
                         onCameraMove: (position) {
-                          _mapIdleSubscription?.cancel();
-                          _mapIdleSubscription =
-                              Future.delayed(Duration(milliseconds: 100))
-                                  .asStream()
-                                  .listen((_) {});
                           _customInfoWindowController.onCameraMove();
                         },
                       ),
@@ -243,32 +212,5 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : Container(),
             ])));
-  }
-
-  Widget buildCustomInfoWindow() {
-    return Container(
-      width: 100.0,
-      height: 50.0,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40.0),
-          color: globals.backgroundColor),
-      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-        Container(
-          width: 30.0,
-          height: 30.0,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100), color: Colors.white),
-          child: Center(
-              child: Text('P',
-                  style: globals.buildTextStyle(
-                      17.0, true, globals.backgroundColor))),
-        ),
-        SizedBox(width: 15.0),
-        Text(
-          '\$10 / hr',
-          style: globals.buildTextStyle(17.0, false, Colors.white),
-        )
-      ]),
-    );
   }
 }
