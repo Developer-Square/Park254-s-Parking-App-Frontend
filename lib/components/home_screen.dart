@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BitmapDescriptor customIcon;
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+  bool showBackground;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     searchBarController.text = _searchText;
     showNearByParking = true;
     showMap = true;
+    showBackground = false;
     showTopPageStyling = true;
 
     // Start listening to changes.
@@ -80,12 +82,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void closeNearByParking() {
     setState(() {
       showNearByParking = false;
+      showBackground = false;
     });
   }
 
+// Hides the info window when a user want to see the nearby parking locations.
+// This is so that the info window does not overlap the nearby parking widget.
   void showNearByParkingFn() {
     setState(() {
       showNearByParking = !showNearByParking;
+      _customInfoWindowController.hideInfoWindow();
     });
   }
 
@@ -97,6 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
       showMap = !showMap;
       widget.showBottomNavigation();
     });
+  }
+
+  /// When a user clicks on the nearest parking widget.
+  /// everything else should hide and a blue background.
+  /// will cover the whole screen.
+  showFullBackground() {
+    showBackground = !showBackground;
   }
 
   // Fetching the custom icon and adding it to state.
@@ -131,30 +144,36 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
-            backgroundColor: showMap ? Colors.transparent : Color(0xFF16346c),
+            backgroundColor: Colors.transparent,
             body: Stack(children: [
-              showMap
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  zoomGesturesEnabled: true,
+                  zoomControlsEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(-1.286389, 36.817223), zoom: 14.0),
+                  markers: Set.from(allMarkers),
+                  onMapCreated: mapCreated,
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height - 520.0),
+                  onTap: (position) {
+                    _customInfoWindowController.hideInfoWindow();
+                  },
+                  onCameraMove: (position) {
+                    _customInfoWindowController.onCameraMove();
+                  },
+                ),
+              ),
+              // The blue background that appears when the nearby parking widget.
+              // is enlarged.
+              showBackground
                   ? Container(
-                      height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      child: GoogleMap(
-                        mapType: MapType.normal,
-                        zoomGesturesEnabled: true,
-                        zoomControlsEnabled: true,
-                        initialCameraPosition: CameraPosition(
-                            target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                        markers: Set.from(allMarkers),
-                        onMapCreated: mapCreated,
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height - 520.0),
-                        onTap: (position) {
-                          _customInfoWindowController.hideInfoWindow();
-                        },
-                        // To give that smooth scroll when moving to a new location.
-                        onCameraMove: (position) {
-                          _customInfoWindowController.onCameraMove();
-                        },
-                      ),
+                      height: MediaQuery.of(context).size.height,
+                      color: Color(0xFF16346c),
                     )
                   : Container(),
               // Show the NearByParking section or show an empty container.
@@ -163,15 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       mapController: mapController,
                       customInfoWindowController: _customInfoWindowController,
                       showNearByParkingFn: closeNearByParking,
-                      hideDetails: showFullParkingWidget)
-                  : Container(),
-              // Add CustomInfoWindow as next child to float this on top GoogleMap.
-              showMap
-                  ? CustomInfoWindow(
-                      controller: _customInfoWindowController,
-                      height: 50,
-                      width: 150,
-                      offset: 32)
+                      hideDetails: showFullParkingWidget,
+                      showFullBackground: showFullBackground)
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(
@@ -211,6 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
+              // Add CustomInfoWindow as next child to float this on top GoogleMap.
+              CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 50,
+                  width: 150,
+                  offset: 32),
             ])));
   }
 }

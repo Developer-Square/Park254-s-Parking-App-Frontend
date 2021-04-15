@@ -33,6 +33,10 @@ class NearByParkingList extends StatelessWidget {
   final GoogleMapController mapController;
   final Function showNearbyParking;
   final CustomInfoWindowController customInfoWindowController;
+  final Function hideAllDetails;
+  final bool large;
+  final String selectedCard;
+  final String title;
 
   NearByParkingList(
       {@required this.imgPath,
@@ -45,7 +49,11 @@ class NearByParkingList extends StatelessWidget {
       this.parkingData,
       this.mapController,
       this.showNearbyParking,
-      this.customInfoWindowController});
+      this.customInfoWindowController,
+      this.hideAllDetails,
+      this.large,
+      this.title,
+      this.selectedCard});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +61,12 @@ class NearByParkingList extends StatelessWidget {
     // that he/she clicked on the Nearby parking widget or Recommended parking.
     // Opens up the infoWindow.
     void redirectToLocation() {
+      // If the nearby parking widget is enlarged.
+      // Then hide the background and parking widget.
+      // when redirecting the user to the clicked location
+      if (large) {
+        hideAllDetails();
+      }
       cameraAnimate(mapController, parkingData);
       showNearbyParking();
       customInfoWindowController.addInfoWindow(
@@ -60,7 +74,9 @@ class NearByParkingList extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: () => redirectToLocation(),
+      // If its the selected card then redirect the user.
+      // Else do nothing.
+      onTap: title == selectedCard ? () => redirectToLocation() : () {},
       child: Container(
           height: 80.0,
           child: Row(children: <Widget>[
