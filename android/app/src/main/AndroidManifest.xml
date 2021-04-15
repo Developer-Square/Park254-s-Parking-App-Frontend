@@ -14,7 +14,7 @@
         android:label="park254_s_parking_app"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyDj86ulRLNgLprWrU4YfeIwuwyHHfLKiiQ"/>
+               android:value="AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

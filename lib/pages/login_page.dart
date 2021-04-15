@@ -36,8 +36,8 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: SvgPicture.asset(
                 'assets/images/Logo/PARK_254_1000x400-01.svg',
-                width: 290.0,
-                height: 290.0,
+                width: 260.0,
+                height: 260.0,
               ),
             ),
             SizedBox(height: 75.0),

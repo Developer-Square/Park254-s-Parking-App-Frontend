@@ -103,10 +103,11 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           ),
         ),
       ),
-      backgroundColor: globals.primaryColor,
+      backgroundColor: globals.backgroundColor,
       floatingActionButton: CustomFloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
         },
         label: 'Skip',
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a List of a user's recent searches.
@@ -14,32 +16,48 @@ import '../config/globals.dart' as globals;
 ///```
 
 class RecentSearches extends StatelessWidget {
+  final newSearch;
   final String specificLocation;
   final String town;
   final Function setShowRecentSearches;
+  final controller;
+  final Function clearPlaceListFn;
+  final context;
 
   RecentSearches(
       {@required this.specificLocation,
       @required this.town,
-      @required this.setShowRecentSearches});
+      @required this.setShowRecentSearches,
+      this.newSearch,
+      this.controller,
+      this.clearPlaceListFn,
+      this.context});
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        setShowRecentSearches(specificLocation);
+        newSearch == true
+            ? getLocation(specificLocation + ',' + town, controller,
+                clearPlaceListFn, context)
+            : setShowRecentSearches(specificLocation);
       },
       child: Row(children: <Widget>[
-        Container(
-            height: 50.0,
-            width: 50.0,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(100.0),
-                ),
-                color: Colors.grey.withOpacity(0.2)),
-            child: Icon(
-              Icons.watch_later_outlined,
-              color: Colors.grey,
-            )),
+        // If the user is typing in a new location.
+        // Don't display the watch_later
+        newSearch == true
+            ? SvgPicture.asset('assets/images/pin_icons/location-pin.svg',
+                width: 26.0, color: Colors.grey.withOpacity(0.8))
+            : Container(
+                height: 50.0,
+                width: 50.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(100.0),
+                    ),
+                    color: Colors.grey.withOpacity(0.2)),
+                child: Icon(
+                  Icons.watch_later_outlined,
+                  color: Colors.grey,
+                )),
         SizedBox(width: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
