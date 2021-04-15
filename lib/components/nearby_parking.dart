@@ -211,6 +211,7 @@ class _NearByParkingState extends State<NearByParking>
                           large: _large,
                           title: title,
                           selectedCard: selectedCard,
+                          selectCard: selectCard,
                         ),
                         SizedBox(height: 20.0),
                         NearByParkingList(
@@ -230,6 +231,7 @@ class _NearByParkingState extends State<NearByParking>
                           large: _large,
                           title: title,
                           selectedCard: selectedCard,
+                          selectCard: selectCard,
                         ),
                         SizedBox(height: 30.0),
                         NearByParkingList(
@@ -249,6 +251,7 @@ class _NearByParkingState extends State<NearByParking>
                           large: _large,
                           title: title,
                           selectedCard: selectedCard,
+                          selectCard: selectCard,
                         ),
                         SizedBox(height: 30.0),
                         NearByParkingList(
@@ -268,6 +271,7 @@ class _NearByParkingState extends State<NearByParking>
                           large: _large,
                           title: title,
                           selectedCard: selectedCard,
+                          selectCard: selectCard,
                         ),
                         SizedBox(height: 30.0),
                         NearByParkingList(
@@ -287,6 +291,7 @@ class _NearByParkingState extends State<NearByParking>
                           large: _large,
                           title: title,
                           selectedCard: selectedCard,
+                          selectCard: selectCard,
                         ),
                       ],
                     )),

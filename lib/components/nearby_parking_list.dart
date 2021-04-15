@@ -37,6 +37,7 @@ class NearByParkingList extends StatelessWidget {
   final bool large;
   final String selectedCard;
   final String title;
+  final Function selectCard;
 
   NearByParkingList(
       {@required this.imgPath,
@@ -53,7 +54,8 @@ class NearByParkingList extends StatelessWidget {
       this.hideAllDetails,
       this.large,
       this.title,
-      this.selectedCard});
+      this.selectedCard,
+      this.selectCard});
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +77,10 @@ class NearByParkingList extends StatelessWidget {
 
     return InkWell(
       // If its the selected card then redirect the user.
-      // Else do nothing.
-      onTap: title == selectedCard ? () => redirectToLocation() : () {},
+      // Else select the card.
+      onTap: title == selectedCard
+          ? () => redirectToLocation()
+          : () => selectCard(title),
       child: Container(
           height: 80.0,
           child: Row(children: <Widget>[
