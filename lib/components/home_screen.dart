@@ -157,14 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
-              // Add CustomInfoWindow as next child to float this on top GoogleMap.
-              showMap
-                  ? CustomInfoWindow(
-                      controller: _customInfoWindowController,
-                      height: 50,
-                      width: 150,
-                      offset: 32)
-                  : Container(),
               // Show the NearByParking section or show an empty container.
               showNearByParking
                   ? NearByParking(
@@ -172,6 +164,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       customInfoWindowController: _customInfoWindowController,
                       showNearByParkingFn: closeNearByParking,
                       hideDetails: showFullParkingWidget)
+                  : Container(),
+              // Add CustomInfoWindow as next child to float this on top GoogleMap.
+              showMap
+                  ? CustomInfoWindow(
+                      controller: _customInfoWindowController,
+                      height: 50,
+                      width: 150,
+                      offset: 32)
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(
