@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'dart:async';
@@ -102,18 +103,12 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           ),
         ),
       ),
-      backgroundColor:
-          _start > 15 ? Color(0xFF241f20) : globals.backgroundColor,
-      floatingActionButton: FloatingActionButton.extended(
+      backgroundColor: globals.primaryColor,
+      floatingActionButton: CustomFloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
         },
-        label: Text(
-          'Skip',
-          style: TextStyle(color: globals.textColor),
-        ),
-        backgroundColor: globals.primaryColor,
+        label: 'Skip',
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 
+import 'CircleWithIcon.dart';
 import 'DottedHorizontalLine.dart';
 
 /// Creates a receipt
@@ -217,8 +218,13 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
                       child: Center(
-                          child: _circleWithIcon(
-                              Icons.close, Colors.white, globals.textColor, 2)),
+                          child: CircleWithIcon(
+                            icon: Icons.close,
+                            bgColor: Colors.white,
+                            iconColor: globals.textColor,
+                            sizeFactor: 2,
+                          ),
+                      ),
                     ),
                     flex: 1,
                   ),
@@ -253,33 +259,28 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  /// Creates a circle with icon at center
-  Widget _circleWithIcon(
-      IconData icon, Color bgColor, Color iconColor, double sizeFactor) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: bgColor == globals.primaryColor ? globals.primaryColor : bgColor,
-      ),
-      child: Center(
-        child: Icon(
-          icon,
-          color: iconColor == globals.textColor ? globals.textColor : iconColor,
-        ),
-        widthFactor: sizeFactor == 2 ? 2 : sizeFactor,
-        heightFactor: sizeFactor == 2 ? 2 : sizeFactor,
-      ),
-    );
-  }
-
-  Widget _icons() {
+  Widget _icons(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        _circleWithIcon(
-            Icons.near_me, globals.primaryColor, globals.textColor, 2),
-        _circleWithIcon(Icons.error_outline, Colors.red, Colors.white, 1),
-        _circleWithIcon(Icons.call, globals.primaryColor, globals.textColor, 2),
+        CircleWithIcon(
+            icon: Icons.near_me,
+            bgColor: globals.primaryColor,
+            iconColor: globals.textColor,
+            sizeFactor: 2,
+        ),
+        CircleWithIcon(
+          icon: Icons.error_outline,
+          bgColor: Colors.red,
+          iconColor: Colors.white,
+          sizeFactor: 1,
+        ),
+        CircleWithIcon(
+          icon: Icons.call,
+          bgColor: globals.primaryColor,
+          iconColor: globals.textColor,
+          sizeFactor: 2,
+        ),
       ],
     );
   }

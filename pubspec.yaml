@@ -26,6 +26,9 @@ dependencies:
   google_maps_flutter: ^1.2.0
   geolocator: ^6.1.14
   flutter_svg: ^0.19.1
+  camera: ^0.5.2+1
+  path_provider: ^1.6.28
+  path: ^1.7.0
   
 dev_dependencies:
   flutter_test:
