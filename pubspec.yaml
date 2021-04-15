@@ -29,6 +29,9 @@ dependencies:
   geocoding: ^1.0.5
   http: ^0.12.2
   uuid: ^2.2.2
+  camera: ^0.5.2+1
+  path_provider: ^1.6.28
+  path: ^1.7.0
   
 dev_dependencies:
   flutter_test:
