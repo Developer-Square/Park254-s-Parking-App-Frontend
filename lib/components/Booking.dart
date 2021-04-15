@@ -47,6 +47,7 @@ class Booking extends StatefulWidget {
       @required this.imagePath,
       @required this.address});
 
+
   @override
   _BookingState createState() => _BookingState();
 }

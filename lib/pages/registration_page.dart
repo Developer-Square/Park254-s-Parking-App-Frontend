@@ -23,8 +23,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   changeScreens() {
     if (_step == 1) {
       return RegistrationScreens(
-          title: 'Email',
-          info: 'Welcome to our Parking app, kindly provide your email below',
+          title: 'Phone number',
+          info: 'Welcome to Park254, kindly provide your phone number below',
           step: _step);
     } else if (_step == 2) {
       return RegistrationScreens(
@@ -74,7 +74,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               }),
           title: Text(
             _step == 1
-                ? 'Email'
+                ? 'Phone number'
                 : _step == 2
                     ? 'Verification'
                     : 'Password',

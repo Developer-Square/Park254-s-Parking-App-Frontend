@@ -32,22 +32,20 @@ class PaymentSuccessful extends StatefulWidget {
   final String address;
   static const routeName = '/receipt';
 
-  PaymentSuccessful({
-    @required this.bookingNumber,
-    @required this.parkingSpace,
-    @required this.price,
-    @required this.destination,
-    @required this.address,
-  });
+  PaymentSuccessful(
+      {@required this.bookingNumber,
+      @required this.parkingSpace,
+      @required this.price,
+      @required this.destination,
+      @required this.address});
 
   @override
   _PaymentSuccessfulState createState() => _PaymentSuccessfulState();
 }
 
 class _PaymentSuccessfulState extends State<PaymentSuccessful> {
-
   /// Creates custom row with title and value
-  Widget _messageRow(String title, String value){
+  Widget _messageRow(String title, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -57,7 +55,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _containerWithBorderRadius(Widget child){
+  Widget _containerWithBorderRadius(Widget child) {
     final double width = MediaQuery.of(context).size.width;
 
     return Container(
@@ -70,7 +68,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _greenCircle(){
+  Widget _greenCircle() {
     return Stack(
       children: <Widget>[
         _message(),
@@ -101,7 +99,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _message(){
+  Widget _message() {
     final double width = MediaQuery.of(context).size.width;
 
     return Column(
@@ -129,7 +127,8 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.only(left: width/20,right: width/20),
+                    padding:
+                        EdgeInsets.only(left: width / 20, right: width / 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -149,7 +148,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _receipt(){
+  Widget _receipt() {
     final double width = MediaQuery.of(context).size.width;
 
     return Column(
@@ -157,21 +156,25 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
         Expanded(
           child: _containerWithBorderRadius(
             Container(
-              padding: EdgeInsets.only(left: width/5, right: width/5, top: width/10, bottom: width/10),
+              padding: EdgeInsets.only(
+                  left: width / 5,
+                  right: width / 5,
+                  top: width / 10,
+                  bottom: width / 10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
                     child: Image(
-                      image: AssetImage(
-                          'assets/images/qrcode.png'
-                      ),
+                      image: AssetImage('assets/images/qrcode.png'),
                       fit: BoxFit.cover,
                     ),
                     flex: 7,
                   ),
                   Expanded(
-                    child: SecondaryText(content: 'Scan Barcode Here',),
+                    child: SecondaryText(
+                      content: 'Scan Barcode Here',
+                    ),
                     flex: 1,
                   ),
                 ],
@@ -188,12 +191,14 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                   Expanded(
                     child: _containerWithBorderRadius(
                       Container(
-                        padding: EdgeInsets.all(width/20),
+                        padding: EdgeInsets.all(width / 20),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Expanded(child: PrimaryText(content: widget.destination)),
+                            Expanded(
+                                child:
+                                    PrimaryText(content: widget.destination)),
                             Expanded(
                               child: Text(
                                 widget.address,
@@ -236,7 +241,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _dottedLine(){
+  Widget _dottedLine() {
     return Stack(
       children: <Widget>[
         _receipt(),
@@ -244,7 +249,9 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
           child: Container(
             height: 10,
             child: Center(
-              child: CustomPaint(painter: DotedHorizontalLine(),),
+              child: CustomPaint(
+                painter: DotedHorizontalLine(),
+              ),
             ),
           ),
         ),
@@ -281,14 +288,14 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: globals.textColor,
         resizeToAvoidBottomPadding: true,
         body: DismissKeyboard(
           child: Container(
-            padding: EdgeInsets.all(width/20),
+            padding: EdgeInsets.all(width / 20),
             child: Column(
               children: <Widget>[
                 Expanded(
