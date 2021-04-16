@@ -1,4 +1,4 @@
-import '../models/user.model.dart';
+import '../models/userWithToken.model.dart';
 import '../functions/register.dart';
 
 import 'package:flutter/material.dart';
@@ -9,9 +9,9 @@ class ApiTest extends StatefulWidget {
 }
 
 class _ApiTestState extends State<ApiTest> {
-  Future<User> futureUser;
-  final String name = 'clare';
-  final String email = 'clare@example.com';
+  Future<UserWithToken> futureUser;
+  final String name = 'john';
+  final String email = 'john@example.com';
   final String password = 'password1';
   final String role = 'vendor';
 
@@ -29,16 +29,21 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-        child: FutureBuilder<User>(
+        child: FutureBuilder<UserWithToken>(
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(snapshot.data.name),
-                    Text(snapshot.data.email),
-                    Text(snapshot.data.id),
-                    Text(snapshot.data.role),
+                    Text('name: ${snapshot.data.user.name}'),
+                    Text(snapshot.data.user.email),
+                    Text(snapshot.data.user.id),
+                    Text(snapshot.data.user.role),
+                    Text(snapshot.data.accessToken.token),
+                    Text('${snapshot.data.accessToken.expires}'),
+                    Text(snapshot.data.refreshToken.token),
+                    Text('${snapshot.data.refreshToken.expires}'),
                   ],
                 );
               } else if (snapshot.hasError) {

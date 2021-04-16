@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:park254_s_parking_app/functions/handleError.dart';
 import '../config/globals.dart' as globals;
 
-import '../models/user.model.dart';
+import '../models/userWithToken.model.dart';
 
-Future<User> register(
+Future<UserWithToken> register(
     String email, String name, String role, String password) async {
   final url = Uri.parse('${globals.apiUrl}/v1/auth/register');
   final response = await http.post(
@@ -14,10 +15,9 @@ Future<User> register(
   );
 
   if (response.statusCode == 201) {
-    final user = User.fromJson(jsonDecode(response.body));
-    print(user.name);
-    return user;
+    final userWithToken = UserWithToken.fromJson(jsonDecode(response.body));
+    return userWithToken;
   } else {
-    throw Exception('Failed to register user');
+    handleError(response.body);
   }
 }
