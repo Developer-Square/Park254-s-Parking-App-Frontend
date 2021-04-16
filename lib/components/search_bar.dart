@@ -71,7 +71,7 @@ class SearchBarState extends State<SearchBar> {
                     ? Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => SearchPage()))
                     // If the show suggestions are set to false then the user taps on the.
-                    // search bar suggestions should be set to true.t
+                    // search bar suggestions should be set to true.
                     : widget.showSuggestion == false
                         ? widget.showSuggestionFn()
                         // ignore: unnecessary_statements

@@ -42,6 +42,7 @@ class _SearchPageState extends State<SearchPage> {
   List<dynamic> _placeList = [];
   bool showSuggestion;
   BitmapDescriptor customIcon;
+  bool recentSearchTapped;
 
   @override
   void initState() {
@@ -49,10 +50,11 @@ class _SearchPageState extends State<SearchPage> {
 
     ratingCount = 0;
     clickedStars = [];
-    showRecentSearches = false;
+    showRecentSearches = true;
     showBookNowTab = false;
     showRatingTab = false;
-    showSuggestion = true;
+    showSuggestion = false;
+    recentSearchTapped = false;
     // Pass Initial values.
     searchBarController.text = _searchText;
 
@@ -80,12 +82,31 @@ class _SearchPageState extends State<SearchPage> {
 
 // Hides the recent searches when one of them is clicked and.
 // sets the searchbar text to the clicked recent search.
+// Displays booknow tab and dismisses the keyboard.
   void _setShowRecentSearches(searchText) {
     setState(() {
       searchBarController.text = searchText;
       showRecentSearches = false;
       showBookNowTab = true;
+      showSuggestion = false;
+      recentSearchTapped = true;
+      FocusScope.of(context).unfocus();
     });
+  }
+
+  // Show the recent searches when the user has erased everything.
+  // on the searchbar.
+  showRecentSearchesFn() {
+    // If the user has tapped one of the recent searches then.
+    // do show the recent searches tab
+    if (!recentSearchTapped) {
+      setState(() {
+        showRecentSearches = true;
+      });
+    }
+    return recentSearchTapped
+        ? 110.0
+        : MediaQuery.of(context).size.height - 310.0;
   }
 
   @override
@@ -105,16 +126,17 @@ class _SearchPageState extends State<SearchPage> {
           _sessionToken = uuid.v4();
         });
       }
-
-      // If a user has clicked on one of the suggestions.
-      // No more suggestions should be shown.
-      showSuggestion
-          ?
-          // Gets the suggestions by making an api call to the Places Api.
-          getSuggestion(searchBarController.text)
-          // ignore: unnecessary_statements
-          : () {};
+      print(showSuggestion);
     });
+    // If a user has clicked on one of the suggestions.
+    // No more suggestions should be shown.
+    showSuggestion
+        ?
+        // Gets the suggestions by making an api call to the Places Api.
+        getSuggestion(searchBarController.text)
+        // ignore: unnecessary_statements
+        // ignore: unnecessary_statements
+        : () {};
   }
 
   void getSuggestion(String input) async {
@@ -156,9 +178,12 @@ class _SearchPageState extends State<SearchPage> {
         .push(MaterialPageRoute(builder: (context) => HomePage()));
   }
 
+// When user clicks on a recent search and the booking tab shows up.
+//  he/she wants to change to another location, hide the booking tab.
   void showSuggestionFn() {
     setState(() {
       showSuggestion = true;
+      showBookNowTab = false;
     });
   }
 
@@ -235,7 +260,7 @@ class _SearchPageState extends State<SearchPage> {
                         ? MediaQuery.of(context).size.height - 310.0
                         : _placeList.length > 0
                             ? 400.0
-                            : 110.0,
+                            : showRecentSearchesFn(),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: Colors.white,
