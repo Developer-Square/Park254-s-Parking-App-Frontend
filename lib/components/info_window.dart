@@ -48,9 +48,9 @@ class InfoWindowWidget extends StatelessWidget {
                               : Colors.red,
                     )),
                 SizedBox(
-                  width: 15.0,
+                  width: 10.0,
                 ),
-                Text(value.price,
+                Text('Ksh ${value.price} / Hr',
                     style: TextStyle(
                         fontSize: 15.0,
                         fontWeight: FontWeight.bold,

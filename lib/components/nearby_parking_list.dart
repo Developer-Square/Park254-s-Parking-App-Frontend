@@ -23,7 +23,7 @@ import './load_location.dart';
 ///```
 class NearByParkingList extends StatelessWidget {
   final String imgPath;
-  final int parkingPrice;
+  final double parkingPrice;
   final String parkingPlaceName;
   final double rating;
   final double distance;

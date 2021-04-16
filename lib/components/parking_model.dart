@@ -16,7 +16,7 @@ class Parking {
   String thumbNail;
   LatLng locationCoords;
   bool searched;
-  String price;
+  double price;
 
   Parking(
       {this.parkingPlaceName,
@@ -33,7 +33,7 @@ class Parking {
 final List<Parking> parkingPlaces = [
   Parking(
       searched: true,
-      price: '\$10 / Hr',
+      price: 10,
       parkingPlaceName: 'Parking on Wabera St',
       type: 'PARKING MALL',
       rating: 4.4,
@@ -43,7 +43,7 @@ final List<Parking> parkingPlaces = [
       thumbNail: 'assets/images/parking_photos/parking_1.jpg'),
   Parking(
       searched: false,
-      price: '\$14 / Hr',
+      price: 14,
       parkingPlaceName: 'First Church of Christ',
       type: 'PARKING MALL',
       rating: 4.1,
@@ -53,7 +53,7 @@ final List<Parking> parkingPlaces = [
       thumbNail: 'assets/images/parking_photos/parking_2.jpg'),
   Parking(
       searched: false,
-      price: '\$19 / Hr',
+      price: 19,
       parkingPlaceName: 'Parklands Ave, Nairobi',
       type: 'PARKING MALL',
       rating: 2.1,

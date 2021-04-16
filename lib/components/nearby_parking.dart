@@ -110,6 +110,9 @@ class _NearByParkingState extends State<NearByParking>
     ]);
   }
 
+  /// Builds out the close button that appears when the widget is expanded.
+  ///
+  /// It closes the expanded widget and returns everything back to normal.
   Widget buildCloseButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -128,6 +131,42 @@ class _NearByParkingState extends State<NearByParking>
     );
   }
 
+  /// Builds out the different parking locations using data provided.
+  /// by parking model.
+  Widget buildParkingPlacesList(title) {
+    return ListView.builder(
+        itemCount: parkingPlaces.length,
+        itemBuilder: (context, index) {
+          int picIndex = index + 1;
+          return Column(
+            children: [
+              NearByParkingList(
+                activeCard: title == selectedCard ? true : false,
+                imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
+                parkingPrice: parkingPlaces[index].price,
+                parkingPlaceName: parkingPlaces[index].parkingPlaceName,
+                rating: parkingPlaces[index].rating,
+                distance: parkingPlaces[index].distance,
+                parkingSlots: parkingPlaces[index].parkingSlots,
+                mapController: widget.mapController,
+                customInfoWindowController: widget.customInfoWindowController,
+                parkingData: parkingPlaces[index],
+                showNearbyParking: widget.showNearByParkingFn,
+                hideAllDetails: _closeFullSizeWidgetRedirection,
+                large: _large,
+                title: title,
+                selectedCard: selectedCard,
+                selectCard: selectCard,
+              ),
+              SizedBox(height: 20.0)
+            ],
+          );
+        });
+  }
+
+  /// Builds out the nearby parking widget and the recommended parking widget.
+  ///
+  /// Disables the cards depending on which one is selected.
   Widget buildNearbyContainer(String title) {
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       _large ? buildTitle(title) : Container(),
@@ -191,110 +230,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(height: 19.0),
                 SizedBox(
                     height: _large ? 420.0 : 205.0,
-                    child: ListView(
-                      scrollDirection: Axis.vertical,
-                      children: [
-                        NearByParkingList(
-                          activeCard: title == selectedCard ? true : false,
-                          imgPath: 'assets/images/parking_photos/parking_4.jpg',
-                          parkingPrice: 200,
-                          parkingPlaceName: 'Parking on Wabera St',
-                          rating: 3.5,
-                          distance: 125,
-                          parkingSlots: 5,
-                          mapController: widget.mapController,
-                          customInfoWindowController:
-                              widget.customInfoWindowController,
-                          parkingData: parkingPlaces[0],
-                          showNearbyParking: widget.showNearByParkingFn,
-                          hideAllDetails: _closeFullSizeWidgetRedirection,
-                          large: _large,
-                          title: title,
-                          selectedCard: selectedCard,
-                          selectCard: selectCard,
-                        ),
-                        SizedBox(height: 20.0),
-                        NearByParkingList(
-                          activeCard: title == selectedCard ? true : false,
-                          imgPath: 'assets/images/parking_photos/parking_7.jpg',
-                          parkingPrice: 130,
-                          parkingPlaceName: 'First Church of Christ',
-                          rating: 4.1,
-                          distance: 234,
-                          parkingSlots: 2,
-                          mapController: widget.mapController,
-                          customInfoWindowController:
-                              widget.customInfoWindowController,
-                          parkingData: parkingPlaces[1],
-                          showNearbyParking: widget.showNearByParkingFn,
-                          hideAllDetails: _closeFullSizeWidgetRedirection,
-                          large: _large,
-                          title: title,
-                          selectedCard: selectedCard,
-                          selectCard: selectCard,
-                        ),
-                        SizedBox(height: 30.0),
-                        NearByParkingList(
-                          activeCard: title == selectedCard ? true : false,
-                          imgPath: 'assets/images/parking_photos/parking_1.jpg',
-                          parkingPrice: 450,
-                          parkingPlaceName: 'Parklands Ave, Nairobi',
-                          rating: 3.9,
-                          distance: 234,
-                          parkingSlots: 7,
-                          mapController: widget.mapController,
-                          customInfoWindowController:
-                              widget.customInfoWindowController,
-                          parkingData: parkingPlaces[2],
-                          showNearbyParking: widget.showNearByParkingFn,
-                          hideAllDetails: _closeFullSizeWidgetRedirection,
-                          large: _large,
-                          title: title,
-                          selectedCard: selectedCard,
-                          selectCard: selectCard,
-                        ),
-                        SizedBox(height: 30.0),
-                        NearByParkingList(
-                          activeCard: title == selectedCard ? true : false,
-                          imgPath: 'assets/images/parking_photos/parking_9.jpg',
-                          parkingPrice: 400,
-                          parkingPlaceName: 'Parklands Ave, Nairobi',
-                          rating: 3.9,
-                          distance: 234,
-                          parkingSlots: 7,
-                          mapController: widget.mapController,
-                          customInfoWindowController:
-                              widget.customInfoWindowController,
-                          parkingData: parkingPlaces[2],
-                          showNearbyParking: widget.showNearByParkingFn,
-                          hideAllDetails: _closeFullSizeWidgetRedirection,
-                          large: _large,
-                          title: title,
-                          selectedCard: selectedCard,
-                          selectCard: selectCard,
-                        ),
-                        SizedBox(height: 30.0),
-                        NearByParkingList(
-                          activeCard: title == selectedCard ? true : false,
-                          imgPath: 'assets/images/parking_photos/parking_2.jpg',
-                          parkingPrice: 200,
-                          parkingPlaceName: 'Parking on Wabera St',
-                          rating: 3.5,
-                          distance: 125,
-                          parkingSlots: 5,
-                          mapController: widget.mapController,
-                          customInfoWindowController:
-                              widget.customInfoWindowController,
-                          parkingData: parkingPlaces[0],
-                          showNearbyParking: widget.showNearByParkingFn,
-                          hideAllDetails: _closeFullSizeWidgetRedirection,
-                          large: _large,
-                          title: title,
-                          selectedCard: selectedCard,
-                          selectCard: selectCard,
-                        ),
-                      ],
-                    )),
+                    child: buildParkingPlacesList(title)),
               ],
             ),
           ),

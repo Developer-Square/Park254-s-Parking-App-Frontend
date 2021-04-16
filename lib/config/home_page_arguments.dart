@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class HomePageArguments {
   final String imgPath;
-  final int parkingPrice;
+  final double parkingPrice;
   final String parkingPlaceName;
   final double rating;
   final double distance;
