@@ -1,5 +1,6 @@
+import 'package:park254_s_parking_app/functions/login.dart';
+
 import '../models/userWithToken.model.dart';
-import '../functions/register.dart';
 
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureUser = register(email, name, role, password);
+    futureUser = login(email, password);
   }
 
   @override
