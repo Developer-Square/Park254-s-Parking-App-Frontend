@@ -8,6 +8,7 @@ import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
+import 'bitmap_descriptor.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -126,15 +127,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  loadDescriptors(context) async {
+    bitmapDescriptor = await bitmapDescriptorFromSvgAsset(
+        context, 'assets/images/pin_icons/car-parking-icon-1.svg');
+  }
+
   @override
   Widget build(BuildContext context) {
-    // createMarker(context);
+    loadDescriptors(context);
+    createMarker(context);
     // Display all the available markers from the
     parkingPlaces.forEach((value) {
       allMarkers.add(
         Marker(
             markerId: MarkerId(value.parkingPlaceName),
             position: value.locationCoords,
+            icon: bitmapDescriptor,
             onTap: () {
               _customInfoWindowController.addInfoWindow(
                   InfoWindowWidget(value: value), value.locationCoords);

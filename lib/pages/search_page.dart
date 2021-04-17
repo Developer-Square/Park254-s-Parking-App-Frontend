@@ -126,7 +126,6 @@ class _SearchPageState extends State<SearchPage> {
           _sessionToken = uuid.v4();
         });
       }
-      print(showSuggestion);
     });
     // If a user has clicked on one of the suggestions.
     // No more suggestions should be shown.
