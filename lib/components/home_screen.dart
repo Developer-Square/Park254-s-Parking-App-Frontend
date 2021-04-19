@@ -2,13 +2,12 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
-import 'package:park254_s_parking_app/components/info_window.dart';
-import 'bitmap_descriptor.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -28,9 +27,6 @@ class HomeScreen extends StatefulWidget {
 /// Has navigation at the bottom.
 class _HomeScreenState extends State<HomeScreen> {
   var _activeTab = 'home';
-
-  // A list that stores all the google markers to be displayed.
-  List<Marker> allMarkers = [];
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
   GoogleMapController mapController;
@@ -38,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showNearByParking;
   bool showTopPageStyling;
   bool showMap;
-  BitmapDescriptor customIcon;
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
   bool showBackground;
@@ -113,68 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
     showBackground = !showBackground;
   }
 
-  // Fetching the custom icon and adding it to state.
-  createMarker(context) {
-    if (customIcon == null) {
-      ImageConfiguration configuration = createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(configuration,
-              'assets/images/pin_icons/destination_map_marker.png')
-          .then((icon) {
-        setState(() {
-          customIcon = icon;
-        });
-      });
-    }
-  }
-
-  loadDescriptors(context) async {
-    bitmapDescriptor = await bitmapDescriptorFromSvgAsset(
-        context, 'assets/images/pin_icons/car-parking-icon-1.svg');
-  }
-
   @override
   Widget build(BuildContext context) {
-    loadDescriptors(context);
-    createMarker(context);
-    // Display all the available markers from the
-    parkingPlaces.forEach((value) {
-      allMarkers.add(
-        Marker(
-            markerId: MarkerId(value.parkingPlaceName),
-            position: value.locationCoords,
-            icon: bitmapDescriptor,
-            onTap: () {
-              _customInfoWindowController.addInfoWindow(
-                  InfoWindowWidget(value: value), value.locationCoords);
-            }),
-      );
-    });
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
             backgroundColor: Colors.transparent,
             body: Stack(children: [
-              Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: GoogleMap(
-                  mapType: MapType.normal,
-                  zoomGesturesEnabled: true,
-                  zoomControlsEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                      target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                  markers: Set.from(allMarkers),
-                  onMapCreated: mapCreated,
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height - 520.0),
-                  onTap: (position) {
-                    _customInfoWindowController.hideInfoWindow();
-                  },
-                  onCameraMove: (position) {
-                    _customInfoWindowController.onCameraMove();
-                  },
-                ),
-              ),
+              GoogleMapWidget(
+                  mapCreated: mapCreated,
+                  customInfoWindowController: _customInfoWindowController),
               // The blue background that appears when the nearby parking widget.
               // is enlarged.
               showBackground

@@ -1,7 +1,8 @@
-import 'dart:async';
 import 'dart:convert';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
+import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
@@ -12,12 +13,6 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import '../config/globals.dart' as globals;
 
-class SearchPage extends StatefulWidget {
-  static const routeName = '/search_page';
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
 /// Creates a search page with recent searches of the user.
 ///
 /// Includes the following widgets from other components:
@@ -26,10 +21,14 @@ class SearchPage extends StatefulWidget {
 /// When a user clicks on one of the recent searches or selects their ideal parking location.
 /// the recent searches disappear and a bottom widget appears and the search bar is updated.
 /// with the chosen parking place name.
+class SearchPage extends StatefulWidget {
+  static const routeName = '/search_page';
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
 class _SearchPageState extends State<SearchPage> {
-  // A list that stores all the google markers to be displayed.
-  List<Marker> allMarkers = [];
-  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
   bool showRecentSearches;
   bool showBookNowTab;
   bool showRatingTab;
@@ -43,46 +42,31 @@ class _SearchPageState extends State<SearchPage> {
   bool showSuggestion;
   BitmapDescriptor customIcon;
   bool recentSearchTapped;
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
 
   @override
   void initState() {
     super.initState();
 
+    // Pass Initial values.
     ratingCount = 0;
     clickedStars = [];
     showRecentSearches = true;
     showBookNowTab = false;
     showRatingTab = false;
-    showSuggestion = false;
+    showSuggestion = true;
     recentSearchTapped = false;
-    // Pass Initial values.
     searchBarController.text = _searchText;
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
   }
 
-  /// A function that receives the GoogleMapController when the map is rendered on the page.
-  /// and adds google markers dynamically.
-  void mapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-    setState(() {
-      parkingPlaces.forEach((element) {
-        allMarkers.add(Marker(
-          markerId: MarkerId('1'),
-          icon: customIcon,
-          position: LatLng(-1.308173, 36.823869),
-          draggable: false,
-          infoWindow: InfoWindow(
-              title: element.parkingPlaceName, snippet: element.toString()),
-        ));
-      });
-    });
-  }
-
 // Hides the recent searches when one of them is clicked and.
 // sets the searchbar text to the clicked recent search.
 // Displays booknow tab and dismisses the keyboard.
+// It also clears all the suggestions
   void _setShowRecentSearches(searchText) {
     setState(() {
       searchBarController.text = searchText;
@@ -90,23 +74,15 @@ class _SearchPageState extends State<SearchPage> {
       showBookNowTab = true;
       showSuggestion = false;
       recentSearchTapped = true;
-      FocusScope.of(context).unfocus();
     });
+    FocusScope.of(context).unfocus();
   }
 
-  // Show the recent searches when the user has erased everything.
-  // on the searchbar.
-  showRecentSearchesFn() {
-    // If the user has tapped one of the recent searches then.
-    // do show the recent searches tab
-    if (!recentSearchTapped) {
-      setState(() {
-        showRecentSearches = true;
-      });
-    }
-    return recentSearchTapped
-        ? 110.0
-        : MediaQuery.of(context).size.height - 310.0;
+  /// A function that receives the GoogleMapController when the map is rendered on the page.
+  /// and adds google markers dynamically.
+  void mapCreated(GoogleMapController controller) {
+    mapController = controller;
+    _customInfoWindowController.googleMapController = controller;
   }
 
   @override
@@ -114,6 +90,8 @@ class _SearchPageState extends State<SearchPage> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    mapController.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -133,7 +111,6 @@ class _SearchPageState extends State<SearchPage> {
         ?
         // Gets the suggestions by making an api call to the Places Api.
         getSuggestion(searchBarController.text)
-        // ignore: unnecessary_statements
         // ignore: unnecessary_statements
         : () {};
   }
@@ -178,11 +155,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
 // When user clicks on a recent search and the booking tab shows up.
-//  he/she wants to change to another location, hide the booking tab.
+//  then he/she wants to change to another location, hide the booking tab.
   void showSuggestionFn() {
     setState(() {
       showSuggestion = true;
       showBookNowTab = false;
+      _customInfoWindowController.hideInfoWindow();
     });
   }
 
@@ -190,24 +168,12 @@ class _SearchPageState extends State<SearchPage> {
   void clearPlaceList(address) {
     setState(() {
       showSuggestion = false;
-      _placeList.clear();
-      searchBarController.text = address;
     });
-  }
-
-  createMarker(context) {
-    ImageConfiguration configuration = createLocalImageConfiguration(context);
-    BitmapDescriptor.fromAssetImage(
-            configuration, 'assets/images/pin_icons/destination_map_marker.png')
-        .then((icon) {
-      setState() {
-        customIcon = icon;
-      }
-    });
+    searchBarController.text = address;
+    _placeList.clear();
   }
 
   Widget build(BuildContext context) {
-    createMarker(context);
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab
@@ -228,23 +194,9 @@ class _SearchPageState extends State<SearchPage> {
                 )
               : null,
           body: Stack(children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomGesturesEnabled: true,
-                zoomControlsEnabled: true,
-                markers: Set.from(allMarkers),
-                onMapCreated: mapCreated,
-                mapType: MapType.normal,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height - 370),
-              ),
-            ),
+            GoogleMapWidget(
+                mapCreated: mapCreated,
+                customInfoWindowController: _customInfoWindowController),
             // The rating pop up shown at the end of the parking session.
             showRatingTab
                 ? RatingTab(
@@ -259,7 +211,7 @@ class _SearchPageState extends State<SearchPage> {
                         ? MediaQuery.of(context).size.height - 310.0
                         : _placeList.length > 0
                             ? 400.0
-                            : showRecentSearchesFn(),
+                            : 110.0,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -351,6 +303,12 @@ class _SearchPageState extends State<SearchPage> {
                     searchBarControllerText: searchBarController.text,
                   )
                 : Container(),
+            // Add CustomInfoWindow as next child to float this on top GoogleMap.
+            CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 50,
+                width: 150,
+                offset: 32),
           ])),
     );
   }
@@ -389,7 +347,7 @@ class _SearchPageState extends State<SearchPage> {
         specificLocation: values[0],
         town: values[1] == null ? 'None' : values[1],
         setShowRecentSearches: () {},
-        controller: _controller,
+        controller: mapController,
         newSearch: true,
         clearPlaceListFn: clearPlaceList,
         context: context);

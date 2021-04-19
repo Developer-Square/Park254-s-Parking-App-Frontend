@@ -69,7 +69,9 @@ class NearByParkingList extends StatelessWidget {
       if (large) {
         hideAllDetails();
       }
-      cameraAnimate(mapController, parkingData);
+      final latitude = parkingData.locationCoords.latitude;
+      final longitude = parkingData.locationCoords.longitude;
+      cameraAnimate(mapController, latitude, longitude);
       showNearbyParking();
       customInfoWindowController.addInfoWindow(
           InfoWindowWidget(value: parkingData), parkingData.locationCoords);

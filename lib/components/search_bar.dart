@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import '../config/globals.dart' as globals;
 
