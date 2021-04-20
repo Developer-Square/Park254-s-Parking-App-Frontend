@@ -39,14 +39,14 @@ class Booking extends StatefulWidget {
   final String address;
   static const routeName = '/booking';
 
-  Booking({
-    @required this.bookingNumber,
-    @required this.destination,
-    @required this.parkingLotNumber,
-    @required this.price,
-    @required this.imagePath,
-    @required this.address,
-  });
+  Booking(
+      {@required this.bookingNumber,
+      @required this.destination,
+      @required this.parkingLotNumber,
+      @required this.price,
+      @required this.imagePath,
+      @required this.address});
+
 
   @override
   _BookingState createState() => _BookingState();

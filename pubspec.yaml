@@ -32,6 +32,9 @@ dependencies:
   percent_indicator: "^2.1.7+2"
   clippy_flutter: ^1.1.1
   custom_info_window: ^0.0.4
+  camera: ^0.5.2+1
+  path_provider: ^1.6.28
+  path: ^1.7.0
   
 dev_dependencies:
   flutter_test:

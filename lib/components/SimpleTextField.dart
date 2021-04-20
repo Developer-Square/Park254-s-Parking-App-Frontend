@@ -14,13 +14,21 @@ class SimpleTextField extends StatelessWidget{
   final Color textColor;
   final FontWeight fontWeight;
   final String initialValue;
+  final InputDecoration decoration;
+  final bool decorate;
+  final TextInputType keyboardType;
+  final bool alignLeft;
 
   SimpleTextField({
     this.controller,
     this.capitalize,
     this.textColor,
     this.fontWeight,
-    this.initialValue
+    this.initialValue,
+    this.decoration,
+    this.decorate,
+    this.keyboardType,
+    this.alignLeft
   });
 
   @override
@@ -32,11 +40,12 @@ class SimpleTextField extends StatelessWidget{
           color: textColor == globals.textColor ? globals.textColor : textColor,
           fontWeight: fontWeight == FontWeight.bold ? FontWeight.bold : FontWeight.normal
       ),
-      textAlign: TextAlign.right,
+      textAlign: alignLeft ? TextAlign.left : TextAlign.right,
       autocorrect: true,
       textCapitalization: capitalize == TextCapitalization.characters ? TextCapitalization.characters : TextCapitalization.sentences,
-      decoration: InputDecoration.collapsed(hintText: null),
+      decoration: decorate ? decoration : InputDecoration.collapsed(hintText: null),
       initialValue: initialValue,
+      keyboardType: keyboardType,
     );
   }
 }
