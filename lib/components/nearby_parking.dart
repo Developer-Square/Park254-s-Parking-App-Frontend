@@ -20,9 +20,9 @@ class NearByParking extends StatefulWidget {
   NearByParking(
       {@required this.showNearByParkingFn,
       @required this.hideDetails,
-      this.mapController,
-      this.customInfoWindowController,
-      this.showFullBackground});
+      @required this.mapController,
+      @required this.customInfoWindowController,
+      @required this.showFullBackground});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();

@@ -140,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? TopPageStyling(
                       searchBarController: searchBarController,
                       currentPage: 'home',
+                      widget: null,
                     )
                   : Container(),
               showMap

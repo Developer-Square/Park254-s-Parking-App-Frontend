@@ -73,18 +73,7 @@ flutter:
     - assets/images/Logo/PARK_254_1000x400_wht.png
     - assets/images/Logo/PARK_254_1000x400_wht-01.svg
     - assets/images/Logo/PARK_254_1000x400-01.svg
-    - assets/images/pin_icons/location-pin.svg
-    - assets/images/pin_icons/car-parking-icon-1.svg
     - assets/images/pin_icons/car-parking-icon-2.svg
-    - assets/images/pin_icons/car-parking-icon-3.svg
-    - assets/images/pin_icons/car-parking-icon-4.svg
-    - assets/images/pin_icons/car-parking-icon-5.svg
-    - assets/images/pin_icons/green_pin_2.png
-    - assets/images/pin_icons/green_pin_3.png
-    - assets/images/pin_icons/destination_map_marker.png
-    - assets/images/pin_icons/maps-and-flags.png
-    - assets/images/pin_icons/current location.png
-    - assets/svgs/map_pinpoint.svg
     - assets/images/qrcode.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
