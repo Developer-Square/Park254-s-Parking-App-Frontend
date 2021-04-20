@@ -46,7 +46,9 @@ class _BookingTabState extends State<BookingTab> {
                   activeCard: false,
                   imgPath: 'assets/images/parking_photos/parking_9.jpg',
                   parkingPrice: 400,
-                  parkingPlaceName: widget.searchBarControllerText,
+                  parkingPlaceName: widget.searchBarControllerText.length > 20
+                      ? widget.searchBarControllerText.substring(0, 20) + '...'
+                      : widget.searchBarControllerText,
                   rating: 4.2,
                   distance: 350,
                   parkingSlots: 6),

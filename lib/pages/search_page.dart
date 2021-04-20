@@ -3,6 +3,7 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
@@ -41,7 +42,6 @@ class _SearchPageState extends State<SearchPage> {
   List<dynamic> _placeList = [];
   bool showSuggestion;
   BitmapDescriptor customIcon;
-  bool recentSearchTapped;
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
 
@@ -56,7 +56,6 @@ class _SearchPageState extends State<SearchPage> {
     showBookNowTab = false;
     showRatingTab = false;
     showSuggestion = true;
-    recentSearchTapped = false;
     searchBarController.text = _searchText;
 
     // Start listening to changes.
@@ -66,15 +65,16 @@ class _SearchPageState extends State<SearchPage> {
 // Hides the recent searches when one of them is clicked and.
 // sets the searchbar text to the clicked recent search.
 // Displays booknow tab and dismisses the keyboard.
-// It also clears all the suggestions
-  void _setShowRecentSearches(searchText) {
+// It also redirects the user to the chosen location.
+  void _setShowRecentSearches(
+      searchText, town, controller, clearPlaceListFn, context) {
     setState(() {
       searchBarController.text = searchText;
       showRecentSearches = false;
       showBookNowTab = true;
       showSuggestion = false;
-      recentSearchTapped = true;
     });
+    getLocation(searchText + ',' + town, controller, clearPlaceList, context);
     FocusScope.of(context).unfocus();
   }
 
@@ -208,7 +208,7 @@ class _SearchPageState extends State<SearchPage> {
                 ? Container(
                     // Hides all the recent searches if one of them are clicked.
                     height: showRecentSearches
-                        ? MediaQuery.of(context).size.height - 310.0
+                        ? MediaQuery.of(context).size.height - 390.0
                         : _placeList.length > 0
                             ? 400.0
                             : 110.0,
@@ -248,33 +248,24 @@ class _SearchPageState extends State<SearchPage> {
                                             fontSize: 15.0),
                                       ),
                                       SizedBox(height: 30.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parking on Wabera St',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'First Church of Christ',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parklands Ave, Nairobi',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parklands Ave, Nairobi',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
+                                      SizedBox(
+                                          height: 200.0,
+                                          child: ListView.builder(
+                                              itemCount: parkingPlaces.length,
+                                              itemBuilder: (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    RecentSearches(
+                                                        specificLocation:
+                                                            parkingPlaces[index]
+                                                                .parkingPlaceName,
+                                                        town: 'Nairobi',
+                                                        setShowRecentSearches:
+                                                            _setShowRecentSearches),
+                                                    SizedBox(height: 20.0),
+                                                  ],
+                                                );
+                                              })),
                                     ],
                                   )
                                 // Display suggestions available.

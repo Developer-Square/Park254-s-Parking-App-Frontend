@@ -38,7 +38,8 @@ class RecentSearches extends StatelessWidget {
         newSearch == true
             ? getLocation(specificLocation + ',' + town, controller,
                 clearPlaceListFn, context)
-            : setShowRecentSearches(specificLocation);
+            : setShowRecentSearches(
+                specificLocation, town, controller, clearPlaceListFn, context);
       },
       child: Row(children: <Widget>[
         // If the user is typing in a new location.
