@@ -3,6 +3,7 @@ import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/functions/users/getUsers.dart';
+import 'package:park254_s_parking_app/functions/users/updateUser.dart';
 import 'package:park254_s_parking_app/models/queryUsers.model.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 
@@ -28,7 +29,8 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureUser = getUserById(token, '6079391163b8370020aa6fdd');
+    futureUser =
+        updateUser(token, '6079391163b8370020aa6fdd', name: "Sebastian");
     futureUsers = getUsers(
       token,
       role: 'vendor',
