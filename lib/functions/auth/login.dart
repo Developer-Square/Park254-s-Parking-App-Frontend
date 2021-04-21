@@ -6,7 +6,10 @@ import '../../config/globals.dart' as globals;
 
 import '../../models/userWithToken.model.dart';
 
-Future<UserWithToken> login(String email, String password) async {
+Future<UserWithToken> login(
+  String email,
+  String password,
+) async {
   final url = Uri.parse('${globals.apiUrl}/v1/auth/login');
   final response = await http.post(
     url,

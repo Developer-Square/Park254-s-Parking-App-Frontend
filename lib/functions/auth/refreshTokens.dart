@@ -5,7 +5,9 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/AccessAndRefreshTokens.model.dart';
 import '../../config/globals.dart' as globals;
 
-Future<AccessAndRefreshTokens> refreshTokens(String refreshToken) async {
+Future<AccessAndRefreshTokens> refreshTokens(
+  String refreshToken,
+) async {
   final url = Uri.parse('${globals.apiUrl}/v1/auth/refresh-tokens');
   final response = await http.post(
     url,
