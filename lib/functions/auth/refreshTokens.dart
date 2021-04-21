@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/AccessAndRefreshTokens.model.dart';
+import 'package:park254_s_parking_app/models/accessAndRefreshTokens.model.dart';
 import '../../config/globals.dart' as globals;
 
 Future<AccessAndRefreshTokens> refreshTokens(

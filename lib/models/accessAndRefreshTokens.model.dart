@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './token.model.dart';
+import 'token.model.dart';
 
 class AccessAndRefreshTokens {
   final Token accessToken;
