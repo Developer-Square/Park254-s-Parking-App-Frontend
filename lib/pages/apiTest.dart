@@ -1,8 +1,10 @@
 import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
+import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/functions/users/getUsers.dart';
 import 'package:park254_s_parking_app/models/queryUsers.model.dart';
+import 'package:park254_s_parking_app/models/user.model.dart';
 
 import '../models/userWithToken.model.dart';
 
@@ -14,19 +16,22 @@ class ApiTest extends StatefulWidget {
 }
 
 class _ApiTestState extends State<ApiTest> {
-  Future<UserWithToken> futureUser;
+  Future<User> futureUser;
   Future<QueryUsers> futureUsers;
   final String name = 'john';
   final String email = 'john@example.com';
   final String password = 'password1';
   final String role = 'vendor';
+  final String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwMTk4NDgsImV4cCI6MTYxOTAzNzg0OCwidHlwZSI6ImFjY2VzcyJ9.g6IgJIe8rxcHXLSVg1AOuIOiGlcIO1-UOGnLdvaxYAc';
 
   @override
   void initState() {
     super.initState();
-    futureUser = login(email, password);
+    futureUser = getUserById(token, '6079391163b8370020aa6fdd');
     futureUsers = getUsers(
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwMTY5MTQsImV4cCI6MTYxOTAzNDkxNCwidHlwZSI6ImFjY2VzcyJ9.IbKRV8t-A4HA3prSwsIp-GlE-7aOo43ABl6eIDDmaPw',
+      token,
+      role: 'vendor',
     );
   }
 
@@ -38,18 +43,17 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<QueryUsers>(
+          child: FutureBuilder<User>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(snapshot.data.users.first.name),
-                  Text(snapshot.data.page.toString()),
-                  Text(snapshot.data.limit.toString()),
-                  Text(snapshot.data.totalPages.toString()),
-                  Text(snapshot.data.totalResults.toString()),
+                  Text(snapshot.data.name),
+                  Text(snapshot.data.id),
+                  Text(snapshot.data.email),
+                  Text(snapshot.data.role),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -58,7 +62,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureUsers,
+        future: futureUser,
       )),
     );
   }
