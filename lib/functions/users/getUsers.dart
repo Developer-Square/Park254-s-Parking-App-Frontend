@@ -7,13 +7,13 @@ import 'package:park254_s_parking_app/models/queryUsers.model.dart';
 import '../../config/globals.dart' as globals;
 
 Future<QueryUsers> getUsers(
-  String name,
-  String role,
-  String sortBy,
-  int limit,
-  int page,
-  String token,
-) async {
+  String token, {
+  String name = '',
+  String role = '',
+  String sortBy = '',
+  int limit = 10,
+  int page = 1,
+}) async {
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json", // or whatever
     HttpHeaders.authorizationHeader: "Bearer $token",
@@ -25,6 +25,7 @@ Future<QueryUsers> getUsers(
     "limit": limit.toString(),
     "page": page.toString(),
   };
+  queryParameters.removeWhere((key, value) => value == '');
   final url = Uri.https(globals.httpsUrl, '/v1/users', queryParameters);
   final response = await http.get(url, headers: headers);
 

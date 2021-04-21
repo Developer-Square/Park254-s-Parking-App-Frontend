@@ -20,33 +20,13 @@ class _ApiTestState extends State<ApiTest> {
   final String email = 'john@example.com';
   final String password = 'password1';
   final String role = 'vendor';
-  String refreshToken = '';
-  bool loggedIn = true;
-
-  void updateLogin(String token) {
-    setState(() {
-      refreshToken = token;
-      loggedIn = true;
-    });
-  }
-
-  void updateLogout() {
-    setState(() {
-      loggedIn = false;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     futureUser = login(email, password);
     futureUsers = getUsers(
-      name,
-      "admin",
-      "desc",
-      10,
-      1,
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTg5OTk3MjQsImV4cCI6MTYxOTAxNzcyNCwidHlwZSI6ImFjY2VzcyJ9.KwD03EA7jEL-2GwJ-jFrr9y0y4vtGGu7mHIKhXcjifE',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwMTY5MTQsImV4cCI6MTYxOTAzNDkxNCwidHlwZSI6ImFjY2VzcyJ9.IbKRV8t-A4HA3prSwsIp-GlE-7aOo43ABl6eIDDmaPw',
     );
   }
 
