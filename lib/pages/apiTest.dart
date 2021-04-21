@@ -1,4 +1,6 @@
+import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
 import 'package:park254_s_parking_app/functions/login.dart';
+import 'package:park254_s_parking_app/functions/logout.dart';
 
 import '../models/userWithToken.model.dart';
 
@@ -15,6 +17,21 @@ class _ApiTestState extends State<ApiTest> {
   final String email = 'john@example.com';
   final String password = 'password1';
   final String role = 'vendor';
+  String refreshToken = '';
+  bool loggedIn = true;
+
+  void updateLogin(String token) {
+    setState(() {
+      refreshToken = token;
+      loggedIn = true;
+    });
+  }
+
+  void updateLogout() {
+    setState(() {
+      loggedIn = false;
+    });
+  }
 
   @override
   void initState() {
@@ -30,32 +47,44 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-        child: FutureBuilder<UserWithToken>(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text('name: ${snapshot.data.user.name}'),
-                    Text(snapshot.data.user.email),
-                    Text(snapshot.data.user.id),
-                    Text(snapshot.data.user.role),
-                    Text(snapshot.data.accessToken.token),
-                    Text('${snapshot.data.accessToken.expires}'),
-                    Text(snapshot.data.refreshToken.token),
-                    Text('${snapshot.data.refreshToken.expires}'),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-            }
-            return CircularProgressIndicator();
-          },
-          future: futureUser,
-        ),
+        child: loggedIn
+            ? FutureBuilder<UserWithToken>(
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      updateLogin(snapshot.data.refreshToken.token);
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('name: ${snapshot.data.user.name}'),
+                          Text(snapshot.data.user.email),
+                          Text(snapshot.data.user.id),
+                          Text(snapshot.data.user.role),
+                          Text(snapshot.data.accessToken.token),
+                          Text('${snapshot.data.accessToken.expires}'),
+                          Text(snapshot.data.refreshToken.token),
+                          Text('${snapshot.data.refreshToken.expires}'),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                  }
+                  return CircularProgressIndicator();
+                },
+                future: futureUser,
+              )
+            : Text('Successfully logged out'),
       ),
+      floatingActionButton: loggedIn
+          ? CustomFloatingActionButton(
+              label: 'logout',
+              onPressed: () {
+                logout(refreshToken);
+                updateLogout();
+              },
+            )
+          : Container(),
     );
   }
 }
