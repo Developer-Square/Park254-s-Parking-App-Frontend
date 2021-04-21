@@ -1,6 +1,7 @@
 import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
+import 'package:park254_s_parking_app/functions/users/deleteUser.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/functions/users/getUsers.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
@@ -30,7 +31,7 @@ class _ApiTestState extends State<ApiTest> {
   void initState() {
     super.initState();
     futureUser =
-        updateUser(token, '6079391163b8370020aa6fdd', name: "Sebastian");
+        updateUser(token, '60793c6363b8370020aa6fdf', name: "Sebastian");
     futureUsers = getUsers(
       token,
       role: 'vendor',
