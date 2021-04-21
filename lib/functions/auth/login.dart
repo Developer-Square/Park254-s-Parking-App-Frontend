@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:park254_s_parking_app/functions/handleError.dart';
-import '../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/functions/utils/handleError.dart';
+import '../../config/globals.dart' as globals;
 
-import '../models/userWithToken.model.dart';
+import '../../models/userWithToken.model.dart';
 
 Future<UserWithToken> login(String email, String password) async {
   final url = Uri.parse('${globals.apiUrl}/v1/auth/login');

@@ -1,6 +1,6 @@
 import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
-import 'package:park254_s_parking_app/functions/login.dart';
-import 'package:park254_s_parking_app/functions/logout.dart';
+import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/functions/auth/logout.dart';
 
 import '../models/userWithToken.model.dart';
 
