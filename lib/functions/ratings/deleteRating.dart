@@ -5,18 +5,21 @@ import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import '../../config/globals.dart' as globals;
 
-Future<void> deleteRating({
+/// Deletes a rating
+///
+/// Requires: [token], [ratingId]
+Future<String> deleteRating({
   @required String token,
-  @required String parkingLotId,
+  @required String ratingId,
 }) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
   };
-  final url = Uri.https(globals.httpsUrl, '/v1/ratings/$parkingLotId');
+  final url = Uri.https(globals.httpsUrl, '/v1/ratings/$ratingId');
   final response = await http.delete(url, headers: headers);
 
   if (response.statusCode == 200) {
-    throw 'success';
+    return 'success';
   } else {
     handleError(response.body);
   }

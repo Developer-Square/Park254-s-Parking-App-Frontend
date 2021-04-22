@@ -7,6 +7,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Get nearby parking lots with distance from location
+///
+/// Returns [NearbyParkingLots]
+/// Requires: [token], [longitude], [latitude]
+/// optional param: [maxDistance] default=5
 Future<NearbyParkingLots> getNearbyParkingLots({
   @required String token,
   @required num longitude,

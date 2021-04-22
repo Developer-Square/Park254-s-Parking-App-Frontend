@@ -7,6 +7,10 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Creates a new parking lot
+///
+/// Returns [ParkingLot]
+/// Requires: [owner], [name], [spaces], [longitude], [latitude], [images], [token]
 Future<ParkingLot> createParkingLot({
   @required String owner,
   @required String name,

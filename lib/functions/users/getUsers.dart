@@ -7,6 +7,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/queryUsers.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets users based on filter values
+///
+/// Returns [QueryUsers]
+/// Requires [token]
+/// Filter params: [name], [role], [sortBy], [limit], [page]
 Future<QueryUsers> getUsers({
   @required String token,
   String name = '',

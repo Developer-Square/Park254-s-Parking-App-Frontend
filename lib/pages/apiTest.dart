@@ -49,10 +49,6 @@ class _ApiTestState extends State<ApiTest> {
       token: token,
       ratingId: '60818860d573ef0020d468ac',
     );
-    deleteRating(
-      token: token,
-      parkingLotId: '60818860d573ef0020d468ac',
-    );
   }
 
   @override

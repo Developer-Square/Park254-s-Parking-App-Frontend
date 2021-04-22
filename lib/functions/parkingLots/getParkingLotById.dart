@@ -7,6 +7,10 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Get parking lot using id
+///
+/// Returns [ParkingLot]
+/// Requires: [token], [parkingLotId]
 Future<ParkingLot> getParkingLotById({
   @required String token,
   @required String parkingLotId,

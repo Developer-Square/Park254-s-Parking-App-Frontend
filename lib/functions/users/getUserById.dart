@@ -7,6 +7,10 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets a user using their id
+///
+/// Returns [User]
+/// Requires: [token], [userId]
 Future<User> getUserById({
   @required String token,
   @required String userId,

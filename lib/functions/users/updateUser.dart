@@ -7,6 +7,10 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Updates user's [email], [name], or [role]
+///
+/// Returns [User]
+/// Requires: [token], [userId]
 Future<User> updateUser({
   @required String token,
   @required String userId,

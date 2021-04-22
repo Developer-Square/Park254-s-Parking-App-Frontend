@@ -7,6 +7,10 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/rating.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Creates a new rating
+///
+/// Returns [Rating]
+/// Requires: [userId], [parkingLotId], [value], [token]
 Future<Rating> createRating({
   @required String userId,
   @required String parkingLotId,

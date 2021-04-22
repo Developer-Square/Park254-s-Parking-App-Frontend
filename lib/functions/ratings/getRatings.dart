@@ -7,6 +7,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/queryRatings.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets ratings based on filters
+///
+/// Returns [QueryRatings]
+/// Requires [token]
+/// Optional filter params: [userId], [parkingLotId], [sortBy], [limit], [page]
 Future<QueryRatings> getRatings({
   @required String token,
   String userId = '',

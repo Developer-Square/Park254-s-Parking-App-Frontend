@@ -7,6 +7,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Updates parking lot details using Id
+///
+/// Returns the [ParkingLot]
+/// Requires: [token], [parkingLotId]
+/// Optional params: [name], [owner], [spaces], [longitude], [latitude], [images]
 Future<ParkingLot> updateParkingLot({
   @required String token,
   @required String parkingLotId,

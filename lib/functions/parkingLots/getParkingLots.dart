@@ -7,6 +7,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/queryParkingLots.models.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets parking lots based on filters
+///
+/// Returns [QueryParkingLots]
+/// Requires: [token]
+/// Optional filter params: [name], [owner], [sortBy], [limit], [page]
 Future<QueryParkingLots> getParkingLots({
   @required String token,
   String name = '',
