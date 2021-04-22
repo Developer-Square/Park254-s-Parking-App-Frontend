@@ -1,4 +1,5 @@
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
@@ -33,10 +34,13 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureParkingLot = updateParkingLot(
+    deleteParkingLot(
       token: token,
-      parkingLotId: '60813c3660d11c0020639017',
-      name: "Holy Minor Basilica Basement Parking",
+      parkingLotId: "60813f1e60d11c0020639019",
+    );
+    futureParkingLot = getParkingLotById(
+      token: token,
+      parkingLotId: '60813f1e60d11c0020639019',
     );
   }
 
