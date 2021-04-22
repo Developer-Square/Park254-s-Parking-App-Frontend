@@ -1,8 +1,10 @@
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/models/queryParkingLots.models.dart';
 
 class ApiTest extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class ApiTest extends StatefulWidget {
 
 class _ApiTestState extends State<ApiTest> {
   Future<ParkingLot> futureParkingLot;
+  Future<QueryParkingLots> futureParkingLots;
   final String name = 'MHS Parking Lot';
   final String owner = '60793ea363b8370020aa6fe3';
   final int spaces = 800;
@@ -28,15 +31,7 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureParkingLot = createParkingLot(
-      owner: owner,
-      name: name,
-      spaces: spaces,
-      longitude: longitude,
-      latitude: latitude,
-      images: images,
-      token: token,
-    );
+    futureParkingLots = getParkingLots(token: token);
   }
 
   @override
@@ -47,24 +42,25 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<ParkingLot>(
+          child: FutureBuilder<QueryParkingLots>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(snapshot.data.name),
-                  Text(snapshot.data.id),
-                  Text(snapshot.data.spaces.toString()),
-                  Text(snapshot.data.images.first),
-                  Text(snapshot.data.location.type),
-                  Text(snapshot.data.location.id),
-                  Text(snapshot.data.location.coordinates.first.toString()),
-                  Text(snapshot.data.location.coordinates.last.toString()),
-                  Text(snapshot.data.ratingCount.toString()),
-                  Text(snapshot.data.ratingValue.toString()),
-                  Text(snapshot.data.rating.toString()),
+                  Text(snapshot.data.parkingLots.first.id),
+                  Text(snapshot.data.parkingLots.first.name),
+                  Text(snapshot.data.parkingLots.first.owner),
+                  Text(snapshot
+                      .data.parkingLots.first.location.coordinates.first
+                      .toString()),
+                  Text(snapshot.data.parkingLots.first.location.coordinates.last
+                      .toString()),
+                  Text(snapshot.data.limit.toString()),
+                  Text(snapshot.data.page.toString()),
+                  Text(snapshot.data.totalPages.toString()),
+                  Text(snapshot.data.totalResults.toString()),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -73,7 +69,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureParkingLot,
+        future: futureParkingLots,
       )),
     );
   }
