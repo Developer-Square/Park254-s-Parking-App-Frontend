@@ -5,6 +5,7 @@ import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.da
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:park254_s_parking_app/functions/ratings/createRatings.dart';
+import 'package:park254_s_parking_app/functions/ratings/deleteRating.dart';
 import 'package:park254_s_parking_app/functions/ratings/getRatingById.dart';
 import 'package:park254_s_parking_app/functions/ratings/getRatings.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
@@ -44,8 +45,14 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureRating =
-        getRatingById(token: token, ratingId: '60818860d573ef0020d468ac');
+    futureRating = getRatingById(
+      token: token,
+      ratingId: '60818860d573ef0020d468ac',
+    );
+    deleteRating(
+      token: token,
+      parkingLotId: '60818860d573ef0020d468ac',
+    );
   }
 
   @override
