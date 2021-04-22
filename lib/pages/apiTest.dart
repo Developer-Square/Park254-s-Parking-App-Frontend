@@ -1,14 +1,6 @@
-import 'package:park254_s_parking_app/components/CustomFloatingActionButton.dart';
-import 'package:park254_s_parking_app/functions/auth/login.dart';
-import 'package:park254_s_parking_app/functions/auth/logout.dart';
-import 'package:park254_s_parking_app/functions/users/deleteUser.dart';
-import 'package:park254_s_parking_app/functions/users/getUserById.dart';
-import 'package:park254_s_parking_app/functions/users/getUsers.dart';
-import 'package:park254_s_parking_app/functions/users/updateUser.dart';
-import 'package:park254_s_parking_app/models/queryUsers.model.dart';
-import 'package:park254_s_parking_app/models/user.model.dart';
-
-import '../models/userWithToken.model.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
+import 'package:park254_s_parking_app/models/location.model.dart';
+import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
 import 'package:flutter/material.dart';
 
@@ -18,23 +10,32 @@ class ApiTest extends StatefulWidget {
 }
 
 class _ApiTestState extends State<ApiTest> {
-  Future<User> futureUser;
-  Future<QueryUsers> futureUsers;
-  final String name = 'john';
-  final String email = 'john@example.com';
-  final String password = 'password1';
+  Future<ParkingLot> futureParkingLot;
+  final String name = 'MHS Parking Lot';
+  final String owner = '60793ea363b8370020aa6fe3';
+  final int spaces = 800;
+  final num longitude = 36.07784383173969;
+  final num latitude = -0.2860435293491271;
+  final List<String> images = [
+    "https://imageone.com",
+    "https://imagetwo.com",
+    "https://imagethree.com",
+  ];
   final String role = 'vendor';
   final String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwMTk4NDgsImV4cCI6MTYxOTAzNzg0OCwidHlwZSI6ImFjY2VzcyJ9.g6IgJIe8rxcHXLSVg1AOuIOiGlcIO1-UOGnLdvaxYAc';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwODA1MzMsImV4cCI6MTYxOTA5ODUzMywidHlwZSI6ImFjY2VzcyJ9.6dY-CZevxG5klDjO7KgfMWef-9X8Hoexoq2PEqIaCuQ';
 
   @override
   void initState() {
     super.initState();
-    futureUser =
-        updateUser(token, '60793c6363b8370020aa6fdf', name: "Sebastian");
-    futureUsers = getUsers(
-      token,
-      role: 'vendor',
+    futureParkingLot = createParkingLot(
+      owner: owner,
+      name: name,
+      spaces: spaces,
+      longitude: longitude,
+      latitude: latitude,
+      images: images,
+      token: token,
     );
   }
 
@@ -46,7 +47,7 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<User>(
+          child: FutureBuilder<ParkingLot>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
@@ -55,8 +56,15 @@ class _ApiTestState extends State<ApiTest> {
                 children: <Widget>[
                   Text(snapshot.data.name),
                   Text(snapshot.data.id),
-                  Text(snapshot.data.email),
-                  Text(snapshot.data.role),
+                  Text(snapshot.data.spaces.toString()),
+                  Text(snapshot.data.images.first),
+                  Text(snapshot.data.location.type),
+                  Text(snapshot.data.location.id),
+                  Text(snapshot.data.location.coordinates.first.toString()),
+                  Text(snapshot.data.location.coordinates.last.toString()),
+                  Text(snapshot.data.ratingCount.toString()),
+                  Text(snapshot.data.ratingValue.toString()),
+                  Text(snapshot.data.rating.toString()),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -65,7 +73,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureUser,
+        future: futureParkingLot,
       )),
     );
   }
