@@ -5,6 +5,7 @@ import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.da
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:park254_s_parking_app/functions/ratings/createRatings.dart';
+import 'package:park254_s_parking_app/functions/ratings/getRatingById.dart';
 import 'package:park254_s_parking_app/functions/ratings/getRatings.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
@@ -43,7 +44,8 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureRatings = getRatings(token: token);
+    futureRating =
+        getRatingById(token: token, ratingId: '60818860d573ef0020d468ac');
   }
 
   @override
@@ -54,17 +56,17 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<QueryRatings>(
+          child: FutureBuilder<Rating>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(snapshot.data.ratings.first.id),
-                  Text(snapshot.data.ratings.first.userId),
-                  Text(snapshot.data.ratings.first.parkingLotId),
-                  Text(snapshot.data.ratings.first.value.toString()),
+                  Text(snapshot.data.id),
+                  Text(snapshot.data.userId),
+                  Text(snapshot.data.parkingLotId),
+                  Text(snapshot.data.value.toString()),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -73,7 +75,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureRatings,
+        future: futureRating,
       )),
     );
   }
