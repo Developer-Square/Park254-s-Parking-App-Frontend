@@ -208,9 +208,9 @@ class _SearchPageState extends State<SearchPage> {
                 ? Container(
                     // Hides all the recent searches if one of them are clicked.
                     height: showRecentSearches
-                        ? MediaQuery.of(context).size.height - 390.0
+                        ? MediaQuery.of(context).size.height / 2.1
                         : _placeList.length > 0
-                            ? 400.0
+                            ? MediaQuery.of(context).size.height / 1.9
                             : 110.0,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(

@@ -77,6 +77,7 @@ flutter:
     - assets/images/Logo/PARK_254_1000x400_wht-01.svg
     - assets/images/Logo/PARK_254_1000x400-01.svg
     - assets/images/pin_icons/car-parking-icon-2.svg
+    - assets/images/pin_icons/location-pin.svg
     - assets/images/qrcode.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
