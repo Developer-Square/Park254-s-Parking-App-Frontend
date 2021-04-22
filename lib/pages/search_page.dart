@@ -205,88 +205,138 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Hide the search bar when showing the ratings tab
             !showRatingTab
-                ? Container(
-                    // Hides all the recent searches if one of them are clicked.
-                    height: showRecentSearches
-                        ? MediaQuery.of(context).size.height / 2.1
-                        : _placeList.length > 0
-                            ? MediaQuery.of(context).size.height / 1.9
-                            : 110.0,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0)),
+                ? SingleChildScrollView(
+                    child: Container(
+                      // Hides all the recent searches if one of them are clicked.
+                      height: showRecentSearches
+                          ? MediaQuery.of(context).size.height / 2
+                          : _placeList.length > 0
+                              ? MediaQuery.of(context).size.height / 2
+                              : 110.0,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0)),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 15.0),
+                            SearchBar(
+                              offsetY: 4.0,
+                              blurRadius: 6.0,
+                              opacity: 0.5,
+                              controller: searchBarController,
+                              searchBarTapped: true,
+                              showSuggestion: showSuggestion,
+                              showSuggestionFn: showSuggestionFn,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 35.0, top: 25.0),
+                              child: showRecentSearches
+                                  ? SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'RECENT SEARCH',
+                                            style: TextStyle(
+                                                color: Colors.grey
+                                                    .withOpacity(0.8),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0),
+                                          ),
+                                          SizedBox(height: 30.0),
+                                          SizedBox(
+                                              height: 200.0,
+                                              child: ListView.builder(
+                                                  itemCount:
+                                                      parkingPlaces.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Column(
+                                                      children: [
+                                                        RecentSearches(
+                                                            specificLocation:
+                                                                parkingPlaces[
+                                                                        index]
+                                                                    .parkingPlaceName,
+                                                            town: 'Nairobi',
+                                                            setShowRecentSearches:
+                                                                _setShowRecentSearches),
+                                                        SizedBox(height: 20.0),
+                                                      ],
+                                                    );
+                                                  })),
+                                        ],
+                                      ),
+                                    )
+                                  // Display suggestions available.
+                                  : _placeList.length > 0
+                                      ? SingleChildScrollView(
+                                          child: SizedBox(
+                                            height: 230.0,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: _placeList.length,
+                                                itemBuilder: (context, index) {
+                                                  return Column(
+                                                    children: [
+                                                      ListTile(
+                                                          title: Row(
+                                                        children: [
+                                                          // If the location has more than 25 letters, slice the word and add '...'
+                                                          _buildSinglePlace(
+                                                              index),
+                                                        ],
+                                                      )),
+                                                      SizedBox(
+                                                        height: 7.0,
+                                                      )
+                                                    ],
+                                                  );
+                                                }),
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding:
+                                              EdgeInsets.only(bottom: 20.0),
+                                        ),
+                            )
+                          ]),
                     ),
+                  )
+                : Container(),
+            // Helper: To inform the user that they can scroll down to see more.
+            // suggestions.
+            showRecentSearches || _placeList.length > 0
+                ? Positioned(
+                    top: MediaQuery.of(context).size.height / 2.3,
+                    right: MediaQuery.of(context).size.width / 4,
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 15.0),
-                          SearchBar(
-                            offsetY: 4.0,
-                            blurRadius: 6.0,
-                            opacity: 0.5,
-                            controller: searchBarController,
-                            searchBarTapped: true,
-                            showSuggestion: showSuggestion,
-                            showSuggestionFn: showSuggestionFn,
+                      children: [
+                        Text(
+                          'Scroll down for more suggestions',
+                          style:
+                              globals.buildTextStyle(12.0, false, Colors.grey),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: globals.textColor),
+                          height: 30,
+                          width: 30,
+                          child: Icon(
+                            Icons.arrow_circle_down_sharp,
+                            color: Colors.white,
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 35.0, top: 25.0),
-                            child: showRecentSearches
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'RECENT SEARCH',
-                                        style: TextStyle(
-                                            color: Colors.grey.withOpacity(0.8),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.0),
-                                      ),
-                                      SizedBox(height: 30.0),
-                                      SizedBox(
-                                          height: 200.0,
-                                          child: ListView.builder(
-                                              itemCount: parkingPlaces.length,
-                                              itemBuilder: (context, index) {
-                                                return Column(
-                                                  children: [
-                                                    RecentSearches(
-                                                        specificLocation:
-                                                            parkingPlaces[index]
-                                                                .parkingPlaceName,
-                                                        town: 'Nairobi',
-                                                        setShowRecentSearches:
-                                                            _setShowRecentSearches),
-                                                    SizedBox(height: 20.0),
-                                                  ],
-                                                );
-                                              })),
-                                    ],
-                                  )
-                                // Display suggestions available.
-                                : _placeList.length > 0
-                                    ? ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: _placeList.length,
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                              title: Row(
-                                            children: [
-                                              // If the location has more than 25 letters, slice the word and add '...'
-                                              _buildSinglePlace(index),
-                                            ],
-                                          ));
-                                        })
-                                    : Padding(
-                                        padding: EdgeInsets.only(bottom: 20.0),
-                                      ),
-                          )
-                        ]),
+                        ),
+                      ],
+                    ),
                   )
                 : Container(),
             showBookNowTab
