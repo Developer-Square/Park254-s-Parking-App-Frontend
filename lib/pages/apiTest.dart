@@ -1,4 +1,5 @@
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
@@ -26,12 +27,13 @@ class _ApiTestState extends State<ApiTest> {
   ];
   final String role = 'vendor';
   final String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwODA1MzMsImV4cCI6MTYxOTA5ODUzMywidHlwZSI6ImFjY2VzcyJ9.6dY-CZevxG5klDjO7KgfMWef-9X8Hoexoq2PEqIaCuQ';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDc5NTVlYTA4YzE1OTAwMjAzZGZlYjciLCJpYXQiOjE2MTkwODUxNDYsImV4cCI6MTYxOTEwMzE0NiwidHlwZSI6ImFjY2VzcyJ9.Dw52vmgyi5xGFciyk-5AvajvKFMj6F8o6U8yFlX5AOw';
 
   @override
   void initState() {
     super.initState();
-    futureParkingLots = getParkingLots(token: token);
+    futureParkingLot = getParkingLotById(
+        token: token, parkingLotId: '60813c3660d11c0020639017');
   }
 
   @override
@@ -42,25 +44,16 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<QueryParkingLots>(
+          child: FutureBuilder<ParkingLot>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(snapshot.data.parkingLots.first.id),
-                  Text(snapshot.data.parkingLots.first.name),
-                  Text(snapshot.data.parkingLots.first.owner),
-                  Text(snapshot
-                      .data.parkingLots.first.location.coordinates.first
-                      .toString()),
-                  Text(snapshot.data.parkingLots.first.location.coordinates.last
-                      .toString()),
-                  Text(snapshot.data.limit.toString()),
-                  Text(snapshot.data.page.toString()),
-                  Text(snapshot.data.totalPages.toString()),
-                  Text(snapshot.data.totalResults.toString()),
+                  Text(snapshot.data.id),
+                  Text(snapshot.data.name),
+                  Text(snapshot.data.owner),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -69,7 +62,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureParkingLots,
+        future: futureParkingLot,
       )),
     );
   }
