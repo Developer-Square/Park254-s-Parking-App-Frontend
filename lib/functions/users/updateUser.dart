@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 import '../../config/globals.dart' as globals;
 
-Future<User> updateUser(
-  String token,
-  String userId, {
+Future<User> updateUser({
+  @required String token,
+  @required String userId,
   String name = '',
   String email = '',
   String role = '',

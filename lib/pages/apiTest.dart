@@ -1,6 +1,7 @@
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
@@ -32,8 +33,11 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureParkingLot = getParkingLotById(
-        token: token, parkingLotId: '60813c3660d11c0020639017');
+    futureParkingLot = updateParkingLot(
+      token: token,
+      parkingLotId: '60813c3660d11c0020639017',
+      name: "Holy Minor Basilica Basement Parking",
+    );
   }
 
   @override
