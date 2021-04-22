@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/queryUsers.model.dart';
+import 'package:park254_s_parking_app/models/queryRatings.model.dart';
 import '../../config/globals.dart' as globals;
 
-Future<QueryUsers> getUsers({
+Future<QueryRatings> getRatings({
   @required String token,
-  String name = '',
-  String role = '',
+  String userId = '',
+  String parkingLotId = '',
   String sortBy = '',
   int limit = 10,
   int page = 1,
@@ -20,18 +20,18 @@ Future<QueryUsers> getUsers({
     HttpHeaders.authorizationHeader: "Bearer $token",
   };
   Map<String, String> queryParameters = {
-    "name": name,
-    "role": role,
+    "userId": userId,
+    "parkingLotId": parkingLotId,
     "sortBy": sortBy,
     "limit": limit.toString(),
     "page": page.toString(),
   };
   queryParameters.removeWhere((key, value) => value == '');
-  final url = Uri.https(globals.httpsUrl, '/v1/users', queryParameters);
+  final url = Uri.https(globals.httpsUrl, '/v1/ratings', queryParameters);
   final response = await http.get(url, headers: headers);
 
   if (response.statusCode == 200) {
-    final results = QueryUsers.fromJson(jsonDecode(response.body));
+    final results = QueryRatings.fromJson(jsonDecode(response.body));
     return results;
   } else {
     handleError(response.body);

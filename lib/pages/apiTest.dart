@@ -5,12 +5,14 @@ import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.da
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:park254_s_parking_app/functions/ratings/createRatings.dart';
+import 'package:park254_s_parking_app/functions/ratings/getRatings.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/queryParkingLots.models.dart';
+import 'package:park254_s_parking_app/models/queryRatings.model.dart';
 import 'package:park254_s_parking_app/models/rating.model.dart';
 
 class ApiTest extends StatefulWidget {
@@ -23,6 +25,7 @@ class _ApiTestState extends State<ApiTest> {
   Future<QueryParkingLots> futureParkingLots;
   Future<NearbyParkingLots> futureNearbyParkingLots;
   Future<Rating> futureRating;
+  Future<QueryRatings> futureRatings;
   final String name = 'MHS Parking Lot';
   final String owner = '60793ea363b8370020aa6fe3';
   final int spaces = 800;
@@ -40,12 +43,7 @@ class _ApiTestState extends State<ApiTest> {
   @override
   void initState() {
     super.initState();
-    futureRating = createRating(
-      userId: "607955ea08c15900203dfeb7",
-      parkingLotId: '60813c3660d11c0020639017',
-      value: 4,
-      token: token,
-    );
+    futureRatings = getRatings(token: token);
   }
 
   @override
@@ -56,17 +54,17 @@ class _ApiTestState extends State<ApiTest> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder<Rating>(
+          child: FutureBuilder<QueryRatings>(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(snapshot.data.id),
-                  Text(snapshot.data.userId),
-                  Text(snapshot.data.parkingLotId),
-                  Text(snapshot.data.value.toString()),
+                  Text(snapshot.data.ratings.first.id),
+                  Text(snapshot.data.ratings.first.userId),
+                  Text(snapshot.data.ratings.first.parkingLotId),
+                  Text(snapshot.data.ratings.first.value.toString()),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -75,7 +73,7 @@ class _ApiTestState extends State<ApiTest> {
           }
           return CircularProgressIndicator();
         },
-        future: futureRating,
+        future: futureRatings,
       )),
     );
   }
