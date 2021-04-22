@@ -14,7 +14,6 @@ import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
 import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
-import 'package:park254_s_parking_app/pages/apiTest.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: primaryColor,
         ),
-        home: ApiTest(),
+        home: OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
           '/homepage': (context) => HomePage()
