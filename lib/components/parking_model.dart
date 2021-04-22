@@ -42,6 +42,16 @@ final List<Parking> parkingPlaces = [
       locationCoords: LatLng(-1.285128, 36.821934),
       thumbNail: 'assets/images/parking_photos/parking_1.jpg'),
   Parking(
+      searched: true,
+      price: 10,
+      parkingPlaceName: 'Parking on Wabera St',
+      type: 'PARKING MALL',
+      rating: 4.4,
+      parkingSlots: 5,
+      distance: 345,
+      locationCoords: LatLng(-1.285128, 36.821934),
+      thumbNail: 'assets/images/parking_photos/parking_1.jpg'),
+  Parking(
       searched: false,
       price: 14,
       parkingPlaceName: 'First Church of Christ',

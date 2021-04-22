@@ -211,7 +211,7 @@ class _SearchPageState extends State<SearchPage> {
                       height: showRecentSearches
                           ? MediaQuery.of(context).size.height / 2
                           : _placeList.length > 0
-                              ? MediaQuery.of(context).size.height / 2
+                              ? MediaQuery.of(context).size.height / 1.85
                               : 110.0,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
@@ -242,6 +242,7 @@ class _SearchPageState extends State<SearchPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          SizedBox(height: 40.0),
                                           Text(
                                             'RECENT SEARCH',
                                             style: TextStyle(
@@ -250,9 +251,9 @@ class _SearchPageState extends State<SearchPage> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15.0),
                                           ),
-                                          SizedBox(height: 30.0),
+                                          SizedBox(height: 15.0),
                                           SizedBox(
-                                              height: 200.0,
+                                              height: 170.0,
                                               child: ListView.builder(
                                                   itemCount:
                                                       parkingPlaces.length,
@@ -278,28 +279,35 @@ class _SearchPageState extends State<SearchPage> {
                                   // Display suggestions available.
                                   : _placeList.length > 0
                                       ? SingleChildScrollView(
-                                          child: SizedBox(
-                                            height: 230.0,
-                                            child: ListView.builder(
-                                                shrinkWrap: true,
-                                                itemCount: _placeList.length,
-                                                itemBuilder: (context, index) {
-                                                  return Column(
-                                                    children: [
-                                                      ListTile(
-                                                          title: Row(
+                                          child: Column(
+                                            children: [
+                                              SizedBox(height: 40.0),
+                                              SizedBox(
+                                                height: 230.0,
+                                                child: ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        _placeList.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return Column(
                                                         children: [
-                                                          // If the location has more than 25 letters, slice the word and add '...'
-                                                          _buildSinglePlace(
-                                                              index),
+                                                          ListTile(
+                                                              title: Row(
+                                                            children: [
+                                                              // If the location has more than 25 letters, slice the word and add '...'
+                                                              _buildSinglePlace(
+                                                                  index),
+                                                            ],
+                                                          )),
+                                                          SizedBox(
+                                                            height: 7.0,
+                                                          )
                                                         ],
-                                                      )),
-                                                      SizedBox(
-                                                        height: 7.0,
-                                                      )
-                                                    ],
-                                                  );
-                                                }),
+                                                      );
+                                                    }),
+                                              ),
+                                            ],
                                           ),
                                         )
                                       : Padding(
@@ -315,7 +323,9 @@ class _SearchPageState extends State<SearchPage> {
             // suggestions.
             showRecentSearches || _placeList.length > 0
                 ? Positioned(
-                    top: MediaQuery.of(context).size.height / 2.3,
+                    top: showRecentSearches
+                        ? MediaQuery.of(context).size.height / 9
+                        : MediaQuery.of(context).size.height / 9,
                     right: MediaQuery.of(context).size.width / 4,
                     child: Column(
                       children: [
