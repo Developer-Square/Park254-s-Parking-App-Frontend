@@ -15,7 +15,7 @@ Future<String> deleteParkingLot({
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
   };
-  final url = Uri.https(globals.httpsUrl, '/v1/parkingLots/$parkingLotId');
+  final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.delete(url, headers: headers);
 
   if (response.statusCode == 200) {

@@ -32,7 +32,7 @@ Future<QueryParkingLots> getParkingLots({
     "page": page.toString(),
   };
   queryParameters.removeWhere((key, value) => value == '');
-  final url = Uri.https(globals.httpsUrl, '/v1/parkingLots', queryParameters);
+  final url = Uri.https(globals.apiKey, '/v1/parkingLots', queryParameters);
   final response = await http.get(url, headers: headers);
 
   if (response.statusCode == 200) {

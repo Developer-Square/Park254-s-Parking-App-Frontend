@@ -6,8 +6,7 @@ final Color primaryColor = Color(0xff14eeb5);
 final Color textColor = Color(0xff091a5e);
 final Color backgroundColor = Color(0xFF2BE9BA);
 final Color placeHolderColor = Color(0xFF9FA8AB);
-final String apiUrl = 'https://park254-parking-app-server.herokuapp.com';
-final String httpsUrl = 'park254-parking-app-server.herokuapp.com';
+final String apiKey = 'park254-parking-app-server.herokuapp.com';
 
 buildTextStyle(double fontSize, bool fontWeight, color) {
   return TextStyle(

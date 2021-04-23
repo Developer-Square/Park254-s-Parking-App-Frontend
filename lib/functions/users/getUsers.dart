@@ -32,7 +32,7 @@ Future<QueryUsers> getUsers({
     "page": page.toString(),
   };
   queryParameters.removeWhere((key, value) => value == '');
-  final url = Uri.https(globals.httpsUrl, '/v1/users', queryParameters);
+  final url = Uri.https(globals.apiKey, '/v1/users', queryParameters);
   final response = await http.get(url, headers: headers);
 
   if (response.statusCode == 200) {

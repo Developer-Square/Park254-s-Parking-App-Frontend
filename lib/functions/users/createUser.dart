@@ -22,7 +22,7 @@ Future<User> createUser({
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final Uri url = Uri.https(globals.httpsUrl, '/v1/users');
+  final Uri url = Uri.https(globals.apiKey, '/v1/users');
   final String body = jsonEncode({
     'email': email,
     'role': role,

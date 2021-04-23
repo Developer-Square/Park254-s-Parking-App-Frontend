@@ -8,7 +8,7 @@ import '../../config/globals.dart' as globals;
 
 /// logs out a user using [refreshToken]
 Future<String> logout({@required String refreshToken}) async {
-  final Uri url = Uri.https(globals.httpsUrl, '/v1/auth/login');
+  final Uri url = Uri.https(globals.apiKey, '/v1/auth/login');
   final String body = jsonEncode({'refreshToken': refreshToken});
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",

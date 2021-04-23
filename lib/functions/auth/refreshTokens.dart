@@ -16,7 +16,7 @@ Future<AccessAndRefreshTokens> refreshTokens({
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final Uri url = Uri.https(globals.httpsUrl, '/v1/auth/refresh-tokens');
+  final Uri url = Uri.https(globals.apiKey, '/v1/auth/refresh-tokens');
   final String body = jsonEncode({'refreshToken': refreshToken});
   final response = await http.post(
     url,

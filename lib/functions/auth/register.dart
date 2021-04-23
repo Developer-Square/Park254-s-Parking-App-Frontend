@@ -22,7 +22,7 @@ Future<UserWithToken> register({
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final Uri url = Uri.https(globals.httpsUrl, '/v1/auth/register');
+  final Uri url = Uri.https(globals.apiKey, '/v1/auth/register');
   final String body = jsonEncode({
     'email': email,
     'role': role,

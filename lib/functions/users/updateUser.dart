@@ -27,7 +27,7 @@ Future<User> updateUser({
     "role": role,
   };
   body.removeWhere((key, value) => value == '');
-  final url = Uri.https(globals.httpsUrl, '/v1/users/$userId');
+  final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response = await http.patch(url, headers: headers, body: body);
 
   if (response.statusCode == 200) {

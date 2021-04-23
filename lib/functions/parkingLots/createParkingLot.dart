@@ -24,7 +24,7 @@ Future<ParkingLot> createParkingLot({
     HttpHeaders.authorizationHeader: "Bearer $token",
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final url = Uri.https('${globals.httpsUrl}', '/v1/parkingLots');
+  final url = Uri.https('${globals.apiKey}', '/v1/parkingLots');
   final body = jsonEncode({
     'owner': owner,
     'spaces': spaces.toString(),

@@ -22,7 +22,7 @@ Future<Rating> createRating({
     HttpHeaders.contentTypeHeader: "application/json",
   };
 
-  final url = Uri.https(globals.httpsUrl, '/v1/ratings');
+  final url = Uri.https(globals.apiKey, '/v1/ratings');
   final body = jsonEncode({
     'userId': userId,
     'parkingLotId': parkingLotId,

@@ -17,7 +17,7 @@ Future<String> resetPassword({
     HttpHeaders.contentTypeHeader: "application/json",
   };
   final Uri url = Uri.https(
-    globals.httpsUrl,
+    globals.apiKey,
     '/v1/auth/reset-password?token=$token',
   );
   final String body = jsonEncode({'password': password});

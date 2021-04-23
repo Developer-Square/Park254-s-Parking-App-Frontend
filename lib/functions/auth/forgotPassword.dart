@@ -13,7 +13,7 @@ Future<String> forgotPassword({@required String email}) async {
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final Uri url = Uri.https(globals.httpsUrl, '/v1/auth/forgot-password');
+  final Uri url = Uri.https(globals.apiKey, '/v1/auth/forgot-password');
   final String body = jsonEncode({'email': email});
   final response = await http.post(
     url,
