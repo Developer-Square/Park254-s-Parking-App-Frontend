@@ -11,13 +11,15 @@ import 'load_location.dart';
 /// Requires [allMarkers], [mapController] and [customInfoWindowController].
 class GoogleMapWidget extends StatefulWidget {
   final Function mapCreated;
+  final Function showBookNowTab;
   final CustomInfoWindowController customInfoWindowController;
   final TextEditingController searchBarController;
 
   GoogleMapWidget(
       {@required this.mapCreated,
       @required this.customInfoWindowController,
-      this.searchBarController});
+      this.searchBarController,
+      this.showBookNowTab});
   @override
   _GoogleMapWidgetState createState() => _GoogleMapWidgetState();
 }
@@ -43,6 +45,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
             position: value.locationCoords,
             icon: bitmapDescriptor,
             onTap: () {
+              widget.showBookNowTab('googleMapMarker');
               widget.searchBarController.text = value.parkingPlaceName;
               widget.customInfoWindowController.addInfoWindow(
                   InfoWindowWidget(value: value), value.locationCoords);

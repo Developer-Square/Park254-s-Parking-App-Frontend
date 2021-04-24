@@ -69,10 +69,12 @@ class _SearchPageState extends State<SearchPage> {
   void _setShowRecentSearches(
       searchText, town, controller, clearPlaceListFn, context) {
     setState(() {
-      searchBarController.text = searchText;
       showRecentSearches = false;
       showBookNowTab = true;
       showSuggestion = false;
+      // First remove the suggestions then set the searchBarController to avoid.
+      // the suggestions from showing up.
+      searchBarController.text = searchText;
     });
     getLocation(searchText + ',' + town, controller, clearPlaceList, context);
     FocusScope.of(context).unfocus();
@@ -169,8 +171,14 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       showSuggestion = false;
     });
-    searchBarController.text = address;
     _placeList.clear();
+  }
+
+  // Show the book now tab when a user clicks on a google map marker.
+  showBookNowTabFn(widget) {
+    if (widget != 'bookingTab') {
+      showBookNowTab = true;
+    }
   }
 
   Widget build(BuildContext context) {
@@ -195,6 +203,8 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
+                showBookNowTab: showBookNowTabFn,
+                searchBarController: searchBarController,
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),
             // The rating pop up shown at the end of the parking session.

@@ -61,7 +61,7 @@ class _BookingTabState extends State<BookingTab> {
                           onTap: widget.homeScreen
                               ? () {
                                   widget.showNearbyParking();
-                                  widget.hideMapButtons();
+                                  widget.hideMapButtons('bookingTab');
                                   widget.searchBarController.text = '';
                                 }
                               : () {},

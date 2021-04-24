@@ -81,6 +81,7 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
     _clearPlaceList(address);
+    print('here');
   } catch (e) {
     print(e);
   }

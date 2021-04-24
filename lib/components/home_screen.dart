@@ -116,8 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // This widget is also used to determine when to show the booking tab.
   // i.e. The booking tab will only show if the map buttons aren't being.
   // displayed.
-  void hideMapButtonsFn() {
-    hideMapButtons = !hideMapButtons;
+  void hideMapButtonsFn(widget) {
+    // If the function is being called by the booking tab close icon.
+    // then add hide/show functionality else hide map buttons remains true
+    if (widget == 'bookingTab') {
+      hideMapButtons = !hideMapButtons;
+    } else {
+      hideMapButtons = true;
+    }
   }
 
   @override
@@ -128,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
+                  showBookNowTab: hideMapButtonsFn,
                   mapCreated: mapCreated,
                   customInfoWindowController: _customInfoWindowController,
                   searchBarController: searchBarController),

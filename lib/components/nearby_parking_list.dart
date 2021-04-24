@@ -80,7 +80,7 @@ class NearByParkingList extends StatelessWidget {
       customInfoWindowController.addInfoWindow(
           InfoWindowWidget(value: parkingData), parkingData.locationCoords);
       searchBarController.text = parkingPlaceName;
-      hideMapButtons();
+      hideMapButtons('nearByParkingList');
     }
 
     return InkWell(
