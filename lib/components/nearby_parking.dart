@@ -16,13 +16,17 @@ class NearByParking extends StatefulWidget {
   final GoogleMapController mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
+  final TextEditingController searchBarController;
+  final Function hideMapButtons;
 
   NearByParking(
       {@required this.showNearByParkingFn,
       @required this.hideDetails,
       @required this.mapController,
       @required this.customInfoWindowController,
-      @required this.showFullBackground});
+      @required this.showFullBackground,
+      this.searchBarController,
+      this.hideMapButtons});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -141,23 +145,24 @@ class _NearByParkingState extends State<NearByParking>
           return Column(
             children: [
               NearByParkingList(
-                activeCard: title == selectedCard ? true : false,
-                imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
-                parkingPrice: parkingPlaces[index].price,
-                parkingPlaceName: parkingPlaces[index].parkingPlaceName,
-                rating: parkingPlaces[index].rating,
-                distance: parkingPlaces[index].distance,
-                parkingSlots: parkingPlaces[index].parkingSlots,
-                mapController: widget.mapController,
-                customInfoWindowController: widget.customInfoWindowController,
-                parkingData: parkingPlaces[index],
-                showNearbyParking: widget.showNearByParkingFn,
-                hideAllDetails: _closeFullSizeWidgetRedirection,
-                large: _large,
-                title: title,
-                selectedCard: selectedCard,
-                selectCard: selectCard,
-              ),
+                  activeCard: title == selectedCard ? true : false,
+                  imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
+                  parkingPrice: parkingPlaces[index].price,
+                  parkingPlaceName: parkingPlaces[index].parkingPlaceName,
+                  rating: parkingPlaces[index].rating,
+                  distance: parkingPlaces[index].distance,
+                  parkingSlots: parkingPlaces[index].parkingSlots,
+                  mapController: widget.mapController,
+                  customInfoWindowController: widget.customInfoWindowController,
+                  parkingData: parkingPlaces[index],
+                  showNearbyParking: widget.showNearByParkingFn,
+                  hideAllDetails: _closeFullSizeWidgetRedirection,
+                  large: _large,
+                  title: title,
+                  selectedCard: selectedCard,
+                  selectCard: selectCard,
+                  searchBarController: widget.searchBarController,
+                  hideMapButtons: widget.hideMapButtons),
               SizedBox(height: 20.0)
             ],
           );

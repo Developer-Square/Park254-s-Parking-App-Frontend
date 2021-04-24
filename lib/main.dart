@@ -88,8 +88,7 @@ class MyApp extends StatelessWidget {
                     town: args5.town,
                     specificLocation: args5.specificLocation,
                   ),
-                  BookingTab(
-                      searchBarControllerText: args6.searchBarControllerText)
+                  BookingTab(searchBarController: args6.searchBarControllerText)
                 ],
               );
             });

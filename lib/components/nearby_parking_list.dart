@@ -38,6 +38,8 @@ class NearByParkingList extends StatelessWidget {
   final String selectedCard;
   final String title;
   final Function selectCard;
+  final TextEditingController searchBarController;
+  final Function hideMapButtons;
 
   NearByParkingList(
       {@required this.imgPath,
@@ -55,7 +57,9 @@ class NearByParkingList extends StatelessWidget {
       this.large,
       this.title,
       this.selectedCard,
-      this.selectCard});
+      this.selectCard,
+      this.searchBarController,
+      this.hideMapButtons});
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +79,8 @@ class NearByParkingList extends StatelessWidget {
       showNearbyParking();
       customInfoWindowController.addInfoWindow(
           InfoWindowWidget(value: parkingData), parkingData.locationCoords);
+      searchBarController.text = parkingPlaceName;
+      hideMapButtons();
     }
 
     return InkWell(

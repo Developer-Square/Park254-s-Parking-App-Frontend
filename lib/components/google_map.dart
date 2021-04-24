@@ -12,9 +12,12 @@ import 'load_location.dart';
 class GoogleMapWidget extends StatefulWidget {
   final Function mapCreated;
   final CustomInfoWindowController customInfoWindowController;
+  final TextEditingController searchBarController;
 
   GoogleMapWidget(
-      {@required this.mapCreated, @required this.customInfoWindowController});
+      {@required this.mapCreated,
+      @required this.customInfoWindowController,
+      this.searchBarController});
   @override
   _GoogleMapWidgetState createState() => _GoogleMapWidgetState();
 }
@@ -40,6 +43,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
             position: value.locationCoords,
             icon: bitmapDescriptor,
             onTap: () {
+              widget.searchBarController.text = value.parkingPlaceName;
               widget.customInfoWindowController.addInfoWindow(
                   InfoWindowWidget(value: value), value.locationCoords);
             }),

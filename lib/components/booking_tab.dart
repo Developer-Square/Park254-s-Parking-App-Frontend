@@ -12,9 +12,16 @@ import 'nearby_parking_list.dart';
 /// ```
 
 class BookingTab extends StatefulWidget {
-  final searchBarControllerText;
+  TextEditingController searchBarController;
+  bool homeScreen;
+  final Function showNearbyParking;
+  final Function hideMapButtons;
 
-  BookingTab({@required this.searchBarControllerText});
+  BookingTab(
+      {@required this.searchBarController,
+      this.homeScreen,
+      this.showNearbyParking,
+      this.hideMapButtons});
   @override
   _BookingTabState createState() => _BookingTabState();
 }
@@ -25,8 +32,8 @@ class _BookingTabState extends State<BookingTab> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-          height: 180.0,
-          width: MediaQuery.of(context).size.width - 40,
+          height: widget.homeScreen ? 195.0 : 170.0,
+          width: MediaQuery.of(context).size.width / 1.13,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -39,16 +46,34 @@ class _BookingTabState extends State<BookingTab> {
             ],
           ),
           margin: EdgeInsets.only(bottom: 20.0),
-          padding: EdgeInsets.all(15.0),
+          padding: widget.homeScreen
+              ? EdgeInsets.only(
+                  top: 10.0, bottom: 10.0, left: 15.0, right: 15.0)
+              : EdgeInsets.all(15.0),
           child: Column(
             children: <Widget>[
+              // Display the close icon on in homescreen.
+              widget.homeScreen
+                  ? Container(
+                      margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width / 1.4),
+                      child: InkWell(
+                          onTap: widget.homeScreen
+                              ? () {
+                                  widget.showNearbyParking();
+                                  widget.hideMapButtons();
+                                  widget.searchBarController.text = '';
+                                }
+                              : () {},
+                          child: Icon(Icons.close)))
+                  : Container(),
               NearByParkingList(
                   activeCard: false,
                   imgPath: 'assets/images/parking_photos/parking_9.jpg',
                   parkingPrice: 400,
-                  parkingPlaceName: widget.searchBarControllerText.length > 20
-                      ? widget.searchBarControllerText.substring(0, 20) + '...'
-                      : widget.searchBarControllerText,
+                  parkingPlaceName: widget.searchBarController.text.length > 20
+                      ? widget.searchBarController.text.substring(0, 20) + '...'
+                      : widget.searchBarController.text,
                   rating: 4.2,
                   distance: 350,
                   parkingSlots: 6),

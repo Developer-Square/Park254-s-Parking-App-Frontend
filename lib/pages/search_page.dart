@@ -351,7 +351,8 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             showBookNowTab
                 ? BookingTab(
-                    searchBarControllerText: searchBarController.text,
+                    homeScreen: false,
+                    searchBarController: searchBarController,
                   )
                 : Container(),
             // Add CustomInfoWindow as next child to float this on top GoogleMap.

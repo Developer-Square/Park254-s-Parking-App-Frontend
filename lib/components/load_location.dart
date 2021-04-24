@@ -41,13 +41,14 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
 /// and [parkingData].
 /// animates the Camera twice:
 /// First to a place near the marker, then to the marker.
-/// This is done to ensure that onCameraMove is always called
 void cameraAnimate(mapController, latitude, longitude) async {
   await mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(target: LatLng(latitude - 0.0001, latitude), zoom: 14.0)));
 
-  await mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: LatLng(latitude, longitude), zoom: 14.0)));
+  await mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      // The subtraction is done to ensure the booking tab does not block the marker.
+      target: LatLng(latitude - 0.0015, longitude),
+      zoom: 14.0)));
 }
 
 /// Takes a user to their current location.
