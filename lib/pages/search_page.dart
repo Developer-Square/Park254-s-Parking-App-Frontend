@@ -3,6 +3,7 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
+import 'package:park254_s_parking_app/components/info_window.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -66,8 +67,8 @@ class _SearchPageState extends State<SearchPage> {
 // sets the searchbar text to the clicked recent search.
 // Displays booknow tab and dismisses the keyboard.
 // It also redirects the user to the chosen location.
-  void _setShowRecentSearches(
-      searchText, town, controller, clearPlaceListFn, context) {
+  void _setShowRecentSearches(searchText, town, controller, clearPlaceListFn,
+      context, customInfoWindowController, parkingData) {
     setState(() {
       showRecentSearches = false;
       showBookNowTab = true;
@@ -77,6 +78,8 @@ class _SearchPageState extends State<SearchPage> {
       searchBarController.text = searchText;
     });
     getLocation(searchText + ',' + town, controller, clearPlaceList, context);
+    customInfoWindowController.addInfoWindow(
+        InfoWindowWidget(value: parkingData), parkingData.locationCoords);
     FocusScope.of(context).unfocus();
   }
 
@@ -272,6 +275,11 @@ class _SearchPageState extends State<SearchPage> {
                                                     return Column(
                                                       children: [
                                                         RecentSearches(
+                                                            customInfoWindowController:
+                                                                _customInfoWindowController,
+                                                            parkingData:
+                                                                parkingPlaces[
+                                                                    index],
                                                             specificLocation:
                                                                 parkingPlaces[
                                                                         index]
