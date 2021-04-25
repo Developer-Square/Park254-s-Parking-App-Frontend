@@ -1,7 +1,9 @@
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/booking_tab.dart';
+import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
@@ -26,15 +28,18 @@ class HomeScreen extends StatefulWidget {
 /// Has navigation at the bottom.
 class _HomeScreenState extends State<HomeScreen> {
   var _activeTab = 'home';
-  // A list that stores all the google markers to be displayed.
-  List<Marker> allMarkers = [];
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
   Position currentPosition;
   bool showNearByParking;
   bool showTopPageStyling;
   bool showMap;
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
+  bool showBackground;
+  bool hideMapButtons;
+  bool showBookingTab;
 
   @override
   void initState() {
@@ -44,8 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
     searchBarController.text = _searchText;
     showNearByParking = true;
     showMap = true;
+    showBackground = false;
     showTopPageStyling = true;
-
+    hideMapButtons = false;
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
   }
@@ -53,17 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-    setState(() {
-      parkingPlaces.forEach((element) {
-        allMarkers.add(Marker(
-            markerId: MarkerId(element.parkingPlaceName),
-            draggable: false,
-            infoWindow: InfoWindow(
-                title: element.parkingPlaceName, snippet: element.toString()),
-            position: element.locationCoords));
-      });
-    });
+    mapController = controller;
+    _customInfoWindowController.googleMapController = controller;
   }
 
   @override
@@ -71,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -83,12 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void closeNearByParking() {
     setState(() {
       showNearByParking = false;
+      showBackground = false;
     });
   }
 
+// Hides the info window when a user want to see the nearby parking locations.
+// This is so that the info window does not overlap the nearby parking widget.
   void showNearByParkingFn() {
     setState(() {
       showNearByParking = !showNearByParking;
+      _customInfoWindowController.hideInfoWindow();
     });
   }
 
@@ -102,43 +104,81 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// When a user clicks on the nearest parking widget.
+  /// everything else should hide and a blue background.
+  /// will cover the whole screen.
+  showFullBackground() {
+    showBackground = !showBackground;
+  }
+
+  // Hide the 'current location' and 'show nearby parking' buttons.
+  // when the booking tab is shown.
+  // This widget is also used to determine when to show the booking tab.
+  // i.e. The booking tab will only show if the map buttons aren't being.
+  // displayed.
+  void hideMapButtonsFn(widget) {
+    // If the function is being called by the booking tab close icon.
+    // then add hide/show functionality else hide map buttons remains true
+    if (widget == 'bookingTab') {
+      hideMapButtons = !hideMapButtons;
+    } else {
+      hideMapButtons = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
-            backgroundColor: showMap ? Colors.transparent : Color(0xFF16346c),
+            backgroundColor: Colors.transparent,
             body: Stack(children: [
-              showMap
+              GoogleMapWidget(
+                  showBookNowTab: hideMapButtonsFn,
+                  mapCreated: mapCreated,
+                  customInfoWindowController: _customInfoWindowController,
+                  searchBarController: searchBarController),
+              // The blue background that appears when the nearby parking widget.
+              // is enlarged.
+              showBackground
                   ? Container(
-                      height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      child: GoogleMap(
-                        mapType: MapType.normal,
-                        zoomGesturesEnabled: true,
-                        zoomControlsEnabled: true,
-                        initialCameraPosition: CameraPosition(
-                            target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                        markers: Set.from(allMarkers),
-                        onMapCreated: mapCreated,
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height - 520.0),
-                      ),
+                      height: MediaQuery.of(context).size.height,
+                      color: Color(0xFF16346c),
                     )
                   : Container(),
               // Show the NearByParking section or show an empty container.
               showNearByParking
                   ? NearByParking(
+                      mapController: mapController,
+                      customInfoWindowController: _customInfoWindowController,
                       showNearByParkingFn: closeNearByParking,
                       hideDetails: showFullParkingWidget,
+                      showFullBackground: showFullBackground,
+                      searchBarController: searchBarController,
+                      hideMapButtons: hideMapButtonsFn)
+                  : Container(),
+              // Show the booking tab when a user clicks on one of the parking locations.
+              // on the parking widget.
+              hideMapButtons
+                  ? Container(
+                      margin: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height / 20.0),
+                      child: BookingTab(
+                          homeScreen: true,
+                          showNearbyParking: showNearByParkingFn,
+                          hideMapButtons: hideMapButtonsFn,
+                          searchBarController: searchBarController),
                     )
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(
                       searchBarController: searchBarController,
                       currentPage: 'home',
+                      widget: null,
                     )
                   : Container(),
-              showMap
+              showMap && !hideMapButtons
                   ? Positioned(
                       bottom: showNearByParking ? 350.0 : 100.0,
                       right: 0,
@@ -146,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           FloatingActionButton.extended(
                             onPressed: () {
-                              loadLocation(_controller, currentPosition,
+                              loadLocation(mapController, currentPosition,
                                   closeNearByParking);
                             },
                             icon: Icon(Icons.location_searching),
@@ -170,6 +210,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
+              // Add CustomInfoWindow as next child to float this on top GoogleMap.
+              CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 50,
+                  width: 150,
+                  offset: 32),
             ])));
   }
 }

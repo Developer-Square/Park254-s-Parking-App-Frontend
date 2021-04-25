@@ -16,7 +16,9 @@ class TopPageStyling extends StatelessWidget {
   final widget;
 
   TopPageStyling(
-      {this.searchBarController, @required this.currentPage, this.widget});
+      {this.searchBarController,
+      @required this.currentPage,
+      @required this.widget});
   Widget build(BuildContext context) {
     return Container(
       height: currentPage == 'myparking' ? 260.0 : 210.0,

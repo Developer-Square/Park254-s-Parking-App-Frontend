@@ -1,7 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
+import 'package:park254_s_parking_app/components/google_map.dart';
+import 'package:park254_s_parking_app/components/info_window.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
@@ -12,12 +15,6 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import '../config/globals.dart' as globals;
 
-class SearchPage extends StatefulWidget {
-  static const routeName = '/search_page';
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
 /// Creates a search page with recent searches of the user.
 ///
 /// Includes the following widgets from other components:
@@ -26,10 +23,14 @@ class SearchPage extends StatefulWidget {
 /// When a user clicks on one of the recent searches or selects their ideal parking location.
 /// the recent searches disappear and a bottom widget appears and the search bar is updated.
 /// with the chosen parking place name.
+class SearchPage extends StatefulWidget {
+  static const routeName = '/search_page';
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
 class _SearchPageState extends State<SearchPage> {
-  // A list that stores all the google markers to be displayed.
-  List<Marker> allMarkers = [];
-  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
   bool showRecentSearches;
   bool showBookNowTab;
   bool showRatingTab;
@@ -41,48 +42,52 @@ class _SearchPageState extends State<SearchPage> {
   String _sessionToken = new Uuid().toString();
   List<dynamic> _placeList = [];
   bool showSuggestion;
+  BitmapDescriptor customIcon;
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
 
   @override
   void initState() {
     super.initState();
 
+    // Pass Initial values.
     ratingCount = 0;
     clickedStars = [];
     showRecentSearches = true;
     showBookNowTab = false;
     showRatingTab = false;
     showSuggestion = true;
-    // Pass Initial values.
     searchBarController.text = _searchText;
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
   }
 
+// Hides the recent searches when one of them is clicked and.
+// sets the searchbar text to the clicked recent search.
+// Displays booknow tab and dismisses the keyboard.
+// It also redirects the user to the chosen location.
+  void _setShowRecentSearches(searchText, town, controller, clearPlaceListFn,
+      context, customInfoWindowController, parkingData) {
+    setState(() {
+      showRecentSearches = false;
+      showBookNowTab = true;
+      showSuggestion = false;
+      // First remove the suggestions then set the searchBarController to avoid.
+      // the suggestions from showing up.
+      searchBarController.text = searchText;
+    });
+    getLocation(searchText + ',' + town, controller, clearPlaceList, context);
+    customInfoWindowController.addInfoWindow(
+        InfoWindowWidget(value: parkingData), parkingData.locationCoords);
+    FocusScope.of(context).unfocus();
+  }
+
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-    setState(() {
-      parkingPlaces.forEach((element) {
-        allMarkers.add(Marker(
-            markerId: MarkerId(element.parkingPlaceName),
-            draggable: false,
-            infoWindow: InfoWindow(
-                title: element.parkingPlaceName, snippet: element.toString()),
-            position: element.locationCoords));
-      });
-    });
-  }
-
-// Hides the recent searches when one of them is clicked and.
-// sets the searchbar text to the clicked recent search.
-  void _setShowRecentSearches(searchText) {
-    setState(() {
-      searchBarController.text = searchText;
-      showRecentSearches = false;
-      showBookNowTab = true;
-    });
+    mapController = controller;
+    _customInfoWindowController.googleMapController = controller;
   }
 
   @override
@@ -90,6 +95,8 @@ class _SearchPageState extends State<SearchPage> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    mapController.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -102,16 +109,15 @@ class _SearchPageState extends State<SearchPage> {
           _sessionToken = uuid.v4();
         });
       }
-
-      // If a user has clicked on one of the suggestions.
-      // No more suggestions should be shown.
-      showSuggestion
-          ?
-          // Gets the suggestions by making an api call to the Places Api.
-          getSuggestion(searchBarController.text)
-          // ignore: unnecessary_statements
-          : () {};
     });
+    // If a user has clicked on one of the suggestions.
+    // No more suggestions should be shown.
+    showSuggestion
+        ?
+        // Gets the suggestions by making an api call to the Places Api.
+        getSuggestion(searchBarController.text)
+        // ignore: unnecessary_statements
+        : () {};
   }
 
   void getSuggestion(String input) async {
@@ -153,9 +159,13 @@ class _SearchPageState extends State<SearchPage> {
         .push(MaterialPageRoute(builder: (context) => HomePage()));
   }
 
+// When user clicks on a recent search and the booking tab shows up.
+//  then he/she wants to change to another location, hide the booking tab.
   void showSuggestionFn() {
     setState(() {
       showSuggestion = true;
+      showBookNowTab = false;
+      _customInfoWindowController.hideInfoWindow();
     });
   }
 
@@ -163,9 +173,15 @@ class _SearchPageState extends State<SearchPage> {
   void clearPlaceList(address) {
     setState(() {
       showSuggestion = false;
-      _placeList.clear();
-      searchBarController.text = address;
     });
+    _placeList.clear();
+  }
+
+  // Show the book now tab when a user clicks on a google map marker.
+  showBookNowTabFn(widget) {
+    if (widget != 'bookingTab') {
+      showBookNowTab = true;
+    }
   }
 
   Widget build(BuildContext context) {
@@ -189,23 +205,11 @@ class _SearchPageState extends State<SearchPage> {
                 )
               : null,
           body: Stack(children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomGesturesEnabled: true,
-                zoomControlsEnabled: true,
-                markers: Set.from(allMarkers),
-                onMapCreated: mapCreated,
-                mapType: MapType.normal,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(-1.286389, 36.817223), zoom: 14.0),
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height - 370),
-              ),
-            ),
+            GoogleMapWidget(
+                showBookNowTab: showBookNowTabFn,
+                searchBarController: searchBarController,
+                mapCreated: mapCreated,
+                customInfoWindowController: _customInfoWindowController),
             // The rating pop up shown at the end of the parking session.
             showRatingTab
                 ? RatingTab(
@@ -214,104 +218,167 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Hide the search bar when showing the ratings tab
             !showRatingTab
-                ? Container(
-                    // Hides all the recent searches if one of them are clicked.
-                    height: showRecentSearches
-                        ? MediaQuery.of(context).size.height - 310.0
-                        : _placeList.length > 0
-                            ? 400.0
-                            : 110.0,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0)),
-                    ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 15.0),
-                          SearchBar(
-                            offsetY: 4.0,
-                            blurRadius: 6.0,
-                            opacity: 0.5,
-                            controller: searchBarController,
-                            searchBarTapped: true,
-                            showSuggestion: showSuggestion,
-                            showSuggestionFn: showSuggestionFn,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 35.0, top: 25.0),
-                            child: showRecentSearches
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'RECENT SEARCH',
-                                        style: TextStyle(
-                                            color: Colors.grey.withOpacity(0.8),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.0),
+                ? SingleChildScrollView(
+                    child: Container(
+                      // Hides all the recent searches if one of them are clicked.
+                      height: showRecentSearches
+                          ? MediaQuery.of(context).size.height / 2
+                          : _placeList.length > 0
+                              ? MediaQuery.of(context).size.height / 1.85
+                              : 110.0,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0)),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 15.0),
+                            SearchBar(
+                              offsetY: 4.0,
+                              blurRadius: 6.0,
+                              opacity: 0.5,
+                              controller: searchBarController,
+                              searchBarTapped: true,
+                              showSuggestion: showSuggestion,
+                              showSuggestionFn: showSuggestionFn,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 35.0, top: 25.0),
+                              child: showRecentSearches
+                                  ? SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 40.0),
+                                          Text(
+                                            'RECENT SEARCH',
+                                            style: TextStyle(
+                                                color: Colors.grey
+                                                    .withOpacity(0.8),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0),
+                                          ),
+                                          SizedBox(height: 15.0),
+                                          SizedBox(
+                                              height: 170.0,
+                                              child: ListView.builder(
+                                                  itemCount:
+                                                      parkingPlaces.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Column(
+                                                      children: [
+                                                        RecentSearches(
+                                                            customInfoWindowController:
+                                                                _customInfoWindowController,
+                                                            parkingData:
+                                                                parkingPlaces[
+                                                                    index],
+                                                            specificLocation:
+                                                                parkingPlaces[
+                                                                        index]
+                                                                    .parkingPlaceName,
+                                                            town: 'Nairobi',
+                                                            setShowRecentSearches:
+                                                                _setShowRecentSearches),
+                                                        SizedBox(height: 20.0),
+                                                      ],
+                                                    );
+                                                  })),
+                                        ],
                                       ),
-                                      SizedBox(height: 30.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parking on Wabera St',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'First Church of Christ',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parklands Ave, Nairobi',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                      SizedBox(height: 20.0),
-                                      RecentSearches(
-                                          specificLocation:
-                                              'Parklands Ave, Nairobi',
-                                          town: 'Nairobi',
-                                          setShowRecentSearches:
-                                              _setShowRecentSearches),
-                                    ],
-                                  )
-                                // Display suggestions available.
-                                : _placeList.length > 0
-                                    ? ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: _placeList.length,
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                              title: Row(
+                                    )
+                                  // Display suggestions available.
+                                  : _placeList.length > 0
+                                      ? SingleChildScrollView(
+                                          child: Column(
                                             children: [
-                                              // If the location has more than 25 letters, slice the word and add '...'
-                                              _buildSinglePlace(index),
+                                              SizedBox(height: 40.0),
+                                              SizedBox(
+                                                height: 230.0,
+                                                child: ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        _placeList.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return Column(
+                                                        children: [
+                                                          ListTile(
+                                                              title: Row(
+                                                            children: [
+                                                              // If the location has more than 25 letters, slice the word and add '...'
+                                                              _buildSinglePlace(
+                                                                  index),
+                                                            ],
+                                                          )),
+                                                          SizedBox(
+                                                            height: 7.0,
+                                                          )
+                                                        ],
+                                                      );
+                                                    }),
+                                              ),
                                             ],
-                                          ));
-                                        })
-                                    : Padding(
-                                        padding: EdgeInsets.only(bottom: 20.0),
-                                      ),
-                          )
-                        ]),
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding:
+                                              EdgeInsets.only(bottom: 20.0),
+                                        ),
+                            )
+                          ]),
+                    ),
+                  )
+                : Container(),
+            // Helper: To inform the user that they can scroll down to see more.
+            // suggestions.
+            showRecentSearches || _placeList.length > 0
+                ? Positioned(
+                    top: showRecentSearches
+                        ? MediaQuery.of(context).size.height / 9
+                        : MediaQuery.of(context).size.height / 9,
+                    right: MediaQuery.of(context).size.width / 4,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Scroll down for more suggestions',
+                          style:
+                              globals.buildTextStyle(12.0, false, Colors.grey),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: globals.textColor),
+                          height: 30,
+                          width: 30,
+                          child: Icon(
+                            Icons.arrow_circle_down_sharp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 : Container(),
             showBookNowTab
                 ? BookingTab(
-                    searchBarControllerText: searchBarController.text,
+                    homeScreen: false,
+                    searchBarController: searchBarController,
                   )
                 : Container(),
+            // Add CustomInfoWindow as next child to float this on top GoogleMap.
+            CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 50,
+                width: 150,
+                offset: 32),
           ])),
     );
   }
@@ -350,7 +417,7 @@ class _SearchPageState extends State<SearchPage> {
         specificLocation: values[0],
         town: values[1] == null ? 'None' : values[1],
         setShowRecentSearches: () {},
-        controller: _controller,
+        controller: mapController,
         newSearch: true,
         clearPlaceListFn: clearPlaceList,
         context: context);

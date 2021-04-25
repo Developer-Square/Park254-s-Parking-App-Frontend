@@ -15,6 +15,8 @@ class Parking {
   double distance;
   String thumbNail;
   LatLng locationCoords;
+  bool searched;
+  double price;
 
   Parking(
       {this.parkingPlaceName,
@@ -23,11 +25,15 @@ class Parking {
       this.parkingSlots,
       this.distance,
       this.thumbNail,
-      this.locationCoords});
+      this.locationCoords,
+      this.searched,
+      this.price});
 }
 
 final List<Parking> parkingPlaces = [
   Parking(
+      searched: true,
+      price: 10,
       parkingPlaceName: 'Parking on Wabera St',
       type: 'PARKING MALL',
       rating: 4.4,
@@ -36,6 +42,18 @@ final List<Parking> parkingPlaces = [
       locationCoords: LatLng(-1.285128, 36.821934),
       thumbNail: 'assets/images/parking_photos/parking_1.jpg'),
   Parking(
+      searched: true,
+      price: 10,
+      parkingPlaceName: 'Parking on Wabera St',
+      type: 'PARKING MALL',
+      rating: 4.4,
+      parkingSlots: 5,
+      distance: 345,
+      locationCoords: LatLng(-1.285128, 36.821934),
+      thumbNail: 'assets/images/parking_photos/parking_1.jpg'),
+  Parking(
+      searched: false,
+      price: 14,
       parkingPlaceName: 'First Church of Christ',
       type: 'PARKING MALL',
       rating: 4.1,
@@ -44,9 +62,11 @@ final List<Parking> parkingPlaces = [
       locationCoords: LatLng(-1.28362, 36.8142),
       thumbNail: 'assets/images/parking_photos/parking_2.jpg'),
   Parking(
+      searched: false,
+      price: 19,
       parkingPlaceName: 'Parklands Ave, Nairobi',
       type: 'PARKING MALL',
-      rating: 4.1,
+      rating: 2.1,
       parkingSlots: 3,
       distance: 450,
       locationCoords: LatLng(-1.308173, 36.823869),

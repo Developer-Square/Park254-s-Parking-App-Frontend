@@ -1,6 +1,8 @@
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
+import 'package:park254_s_parking_app/components/parking_model.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a List of a user's recent searches.
@@ -22,6 +24,8 @@ class RecentSearches extends StatelessWidget {
   final Function setShowRecentSearches;
   final controller;
   final Function clearPlaceListFn;
+  final CustomInfoWindowController customInfoWindowController;
+  final Parking parkingData;
   final context;
 
   RecentSearches(
@@ -31,14 +35,23 @@ class RecentSearches extends StatelessWidget {
       this.newSearch,
       this.controller,
       this.clearPlaceListFn,
-      this.context});
+      this.parkingData,
+      this.context,
+      this.customInfoWindowController});
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         newSearch == true
             ? getLocation(specificLocation + ',' + town, controller,
                 clearPlaceListFn, context)
-            : setShowRecentSearches(specificLocation);
+            : setShowRecentSearches(
+                specificLocation,
+                town,
+                controller,
+                clearPlaceListFn,
+                context,
+                customInfoWindowController,
+                parkingData);
       },
       child: Row(children: <Widget>[
         // If the user is typing in a new location.
