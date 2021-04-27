@@ -7,18 +7,19 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import '../../config/globals.dart' as globals;
 
 import '../../models/userWithToken.model.dart';
+import 'package:park254_s_parking_app/models/error.model.dart';
 
 /// Logs in a user using [email] and [password]
 ///
 /// Returns the user with their access and refresh tokens
-Future<UserWithToken> login({
+Future login({
   @required String email,
   @required String password,
 }) async {
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
-  final Uri url = Uri.https(globals.apiKey, '/v1/auth/login');
+  final Uri url = Uri.http(globals.apiKey, '/v1/auth/login');
   final String body = jsonEncode({'email': email, 'password': password});
   final response = await http.post(
     url,
@@ -30,6 +31,8 @@ Future<UserWithToken> login({
     final userWithToken = UserWithToken.fromJson(jsonDecode(response.body));
     return userWithToken;
   } else {
+    // final error = Error.fromJson(jsonDecode(response.body));
+    // throw error.message;
     handleError(response.body);
   }
 }

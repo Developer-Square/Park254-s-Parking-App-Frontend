@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
-import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,6 +14,39 @@ class LoginPage extends StatefulWidget {
 /// Has an option at the bottom, where a user can choose to signup.
 /// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController email = new TextEditingController();
+  TextEditingController password = new TextEditingController();
+  bool showToolTip;
+  String text;
+
+  @override
+  void initState() {
+    super.initState();
+    email.text = 'ryan25@gmail.com';
+    password.text = 'password1';
+    showToolTip = false;
+    text = '';
+  }
+
+  // Make the api call.
+  void sendLoginDetails() async {
+    if (email.text != '' && password.text != '') {
+      // Dismiss the keyboard.
+      FocusScope.of(context).unfocus();
+      login(email: email.text, password: password.text).then((value) {
+        // Todo: Add a way to store credentials in the phone.
+        if (value.user.id != null) {
+          print(value.user.id);
+        }
+      }).catchError((err) {
+        setState(() {
+          showToolTip = true;
+          text = err;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,14 +66,15 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            toolTip(text),
             Container(
               child: SvgPicture.asset(
                 'assets/images/Logo/PARK_254_1000x400-01.svg',
-                width: 260.0,
-                height: 260.0,
+                width: 230.0,
+                height: 230.0,
               ),
             ),
-            SizedBox(height: 75.0),
+            SizedBox(height: 65.0),
             Container(
                 child: Form(
               child: Column(children: <Widget>[
@@ -56,8 +90,9 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HomePage()));
+                      sendLoginDetails();
+                      // Navigator.of(context).push(
+                      //     MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     child: Container(
                         height: 50.0,
@@ -101,12 +136,58 @@ class _LoginPageState extends State<LoginPage> {
     ));
   }
 
+  /// A widget meant to inform the user of any errors during.
+  /// the login process.
+  /// Requires [Text].
+  Widget toolTip(String text) {
+    return AnimatedOpacity(
+      opacity: showToolTip ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 600),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          margin: EdgeInsets.only(right: 8.0),
+          width: 250.0,
+          height: 50.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: Colors.red,
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0, right: 25.0),
+                child: Text(
+                  text,
+                  style: globals.buildTextStyle(14.0, false, Colors.white),
+                ),
+              ),
+              InkWell(
+                  onTap: () {
+                    setState(() {
+                      showToolTip = false;
+                    });
+                  },
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                  ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Builds out every form field depending on the [text] variable passed to it.
   Widget _buildFormField(String text) {
     return Column(children: <Widget>[
       Container(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: TextFormField(
+            controller: text == 'Password' ? password : email,
+            obscureText: text == 'Password' ? true : false,
+            obscuringCharacter: '*',
             decoration: InputDecoration(
                 hintText: text,
                 hintStyle: TextStyle(color: globals.placeHolderColor)),
