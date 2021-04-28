@@ -11,10 +11,14 @@ class RegistrationScreens extends StatelessWidget {
   final String title;
   final String info;
   final int step;
+  String selectedValue;
   TextEditingController _controller = new TextEditingController();
 
   RegistrationScreens(
-      {@required this.title, @required this.info, @required this.step});
+      {@required this.title,
+      @required this.info,
+      @required this.step,
+      this.selectedValue});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,12 @@ class RegistrationScreens extends StatelessWidget {
           ),
         ),
         SizedBox(height: 35.0),
-        buildFormField(title, context, '', _controller),
+        BuildFormField(
+            text: title,
+            context: context,
+            placeholder: '',
+            controller: _controller,
+            selectedValue: selectedValue),
         SizedBox(height: 40.0),
       ],
     );

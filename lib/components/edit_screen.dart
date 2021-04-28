@@ -52,11 +52,17 @@ class _EditScreenState extends State<EditScreen> {
               : Column(
                   children: [
                     SizedBox(height: MediaQuery.of(context).size.height / 3.1),
-                    buildFormField('vehicle', 'Add vehicle type',
-                        'vehicle type', vehicleTypeController),
+                    BuildFormField(
+                        text: 'vehicle',
+                        label: 'Add vehicle type',
+                        placeholder: 'vehicle type',
+                        controller: vehicleTypeController),
                     SizedBox(height: 20.0),
-                    buildFormField('vehicle', 'Add vechicle plate',
-                        'vehicle plate', vehiclePlateController)
+                    BuildFormField(
+                        text: 'vehicle',
+                        label: 'Add vechicle plate',
+                        placeholder: 'vehicle plate',
+                        controller: vehiclePlateController)
                   ],
                 ),
         ),
@@ -85,13 +91,29 @@ class _EditScreenState extends State<EditScreen> {
                   width: 80.0,
                 ))),
         SizedBox(height: 40.0),
-        buildFormField('Profile', 'Full name', 'Ken Smith', widget.fullName),
+        BuildFormField(
+            text: 'Profile',
+            label: 'Full name',
+            placeholder: 'Ken Smith',
+            controller: widget.fullName),
         SizedBox(height: 20.0),
-        buildFormField('Profile', 'Email', 'test@gmail.com', widget.email),
+        BuildFormField(
+            text: 'Profile',
+            label: 'Email',
+            placeholder: 'test@gmail.com',
+            controller: widget.email),
         SizedBox(height: 20.0),
-        buildFormField('International Number', '', '789876078', widget.phone),
+        BuildFormField(
+            text: 'International Number',
+            label: '',
+            placeholder: '789876078',
+            controller: widget.phone),
         SizedBox(height: 20.0),
-        buildFormField('Profile', 'Password', 'Password', widget.password),
+        BuildFormField(
+            text: 'Profile',
+            label: 'Password',
+            placeholder: 'Password',
+            controller: widget.password),
         SizedBox(height: 40.0),
         Text(
           'Do you want to top up your balance ?',

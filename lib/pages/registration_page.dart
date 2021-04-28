@@ -14,7 +14,15 @@ class RegistrationPage extends StatefulWidget {
 /// Returns a [Widget].
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  int _step = 1;
+  int _step;
+  String selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _step = 1;
+    selectedValue = '';
+  }
 
   /// Determines which inputs will be displayed depending on the step count.
   ///
@@ -33,26 +41,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
           step: _step);
     } else if (_step == 3) {
       return RegistrationScreens(
+          title: 'Role',
+          info: 'Kindly choose the type of account you\'re creating',
+          step: _step,
+          selectedValue: selectedValue);
+    } else if (_step == 4) {
+      return RegistrationScreens(
           title: 'Password', info: 'Enter your password', step: _step);
     }
   }
 
-  Widget _buildSteps(String text) {
-    return Container(
-      child: Padding(
-        padding: text.contains('STEP')
-            ? EdgeInsets.only(left: 30.0, top: 40.0)
-            : EdgeInsets.only(left: 5.0, top: 40.0),
-        child: Text(text,
-            style: TextStyle(
-                fontSize: 19.0,
-                fontWeight: FontWeight.bold,
-                color: text.contains('STEP')
-                    ? globals.textColor
-                    : Colors.grey.withOpacity(0.9))),
-      ),
-    );
-  }
+  // Make api call to register a user.
+  void sendRegisterDetails() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ? 'Phone number'
                 : _step == 2
                     ? 'Verification'
-                    : 'Password',
+                    : _step == 3
+                        ? 'Role'
+                        : 'Password',
             style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
@@ -87,7 +89,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 3'),
+              _buildSteps('of 4'),
             ],
           ),
           SizedBox(height: 170.0),
@@ -102,11 +104,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
             alignment: Alignment.bottomCenter,
             child: InkWell(
                 onTap: () {
-                  setState(() {
-                    if (_step < 3) {
+                  if (_step < 4) {
+                    setState(() {
                       _step += 1;
-                    }
-                  });
+                    });
+                  } else {
+                    // When a user is done filling the form.
+                    sendRegisterDetails();
+                  }
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -116,7 +121,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   child: Center(
                     child: Text(
-                      _step == 3 ? 'Finish' : 'Next',
+                      _step == 4 ? 'Finish' : 'Next',
                       style:
                           globals.buildTextStyle(18.0, true, globals.textColor),
                     ),
@@ -124,6 +129,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 )),
           )
         ]),
+      ),
+    );
+  }
+
+  Widget _buildSteps(String text) {
+    return Container(
+      child: Padding(
+        padding: text.contains('STEP')
+            ? EdgeInsets.only(left: 30.0, top: 40.0)
+            : EdgeInsets.only(left: 5.0, top: 40.0),
+        child: Text(text,
+            style: TextStyle(
+                fontSize: 19.0,
+                fontWeight: FontWeight.bold,
+                color: text.contains('STEP')
+                    ? globals.textColor
+                    : Colors.grey.withOpacity(0.9))),
       ),
     );
   }

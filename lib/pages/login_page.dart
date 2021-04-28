@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
 
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    email.text = 'ryan25@gmail.com';
+    email.text = 'ryan254@gmail.com';
     password.text = 'password1';
     showToolTip = false;
     text = '';
@@ -35,6 +36,8 @@ class _LoginPageState extends State<LoginPage> {
       FocusScope.of(context).unfocus();
       login(email: email.text, password: password.text).then((value) {
         // Todo: Add a way to store credentials in the phone.
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomePage()));
         if (value.user.id != null) {
           print(value.user.id);
         }
@@ -91,8 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                   InkWell(
                     onTap: () {
                       sendLoginDetails();
-                      // Navigator.of(context).push(
-                      //     MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     child: Container(
                         height: 50.0,
