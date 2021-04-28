@@ -12,13 +12,15 @@ class RegistrationScreens extends StatelessWidget {
   final String info;
   final int step;
   String selectedValue;
+  final GlobalKey formKey;
   TextEditingController _controller = new TextEditingController();
 
   RegistrationScreens(
       {@required this.title,
       @required this.info,
       @required this.step,
-      this.selectedValue});
+      this.selectedValue,
+      this.formKey});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,8 @@ class RegistrationScreens extends StatelessWidget {
             context: context,
             placeholder: '',
             controller: _controller,
-            selectedValue: selectedValue),
+            selectedValue: selectedValue,
+            formKey: formKey),
         SizedBox(height: 40.0),
       ],
     );

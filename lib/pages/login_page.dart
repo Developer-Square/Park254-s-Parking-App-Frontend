@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController password = new TextEditingController();
   bool showToolTip;
   String text;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // Make the api call.
   void sendLoginDetails() async {
-    if (email.text != '' && password.text != '') {
+    if (formKey.currentState.validate()) {
       // Dismiss the keyboard.
       FocusScope.of(context).unfocus();
       login(email: email.text, password: password.text).then((value) {
@@ -80,11 +81,14 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 65.0),
             Container(
                 child: Form(
-              child: Column(children: <Widget>[
-                _buildFormField('Phone number'),
-                SizedBox(height: 15.0),
-                _buildFormField('Password'),
-              ]),
+              child: Form(
+                key: formKey,
+                child: Column(children: <Widget>[
+                  _buildFormField('Phone number'),
+                  SizedBox(height: 15.0),
+                  _buildFormField('Password'),
+                ]),
+              ),
             )),
             SizedBox(height: 40.0),
             Container(
@@ -186,6 +190,11 @@ class _LoginPageState extends State<LoginPage> {
       Container(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: TextFormField(
+            validator: (value) {
+              if (value == '' || value.isEmpty) {
+                return 'Please enter your ${text.toLowerCase()}';
+              }
+            },
             controller: text == 'Password' ? password : email,
             obscureText: text == 'Password' ? true : false,
             obscuringCharacter: '*',

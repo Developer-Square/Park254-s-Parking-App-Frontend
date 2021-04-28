@@ -13,6 +13,7 @@ class BuildFormField extends StatefulWidget {
   final TextEditingController controller;
   String selectedValue;
   final String label;
+  final GlobalKey formKey;
 
   BuildFormField(
       {this.text,
@@ -20,74 +21,95 @@ class BuildFormField extends StatefulWidget {
       this.context,
       this.placeholder,
       this.controller,
-      this.selectedValue});
+      this.selectedValue,
+      this.formKey});
   @override
   BuildFormFieldState createState() => BuildFormFieldState();
 }
 
 class BuildFormFieldState extends State<BuildFormField> {
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-        child: Container(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: widget.text == 'Password'
-                // Create the two input fields in step 4 of registration screens.
-                ? Column(
-                    children: [
-                      buildSingleTextField('Create Password', widget.text, '',
-                          widget.controller),
-                      SizedBox(height: 15.0),
-                      buildSingleTextField('Confirm Password', widget.text, '',
-                          widget.controller)
-                    ],
-                  )
-                // Create the verification input field.
-                : widget.text == 'Verification'
-                    ? buildVerificationField(context)
-                    // Create radio buttons for role selection.
-                    : widget.text == 'Role'
-                        ? buildRoleRadioButtons()
-                        // Create the input fields in the Profile page and Add vehicle page.
-                        : widget.text == 'Profile' || widget.text == 'vehicle'
-                            ? buildSingleTextField(
-                                widget.label,
-                                widget.placeholder,
-                                widget.text,
-                                widget.controller)
-                            // Create the phone number input field.
-                            : widget.text == 'International Number'
-                                ? buildInternationalNumberField(
-                                    widget.controller, widget.placeholder)
-                                // Creates the input fields in step 1 of the registration screens.
-                                : widget.text == 'Phone number'
-                                    ? Column(children: <Widget>[
-                                        TextFormField(
-                                          decoration: InputDecoration(
-                                              hintText: 'Full Name',
-                                              hintStyle: TextStyle(
-                                                  color: globals
-                                                      .placeHolderColor)),
-                                        ),
-                                        SizedBox(height: 25.0),
-                                        TextFormField(
+    return Form(
+      key: widget.formKey,
+      child: Column(children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Container(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: widget.text == 'Password'
+                  // Create the two input fields in step 4 of registration screens.
+                  ? Column(
+                      children: [
+                        buildSingleTextField('Create Password', widget.text, '',
+                            widget.controller),
+                        SizedBox(height: 15.0),
+                        buildSingleTextField('Confirm Password', widget.text,
+                            '', widget.controller)
+                      ],
+                    )
+                  // Create the verification input field.
+                  : widget.text == 'Verification'
+                      ? buildVerificationField(context)
+                      // Create radio buttons for role selection.
+                      : widget.text == 'Role'
+                          ? buildRoleRadioButtons()
+                          // Create the input fields in the Profile page and Add vehicle page.
+                          : widget.text == 'Profile' || widget.text == 'vehicle'
+                              ? buildSingleTextField(
+                                  widget.label,
+                                  widget.placeholder,
+                                  widget.text,
+                                  widget.controller)
+                              // Create the phone number input field.
+                              : widget.text == 'International Number'
+                                  ? buildInternationalNumberField(
+                                      widget.controller, widget.placeholder)
+                                  // Creates the input fields in step 1 of the registration screens.
+                                  : widget.text == 'Phone number'
+                                      ? Column(children: <Widget>[
+                                          TextFormField(
+                                            validator: (value) {
+                                              if (value == '' ||
+                                                  value.isEmpty) {
+                                                return 'Please enter your Full name';
+                                              }
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'Full Name',
+                                                hintStyle: TextStyle(
+                                                    color: globals
+                                                        .placeHolderColor)),
+                                          ),
+                                          SizedBox(height: 25.0),
+                                          TextFormField(
+                                            validator: (value) {
+                                              if (value == '' ||
+                                                  value.isEmpty) {
+                                                return 'Please enter your Phone number';
+                                              }
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: widget.text,
+                                                hintStyle: TextStyle(
+                                                    color: globals
+                                                        .placeHolderColor)),
+                                          )
+                                        ])
+                                      : TextFormField(
+                                          validator: (value) {
+                                            if (value == '' || value.isEmpty) {
+                                              return 'Please enter some text';
+                                            }
+                                          },
                                           decoration: InputDecoration(
                                               hintText: widget.text,
                                               hintStyle: TextStyle(
                                                   color: globals
                                                       .placeHolderColor)),
-                                        )
-                                      ])
-                                    : TextFormField(
-                                        decoration: InputDecoration(
-                                            hintText: widget.text,
-                                            hintStyle: TextStyle(
-                                                color:
-                                                    globals.placeHolderColor)),
-                                      )),
-      ),
-    ]);
+                                        )),
+        ),
+      ]),
+    );
   }
 
   /// Creates Radio buttons that help a user choose.
@@ -132,6 +154,11 @@ class BuildFormFieldState extends State<BuildFormField> {
   /// Requires [label or context], [placeholder], [text] and [controller].
   Widget buildSingleTextField(label, placeholder, text, _controller) {
     return TextFormField(
+      validator: (value) {
+        if (value == '' || value.isEmpty) {
+          return 'Please enter some text';
+        }
+      },
       controller: _controller,
       obscureText: placeholder == 'Password' ? true : false,
       decoration: InputDecoration(
@@ -166,6 +193,11 @@ class BuildFormFieldState extends State<BuildFormField> {
         /// obscuringCharacter: '*'.
         /// ```
         PinCodeTextField(
+          validator: (value) {
+            if (value == '' || value.isEmpty) {
+              return 'Please enter some text';
+            }
+          },
           appContext: context,
           onChanged: (value) {
             print(value);
@@ -240,6 +272,11 @@ class BuildFormFieldState extends State<BuildFormField> {
         SizedBox(width: 10.0),
         Expanded(
           child: TextFormField(
+            validator: (value) {
+              if (value == '' || value.isEmpty) {
+                return 'Please enter some text';
+              }
+            },
             controller: _controller,
             decoration: InputDecoration(
                 hintText: placeholder,

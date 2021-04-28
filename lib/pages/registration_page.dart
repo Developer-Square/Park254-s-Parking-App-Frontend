@@ -16,6 +16,7 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   int _step;
   String selectedValue;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -33,21 +34,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
       return RegistrationScreens(
           title: 'Phone number',
           info: 'Welcome to Park254, kindly provide your phone number below',
-          step: _step);
+          step: _step,
+          formKey: formKey);
     } else if (_step == 2) {
       return RegistrationScreens(
-          title: 'Verification',
-          info: 'Enter the code to verify your account',
-          step: _step);
+        title: 'Verification',
+        info: 'Enter the code to verify your account',
+        step: _step,
+        formKey: formKey,
+      );
     } else if (_step == 3) {
       return RegistrationScreens(
-          title: 'Role',
-          info: 'Kindly choose the type of account you\'re creating',
-          step: _step,
-          selectedValue: selectedValue);
+        title: 'Role',
+        info: 'Kindly choose the type of account you\'re creating',
+        step: _step,
+        selectedValue: selectedValue,
+        formKey: formKey,
+      );
     } else if (_step == 4) {
       return RegistrationScreens(
-          title: 'Password', info: 'Enter your password', step: _step);
+        title: 'Password',
+        info: 'Enter your password',
+        step: _step,
+        formKey: formKey,
+      );
     }
   }
 
@@ -104,7 +114,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             alignment: Alignment.bottomCenter,
             child: InkWell(
                 onTap: () {
-                  if (_step < 4) {
+                  if (_step < 4 && formKey.currentState.validate()) {
                     setState(() {
                       _step += 1;
                     });
