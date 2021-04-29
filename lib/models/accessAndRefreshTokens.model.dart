@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'token.model.dart';
 
+/// Creates an object of access and refresh tokens from Json
 class AccessAndRefreshTokens {
   final Token accessToken;
   final Token refreshToken;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/location.model.dart';
 
+/// Creates a parking lot object from Json
 class ParkingLot {
   final String id;
   final String owner;
@@ -11,6 +12,9 @@ class ParkingLot {
   final int ratingValue;
   final int ratingCount;
   final num rating;
+  final int price;
+  final String address;
+  final String city;
 
   ParkingLot({
     @required this.id,
@@ -22,6 +26,9 @@ class ParkingLot {
     @required this.ratingCount,
     @required this.ratingValue,
     @required this.rating,
+    @required this.address,
+    @required this.city,
+    @required this.price,
   });
 
   factory ParkingLot.fromJson(Map<String, dynamic> json) {
@@ -37,6 +44,9 @@ class ParkingLot {
       rating: (json['ratingCount'] == 0)
           ? 0
           : json['ratingValue'] / json['ratingCount'],
+      price: json['price'],
+      address: json['address'],
+      city: json['city'],
     );
   }
 }

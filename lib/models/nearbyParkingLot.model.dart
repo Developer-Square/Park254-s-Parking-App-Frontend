@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/nearbyLocation.model.dart';
 
+/// Creates a nearby parking lot object from Json
 class NearbyParkingLot {
   final String id;
   final String owner;
@@ -12,6 +13,9 @@ class NearbyParkingLot {
   final int ratingCount;
   final num rating;
   final num distance;
+  final int price;
+  final String address;
+  final String city;
 
   NearbyParkingLot({
     @required this.id,
@@ -24,11 +28,14 @@ class NearbyParkingLot {
     @required this.ratingValue,
     @required this.rating,
     @required this.distance,
+    @required this.address,
+    @required this.city,
+    @required this.price,
   });
 
   factory NearbyParkingLot.fromJson(Map<String, dynamic> json) {
     return NearbyParkingLot(
-      id: json['id'],
+      id: json['_id'],
       owner: json['owner'],
       name: json['name'],
       spaces: json['spaces'],
@@ -40,6 +47,9 @@ class NearbyParkingLot {
           ? 0
           : json['ratingValue'] / json['ratingCount'],
       distance: json['address']['distance'],
+      price: json['price'],
+      address: json['address'],
+      city: json['city'],
     );
   }
 }

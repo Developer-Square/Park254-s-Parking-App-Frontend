@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Creates a rating object from Json
 class Rating {
   final String id;
   final String userId;

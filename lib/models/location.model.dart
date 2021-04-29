@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Creates a location object from Json
 class Location {
   final String type;
   final List<dynamic> coordinates;
