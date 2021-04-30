@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import 'dart:core';
 
+/// Creates a list of parking lots with metadata from Json
 class QueryParkingLots {
   final List<ParkingLot> parkingLots;
   final int page;

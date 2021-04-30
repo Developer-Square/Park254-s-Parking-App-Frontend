@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Creates a nearby location object from Json
 class NearbyLocation {
   final String type;
   final List<dynamic> coordinates;

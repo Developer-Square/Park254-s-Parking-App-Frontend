@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Creates a token from Json
 class Token {
   final String token;
   final DateTime expires;
