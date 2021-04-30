@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Creates a vehicle object from Json
+/// Converts a vehicle object from and to Json
 class Vehicle {
   final String model;
   final String plate;
@@ -16,4 +16,9 @@ class Vehicle {
       plate: json['plate'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'model': model,
+        'plate': plate,
+      };
 }
