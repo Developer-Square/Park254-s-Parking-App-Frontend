@@ -13,39 +13,65 @@ class RegistrationScreens extends StatelessWidget {
   final int step;
   String selectedValue;
   final GlobalKey formKey;
+  String verificationController;
   TextEditingController _controller = new TextEditingController();
+  TextEditingController nameController;
+  TextEditingController emailController;
+  TextEditingController phoneController;
+  TextEditingController vehicelModelController;
+  TextEditingController vehicelPlateController;
+  TextEditingController createPasswordController;
+  TextEditingController confirmPasswordController;
 
   RegistrationScreens(
       {@required this.title,
       @required this.info,
       @required this.step,
       this.selectedValue,
-      this.formKey});
+      this.formKey,
+      this.nameController,
+      this.emailController,
+      this.phoneController,
+      this.verificationController,
+      this.vehicelModelController,
+      this.vehicelPlateController,
+      this.createPasswordController,
+      this.confirmPasswordController});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: title == 'Password'
-              ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)
-              : const EdgeInsets.only(left: 30.0, right: 30.0, top: 160.0),
-          child: Text(
-            info,
-            style: globals.buildTextStyle(18.0, true, globals.textColor),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: title == 'Password'
+                ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)
+                : const EdgeInsets.only(left: 30.0, right: 30.0, top: 160.0),
+            child: Text(
+              info,
+              style: globals.buildTextStyle(18.0, true, globals.textColor),
+            ),
           ),
-        ),
-        SizedBox(height: 35.0),
-        BuildFormField(
-            text: title,
-            context: context,
-            placeholder: '',
-            controller: _controller,
-            selectedValue: selectedValue,
-            formKey: formKey),
-        SizedBox(height: 40.0),
-      ],
+          SizedBox(height: 35.0),
+          BuildFormField(
+              text: title,
+              context: context,
+              placeholder: '',
+              controller: _controller,
+              selectedValue: selectedValue,
+              formKey: formKey,
+              email: emailController,
+              name: nameController,
+              phone: phoneController,
+              verification: verificationController,
+              vehicelModel: vehicelModelController,
+              vehicelPlate: vehicelPlateController,
+              createPassword: createPasswordController,
+              confirmPassword: confirmPasswordController),
+          SizedBox(height: 40.0),
+        ],
+      ),
     );
   }
 }

@@ -13,7 +13,15 @@ class BuildFormField extends StatefulWidget {
   final TextEditingController controller;
   String selectedValue;
   final String label;
+  String verification;
   final GlobalKey formKey;
+  TextEditingController name;
+  TextEditingController email;
+  TextEditingController phone;
+  TextEditingController vehicelModel;
+  TextEditingController vehicelPlate;
+  TextEditingController createPassword;
+  TextEditingController confirmPassword;
 
   BuildFormField(
       {this.text,
@@ -22,7 +30,15 @@ class BuildFormField extends StatefulWidget {
       this.placeholder,
       this.controller,
       this.selectedValue,
-      this.formKey});
+      this.formKey,
+      this.name,
+      this.email,
+      this.phone,
+      this.verification,
+      this.vehicelModel,
+      this.vehicelPlate,
+      this.createPassword,
+      this.confirmPassword});
   @override
   BuildFormFieldState createState() => BuildFormFieldState();
 }
@@ -41,10 +57,10 @@ class BuildFormFieldState extends State<BuildFormField> {
                   ? Column(
                       children: [
                         buildSingleTextField('Create Password', widget.text, '',
-                            widget.controller),
+                            widget.createPassword),
                         SizedBox(height: 15.0),
                         buildSingleTextField('Confirm Password', widget.text,
-                            '', widget.controller)
+                            '', widget.confirmPassword)
                       ],
                     )
                   // Create the verification input field.
@@ -64,36 +80,57 @@ class BuildFormFieldState extends State<BuildFormField> {
                               : widget.text == 'International Number'
                                   ? buildInternationalNumberField(
                                       widget.controller, widget.placeholder)
-                                  // Creates the input fields in step 1 of the registration screens.
-                                  : widget.text == 'Phone number'
+                                  // Creates the input fields in step 1 of the registration screens and is reused.
+                                  // to create the input fields in step 4
+                                  : widget.text == 'Phone number' ||
+                                          widget.text == 'Vehicle Details'
                                       ? Column(children: <Widget>[
                                           TextFormField(
+                                            controller:
+                                                widget.text == 'Phone number'
+                                                    ? widget.name
+                                                    : widget.vehicelModel,
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {
-                                                return 'Please enter your Full name';
+                                                return 'Please enter your ${widget.text == 'phone number' ? 'full name' : 'vehicle model'}';
                                               }
                                             },
                                             decoration: InputDecoration(
-                                                hintText: 'Full Name',
+                                                hintText: widget.text ==
+                                                        'Phone number'
+                                                    ? 'Full Name'
+                                                    : 'Vehicle model e.g. prius or toyota',
                                                 hintStyle: TextStyle(
                                                     color: globals
                                                         .placeHolderColor)),
                                           ),
                                           SizedBox(height: 25.0),
                                           TextFormField(
+                                            controller:
+                                                widget.text == 'Phone number'
+                                                    ? widget.phone
+                                                    : widget.vehicelPlate,
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {
-                                                return 'Please enter your Phone number';
+                                                return 'Please enter your ${widget.text == 'phone number' ? 'phone number' : 'vehicle plate number'}';
                                               }
                                             },
                                             decoration: InputDecoration(
-                                                hintText: widget.text,
+                                                hintText: widget.text ==
+                                                        'Phone number'
+                                                    ? widget.text
+                                                    : 'Vehicle plate number e.g. KCB 394F',
                                                 hintStyle: TextStyle(
                                                     color: globals
                                                         .placeHolderColor)),
-                                          )
+                                          ),
+                                          SizedBox(height: 15.0),
+                                          widget.text == 'Phone number'
+                                              ? buildSingleTextField(
+                                                  '', 'Email', '', widget.email)
+                                              : Container()
                                         ])
                                       : TextFormField(
                                           validator: (value) {
@@ -156,13 +193,13 @@ class BuildFormFieldState extends State<BuildFormField> {
     return TextFormField(
       validator: (value) {
         if (value == '' || value.isEmpty) {
-          return 'Please enter some text';
+          return 'Please enter ${placeholder == 'Email' ? 'your email' : 'some text'}';
         }
       },
       controller: _controller,
       obscureText: placeholder == 'Password' ? true : false,
       decoration: InputDecoration(
-          labelText: label,
+          labelText: label != '' ? label : null,
           labelStyle: text == 'Profile'
               ? TextStyle(
                   color: Colors.grey.withOpacity(0.7),
@@ -200,7 +237,7 @@ class BuildFormFieldState extends State<BuildFormField> {
           },
           appContext: context,
           onChanged: (value) {
-            print(value);
+            widget.verification = value;
           },
           length: 6,
           obscureText: true,

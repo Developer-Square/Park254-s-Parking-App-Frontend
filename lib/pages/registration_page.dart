@@ -16,7 +16,16 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   int _step;
   String selectedValue;
+  String verification;
   final formKey = GlobalKey<FormState>();
+  TextEditingController name = new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  // TextEditingController verification = new TextEditingController();
+  TextEditingController vehicelModel = new TextEditingController();
+  TextEditingController vehicelPlate = new TextEditingController();
+  TextEditingController createPassword = new TextEditingController();
+  TextEditingController confirmPassword = new TextEditingController();
 
   @override
   void initState() {
@@ -35,13 +44,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
           title: 'Phone number',
           info: 'Welcome to Park254, kindly provide your phone number below',
           step: _step,
-          formKey: formKey);
+          formKey: formKey,
+          nameController: name,
+          emailController: email,
+          phoneController: phone);
     } else if (_step == 2) {
       return RegistrationScreens(
         title: 'Verification',
         info: 'Enter the code to verify your account',
         step: _step,
         formKey: formKey,
+        verificationController: verification,
       );
     } else if (_step == 3) {
       return RegistrationScreens(
@@ -53,11 +66,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     } else if (_step == 4) {
       return RegistrationScreens(
-        title: 'Password',
-        info: 'Enter your password',
-        step: _step,
-        formKey: formKey,
-      );
+          title: 'Vehicle Details',
+          info: 'Enter your vehicle model',
+          step: _step,
+          formKey: formKey,
+          vehicelModelController: vehicelModel,
+          vehicelPlateController: vehicelPlate);
+    } else if (_step == 5) {
+      return RegistrationScreens(
+          title: 'Password',
+          info: 'Enter your password',
+          step: _step,
+          formKey: formKey,
+          createPasswordController: createPassword,
+          confirmPasswordController: confirmPassword);
     }
   }
 
@@ -99,7 +121,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 4'),
+              _buildSteps('of 5'),
             ],
           ),
           SizedBox(height: 170.0),
@@ -114,7 +136,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             alignment: Alignment.bottomCenter,
             child: InkWell(
                 onTap: () {
-                  if (_step < 4 && formKey.currentState.validate()) {
+                  if (_step < 5 && formKey.currentState.validate()) {
                     setState(() {
                       _step += 1;
                     });
@@ -131,7 +153,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   child: Center(
                     child: Text(
-                      _step == 4 ? 'Finish' : 'Next',
+                      _step == 5 ? 'Finish' : 'Next',
                       style:
                           globals.buildTextStyle(18.0, true, globals.textColor),
                     ),
