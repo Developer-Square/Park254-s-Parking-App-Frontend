@@ -8,9 +8,12 @@ import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/pages/login_page.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import 'components/booking_tab.dart';
 import 'components/top_page_styling.dart';
@@ -152,6 +155,15 @@ class MyApp extends StatelessWidget {
                 price: args.price,
                 destination: args.destination,
                 address: args.address,
+              );
+            });
+          } else if (settings.name == LoginPage.routeName) {
+            final LoginRegistrationArguements args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return ToolTip(
+                showToolTip: args.showToolTip,
+                text: args.text,
+                hideToolTip: args.hideToolTip,
               );
             });
           }

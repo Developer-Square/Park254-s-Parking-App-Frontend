@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
+  static const routeName = '/login_page';
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -28,6 +31,12 @@ class _LoginPageState extends State<LoginPage> {
     password.text = 'password1';
     showToolTip = false;
     text = '';
+  }
+
+  void hideToolTip() {
+    setState(() {
+      showToolTip = false;
+    });
   }
 
   // Make the api call.
@@ -70,7 +79,11 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            toolTip(text),
+            ToolTip(
+              showToolTip: showToolTip,
+              text: text,
+              hideToolTip: hideToolTip,
+            ),
             Container(
               child: SvgPicture.asset(
                 'assets/images/Logo/PARK_254_1000x400-01.svg',
@@ -139,49 +152,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     ));
-  }
-
-  /// A widget meant to inform the user of any errors during.
-  /// the login process.
-  /// Requires [Text].
-  Widget toolTip(String text) {
-    return AnimatedOpacity(
-      opacity: showToolTip ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 600),
-      child: Align(
-        alignment: Alignment.topRight,
-        child: Container(
-          margin: EdgeInsets.only(right: 8.0),
-          width: 250.0,
-          height: 50.0,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            color: Colors.red,
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 18.0, right: 25.0),
-                child: Text(
-                  text,
-                  style: globals.buildTextStyle(14.0, false, Colors.white),
-                ),
-              ),
-              InkWell(
-                  onTap: () {
-                    setState(() {
-                      showToolTip = false;
-                    });
-                  },
-                  child: Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  ))
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   /// Builds out every form field depending on the [text] variable passed to it.

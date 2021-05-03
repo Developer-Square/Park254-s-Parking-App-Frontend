@@ -12,8 +12,9 @@ class BuildFormField extends StatefulWidget {
   final String placeholder;
   final TextEditingController controller;
   String selectedValue;
+  Function validateFn;
   final String label;
-  String verification;
+  Function verification;
   final GlobalKey formKey;
   TextEditingController name;
   TextEditingController email;
@@ -30,6 +31,7 @@ class BuildFormField extends StatefulWidget {
       this.placeholder,
       this.controller,
       this.selectedValue,
+      this.validateFn,
       this.formKey,
       this.name,
       this.email,
@@ -159,9 +161,7 @@ class BuildFormFieldState extends State<BuildFormField> {
           value: 'user',
           groupValue: widget.selectedValue,
           onChanged: (value) {
-            setState(() {
-              widget.selectedValue = value;
-            });
+            widget.validateFn(value);
           },
         ),
         Text(
@@ -173,9 +173,7 @@ class BuildFormFieldState extends State<BuildFormField> {
           activeColor: globals.textColor,
           groupValue: widget.selectedValue,
           onChanged: (value) {
-            setState(() {
-              widget.selectedValue = value;
-            });
+            widget.validateFn(value);
           },
         ),
         Text(
@@ -232,12 +230,12 @@ class BuildFormFieldState extends State<BuildFormField> {
         PinCodeTextField(
           validator: (value) {
             if (value == '' || value.isEmpty) {
-              return 'Please enter some text';
+              return 'Please enter ${value.length != 6 ? 'a valid' : 'the'} verification code';
             }
           },
           appContext: context,
           onChanged: (value) {
-            widget.verification = value;
+            widget.verification(value);
           },
           length: 6,
           obscureText: true,

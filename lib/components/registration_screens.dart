@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates the input widgets that are displayed on each of the registration pages.
@@ -12,8 +13,12 @@ class RegistrationScreens extends StatelessWidget {
   final String info;
   final int step;
   String selectedValue;
+  Function validateFn;
   final GlobalKey formKey;
-  String verificationController;
+  Function verificationController;
+  bool showToolTip;
+  String text;
+  Function hideToolTip;
   TextEditingController _controller = new TextEditingController();
   TextEditingController nameController;
   TextEditingController emailController;
@@ -28,6 +33,7 @@ class RegistrationScreens extends StatelessWidget {
       @required this.info,
       @required this.step,
       this.selectedValue,
+      this.validateFn,
       this.formKey,
       this.nameController,
       this.emailController,
@@ -36,7 +42,10 @@ class RegistrationScreens extends StatelessWidget {
       this.vehicelModelController,
       this.vehicelPlateController,
       this.createPasswordController,
-      this.confirmPasswordController});
+      this.confirmPasswordController,
+      this.showToolTip,
+      this.hideToolTip,
+      this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +53,13 @@ class RegistrationScreens extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          // Render only if we are on the Role page.
+          title == 'Role' || title == 'Password'
+              ? ToolTip(
+                  showToolTip: showToolTip,
+                  text: text,
+                  hideToolTip: hideToolTip)
+              : Container(),
           Padding(
             padding: title == 'Password'
                 ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)
@@ -60,6 +76,7 @@ class RegistrationScreens extends StatelessWidget {
               placeholder: '',
               controller: _controller,
               selectedValue: selectedValue,
+              validateFn: validateFn,
               formKey: formKey,
               email: emailController,
               name: nameController,
