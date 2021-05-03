@@ -19,6 +19,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String selectedValue;
   String verification;
   bool showToolTip;
+  bool showLoader;
   String roleError;
   var details = [];
   final formKey = GlobalKey<FormState>();
@@ -35,6 +36,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     super.initState();
     _step = 1;
     showToolTip = false;
+    showLoader = false;
     roleError = '';
   }
 
@@ -129,6 +131,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       });
     } else if (_step == 5) {
       if (createPassword.text == confirmPassword.text) {
+        setState(() {
+          showLoader = true;
+        });
         register(
                 email: email.text,
                 name: name.text,
@@ -136,11 +141,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 phone: phone.text)
             .then((value) {
           if (value.user.id != null) {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => LoginPage()));
+            setState(() {
+              showLoader = false;
+              roleError =
+                  'You were registered successfully. \n Try Logging in now.';
+            });
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => LoginPage(message: roleError)));
           }
         }).catchError((err) {
           setState(() {
+            showLoader = false;
             showToolTip = true;
             roleError = err;
           });
@@ -229,7 +240,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                   ),
                 )),
-          )
+          ),
+          // Adding a loader
+          showLoader
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.grey[300].withOpacity(0.5),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : Container()
         ]),
       ),
     );

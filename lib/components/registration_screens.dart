@@ -86,7 +86,7 @@ class RegistrationScreens extends StatelessWidget {
               vehicelPlate: vehicelPlateController,
               createPassword: createPasswordController,
               confirmPassword: confirmPasswordController),
-          SizedBox(height: 40.0),
+          SizedBox(height: 60.0),
         ],
       ),
     );

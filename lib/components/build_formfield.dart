@@ -95,7 +95,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {
-                                                return 'Please enter your ${widget.text == 'phone number' ? 'full name' : 'vehicle model'}';
+                                                return 'Please enter your ${widget.text == 'Phone number' ? 'full name' : 'vehicle model'}';
                                               }
                                             },
                                             decoration: InputDecoration(
@@ -116,7 +116,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {
-                                                return 'Please enter your ${widget.text == 'phone number' ? 'phone number' : 'vehicle plate number'}';
+                                                return 'Please enter your ${widget.text == 'Phone number' ? 'phone number' : 'vehicle plate number'}';
                                               }
                                             },
                                             decoration: InputDecoration(

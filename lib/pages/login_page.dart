@@ -9,6 +9,8 @@ import '../config/globals.dart' as globals;
 class LoginPage extends StatefulWidget {
   static const routeName = '/login_page';
 
+  String message;
+  LoginPage({this.message});
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -31,6 +33,10 @@ class _LoginPageState extends State<LoginPage> {
     password.text = 'password1';
     showToolTip = false;
     text = '';
+    if (widget.message.length > 0) {
+      showToolTip = true;
+      text = widget.message;
+    }
   }
 
   void hideToolTip() {
@@ -87,8 +93,8 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: SvgPicture.asset(
                 'assets/images/Logo/PARK_254_1000x400-01.svg',
-                width: 230.0,
-                height: 230.0,
+                width: 200.0,
+                height: 200.0,
               ),
             ),
             SizedBox(height: 65.0),
