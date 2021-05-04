@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -23,6 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
   bool showToolTip;
+  bool showLoader;
+  bool keyboardVisible;
   String text;
   final formKey = GlobalKey<FormState>();
 
@@ -32,10 +35,15 @@ class _LoginPageState extends State<LoginPage> {
     email.text = 'ryan254@gmail.com';
     password.text = 'password1';
     showToolTip = false;
+    showLoader = false;
+    keyboardVisible = false;
     text = '';
-    if (widget.message.length > 0) {
-      showToolTip = true;
-      text = widget.message;
+    // Check whether there's a message to display
+    if (widget.message != null) {
+      if (widget.message.length > 0) {
+        showToolTip = true;
+        text = widget.message;
+      }
     }
   }
 
@@ -50,16 +58,23 @@ class _LoginPageState extends State<LoginPage> {
     if (formKey.currentState.validate()) {
       // Dismiss the keyboard.
       FocusScope.of(context).unfocus();
+      setState(() {
+        showLoader = true;
+      });
       login(email: email.text, password: password.text).then((value) {
         // Todo: Add a way to store credentials in the phone.
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => HomePage()));
         if (value.user.id != null) {
+          setState(() {
+            showLoader = false;
+          });
           print(value.user.id);
         }
       }).catchError((err) {
         setState(() {
           showToolTip = true;
+          showLoader = false;
           text = err;
         });
       });
@@ -68,6 +83,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Check whether the keyboard is visible.
+    MediaQuery.of(context).viewInsets.bottom == 0
+        ? setState(() {
+            keyboardVisible = true;
+          })
+        : setState(() {
+            keyboardVisible = false;
+          });
     return SafeArea(
         child: Scaffold(
       backgroundColor: Colors.white,
@@ -81,81 +104,96 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.of(context).pop();
             }),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            ToolTip(
-              showToolTip: showToolTip,
-              text: text,
-              hideToolTip: hideToolTip,
-            ),
-            Container(
-              child: SvgPicture.asset(
-                'assets/images/Logo/PARK_254_1000x400-01.svg',
-                width: 200.0,
-                height: 200.0,
+      body: Stack(
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: ToolTip(
+                  showToolTip: showToolTip,
+                  text: text,
+                  hideToolTip: hideToolTip,
+                ),
+                flex: 1,
               ),
-            ),
-            SizedBox(height: 65.0),
-            Container(
-                child: Form(
-              child: Form(
-                key: formKey,
-                child: Column(children: <Widget>[
-                  _buildFormField('Phone number'),
-                  SizedBox(height: 15.0),
-                  _buildFormField('Password'),
-                ]),
-              ),
-            )),
-            SizedBox(height: 40.0),
-            Container(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      sendLoginDetails();
-                    },
-                    child: Container(
-                        height: 50.0,
-                        width: MediaQuery.of(context).size.width - 50,
-                        decoration: BoxDecoration(
-                            color: globals.backgroundColor,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(25.0))),
-                        child: Center(
-                          child: Text('Log in',
-                              style: globals.buildTextStyle(
-                                  18.0, true, globals.textColor)),
-                        )),
-                  ),
-                  SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'or',
-                        style:
-                            TextStyle(color: globals.textColor, fontSize: 18.0),
+              keyboardVisible
+                  ? Expanded(
+                      child: Container(
+                        child: SvgPicture.asset(
+                          'assets/images/Logo/PARK_254_1000x400-01.svg',
+                          width: 200.0,
+                          height: 200.0,
+                        ),
                       ),
-                      FlatButton(
-                          padding: EdgeInsets.only(right: 10.0),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => RegistrationPage()));
-                          },
-                          child: Text(
-                            'Sign up',
-                            style: globals.buildTextStyle(
-                                18.0, true, globals.backgroundColor),
-                          )),
-                    ],
-                  )
-                ])),
-          ],
-        ),
+                      flex: 3,
+                    )
+                  : Container(),
+              Spacer(
+                flex: 1,
+              ),
+              Expanded(
+                child: Container(
+                    child: Form(
+                  key: formKey,
+                  child: Column(children: <Widget>[
+                    _buildFormField('Phone number'),
+                    SizedBox(height: 15.0),
+                    _buildFormField('Password'),
+                  ]),
+                )),
+                flex: 3,
+              ),
+              Expanded(
+                child: Container(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          sendLoginDetails();
+                        },
+                        child: Container(
+                            height: 50.0,
+                            width: MediaQuery.of(context).size.width - 50,
+                            decoration: BoxDecoration(
+                                color: globals.backgroundColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25.0))),
+                            child: Center(
+                              child: Text('Log in',
+                                  style: globals.buildTextStyle(
+                                      18.0, true, globals.textColor)),
+                            )),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'or',
+                            style: TextStyle(
+                                color: globals.textColor, fontSize: 18.0),
+                          ),
+                          FlatButton(
+                              padding: EdgeInsets.only(right: 10.0),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => RegistrationPage()));
+                              },
+                              child: Text(
+                                'Sign up',
+                                style: globals.buildTextStyle(
+                                    18.0, true, globals.backgroundColor),
+                              )),
+                        ],
+                      )
+                    ])),
+                flex: 2,
+              ),
+            ],
+          ),
+          showLoader ? Loader() : Container()
+        ],
       ),
     ));
   }

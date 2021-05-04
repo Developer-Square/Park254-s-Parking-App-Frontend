@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
@@ -130,6 +131,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _step += 2;
       });
     } else if (_step == 5) {
+      FocusScope.of(context).unfocus();
       if (createPassword.text == confirmPassword.text) {
         setState(() {
           showLoader = true;
@@ -242,16 +244,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 )),
           ),
           // Adding a loader
-          showLoader
-              ? Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  color: Colors.grey[300].withOpacity(0.5),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : Container()
+          showLoader ? Loader() : Container()
         ]),
       ),
     );

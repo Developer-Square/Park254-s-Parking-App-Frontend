@@ -27,7 +27,10 @@ class _ToolTipState extends State<ToolTip> {
       duration: Duration(milliseconds: 600),
       child: Column(
         children: <Widget>[
-          SizedBox(height: 35.0),
+          widget.text.contains('Incorrect') ||
+                  widget.text.contains('successfully')
+              ? Container()
+              : SizedBox(height: 35.0),
           Align(
             alignment: Alignment.topRight,
             child: Container(
