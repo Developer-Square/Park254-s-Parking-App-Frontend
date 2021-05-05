@@ -7,7 +7,6 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import '../../config/globals.dart' as globals;
 
 import '../../models/userWithToken.model.dart';
-import 'package:park254_s_parking_app/models/error.model.dart';
 
 /// Logs in a user using [email] and [password]
 ///
@@ -31,8 +30,6 @@ Future login({
     final userWithToken = UserWithToken.fromJson(jsonDecode(response.body));
     return userWithToken;
   } else {
-    // final error = Error.fromJson(jsonDecode(response.body));
-    // throw error.message;
     handleError(response.body);
   }
 }

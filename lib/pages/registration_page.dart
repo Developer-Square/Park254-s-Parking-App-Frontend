@@ -155,7 +155,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           setState(() {
             showLoader = false;
             showToolTip = true;
-            roleError = err;
+            roleError = err.message;
           });
         });
       } else {
@@ -223,6 +223,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             alignment: Alignment.bottomCenter,
             child: InkWell(
                 onTap: () {
+                  // Validate the form.
                   if (_step <= 5 && formKey.currentState.validate()) {
                     // Get and record details from every page.
                     sendRegisterDetails();

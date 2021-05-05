@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
@@ -27,7 +30,10 @@ class _LoginPageState extends State<LoginPage> {
   bool showLoader;
   bool keyboardVisible;
   String text;
+  int maxRetries;
   final formKey = GlobalKey<FormState>();
+  final tokens = new FlutterSecureStorage();
+  var loginDetails;
 
   @override
   void initState() {
@@ -38,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     showLoader = false;
     keyboardVisible = false;
     text = '';
+    maxRetries = 0;
     // Check whether there's a message to display
     if (widget.message != null) {
       if (widget.message.length > 0) {
@@ -53,6 +60,15 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  storeLoginDetails(details) async {
+    await tokens.write(key: 'accessToken', value: details.accessToken.token);
+    await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+  }
+
+  clearStorage() async {
+    await tokens.deleteAll();
+  }
+
   // Make the api call.
   void sendLoginDetails() async {
     if (formKey.currentState.validate()) {
@@ -62,20 +78,34 @@ class _LoginPageState extends State<LoginPage> {
         showLoader = true;
       });
       login(email: email.text, password: password.text).then((value) {
-        // Todo: Add a way to store credentials in the phone.
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomePage()));
+        // Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => HomePage()));
         if (value.user.id != null) {
           setState(() {
             showLoader = false;
+            loginDetails = value;
           });
-          print(value.user.id);
+          if (loginDetails != null) {
+            // Store the refresh and access tokens.
+            storeLoginDetails(loginDetails);
+          }
         }
       }).catchError((err) {
+        // ToDo: Add this to a request that needs an access token.
+        // Retry the request after getting status code of 401.
+        // if (err.code == 401) {
+        //   // Keep track and add to the number of retries made.
+        //   // Make only 3 retries
+        //   if (maxRetries < 3) {
+        //     maxRetries += 1;
+        //     retryFuture(
+        //         sendLoginDetails, tokens, storeLoginDetails, clearStorage);
+        //   }
+        // }
         setState(() {
           showToolTip = true;
           showLoader = false;
-          text = err;
+          text = err.message;
         });
       });
     }
@@ -220,7 +250,12 @@ class _LoginPageState extends State<LoginPage> {
           ? (Align(
               alignment: Alignment.centerRight,
               child: FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ForgotResetPassword(
+                              pageType: 'forgot',
+                            )));
+                  },
                   padding: EdgeInsets.only(right: 20.0),
                   child: Text(
                     'Forgot Password',
