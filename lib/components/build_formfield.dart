@@ -19,8 +19,8 @@ class BuildFormField extends StatefulWidget {
   TextEditingController name;
   TextEditingController email;
   TextEditingController phone;
-  TextEditingController vehicelModel;
-  TextEditingController vehicelPlate;
+  TextEditingController vehicleModel;
+  TextEditingController vehiclePlate;
   TextEditingController createPassword;
   TextEditingController confirmPassword;
 
@@ -37,8 +37,8 @@ class BuildFormField extends StatefulWidget {
       this.email,
       this.phone,
       this.verification,
-      this.vehicelModel,
-      this.vehicelPlate,
+      this.vehicleModel,
+      this.vehiclePlate,
       this.createPassword,
       this.confirmPassword});
   @override
@@ -91,7 +91,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                                             controller:
                                                 widget.text == 'Phone number'
                                                     ? widget.name
-                                                    : widget.vehicelModel,
+                                                    : widget.vehicleModel,
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {
@@ -112,7 +112,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                                             controller:
                                                 widget.text == 'Phone number'
                                                     ? widget.phone
-                                                    : widget.vehicelPlate,
+                                                    : widget.vehiclePlate,
                                             validator: (value) {
                                               if (value == '' ||
                                                   value.isEmpty) {

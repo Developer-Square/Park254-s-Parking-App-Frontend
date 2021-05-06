@@ -23,8 +23,8 @@ class RegistrationScreens extends StatelessWidget {
   TextEditingController nameController;
   TextEditingController emailController;
   TextEditingController phoneController;
-  TextEditingController vehicelModelController;
-  TextEditingController vehicelPlateController;
+  TextEditingController vehicleModelController;
+  TextEditingController vehiclePlateController;
   TextEditingController createPasswordController;
   TextEditingController confirmPasswordController;
 
@@ -39,8 +39,8 @@ class RegistrationScreens extends StatelessWidget {
       this.emailController,
       this.phoneController,
       this.verificationController,
-      this.vehicelModelController,
-      this.vehicelPlateController,
+      this.vehicleModelController,
+      this.vehiclePlateController,
       this.createPasswordController,
       this.confirmPasswordController,
       this.showToolTip,
@@ -82,8 +82,8 @@ class RegistrationScreens extends StatelessWidget {
               name: nameController,
               phone: phoneController,
               verification: verificationController,
-              vehicelModel: vehicelModelController,
-              vehicelPlate: vehicelPlateController,
+              vehicleModel: vehicleModelController,
+              vehiclePlate: vehiclePlateController,
               createPassword: createPasswordController,
               confirmPassword: confirmPasswordController),
           SizedBox(height: 60.0),

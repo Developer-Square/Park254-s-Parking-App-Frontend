@@ -27,8 +27,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController name = new TextEditingController();
   TextEditingController email = new TextEditingController();
   TextEditingController phone = new TextEditingController();
-  TextEditingController vehicelModel = new TextEditingController();
-  TextEditingController vehicelPlate = new TextEditingController();
+  TextEditingController vehicleModel = new TextEditingController();
+  TextEditingController vehiclePlate = new TextEditingController();
   TextEditingController createPassword = new TextEditingController();
   TextEditingController confirmPassword = new TextEditingController();
 
@@ -100,8 +100,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
           info: 'Enter your vehicle model',
           step: _step,
           formKey: formKey,
-          vehicelModelController: vehicelModel,
-          vehicelPlateController: vehicelPlate);
+          vehicleModelController: vehicleModel,
+          vehiclePlateController: vehiclePlate);
     } else if (_step == 5) {
       return RegistrationScreens(
           title: 'Password',
@@ -140,7 +140,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 email: email.text,
                 name: name.text,
                 password: createPassword.text,
-                phone: phone.text)
+                phone: phone.text,
+                role: selectedValue,
+                model: vehicleModel.text,
+                plate: vehiclePlate.text)
             .then((value) {
           if (value.user.id != null) {
             setState(() {
