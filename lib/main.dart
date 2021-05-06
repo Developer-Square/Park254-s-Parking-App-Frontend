@@ -9,7 +9,6 @@ import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
-import 'package:park254_s_parking_app/config/home_page_arguements.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';

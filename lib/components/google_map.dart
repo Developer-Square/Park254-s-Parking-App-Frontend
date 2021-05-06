@@ -1,5 +1,6 @@
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 
@@ -26,8 +27,23 @@ class GoogleMapWidget extends StatefulWidget {
 
 class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   BitmapDescriptor bitmapDescriptor;
+  Position currentPosition;
   // A list that stores all the google markers to be displayed.
   List<Marker> allMarkers = [];
+
+  initState() {
+    super.initState();
+    getCurrentLocation();
+    loadDescriptors(context);
+  }
+
+  getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      currentPosition = position;
+    });
+  }
 
   // Load the svg icon.
   loadDescriptors(context) async {
@@ -36,7 +52,6 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   }
 
   Widget build(BuildContext context) {
-    loadDescriptors(context);
     // Display all the available markers on the map.
     parkingPlaces.forEach((value) {
       allMarkers.add(
@@ -59,8 +74,13 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         mapType: MapType.normal,
         zoomGesturesEnabled: true,
         zoomControlsEnabled: true,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(-1.286389, 36.817223), zoom: 14.0),
+        initialCameraPosition: CameraPosition(
+            // Because getting a user's position is an async operation we've to give.
+            // the map some results before the user's position is found.
+            target: currentPosition != null
+                ? LatLng(currentPosition.latitude, currentPosition.longitude)
+                : LatLng(-1.2834, 36.8235),
+            zoom: 14.0),
         markers: Set.from(allMarkers),
         onMapCreated: widget.mapCreated,
         padding:

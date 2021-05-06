@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -13,11 +19,13 @@ class NearByParking extends StatefulWidget {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
-  final GoogleMapController mapController;
+  final Completer<GoogleMapController> mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
   final TextEditingController searchBarController;
   final Function hideMapButtons;
+  final Position currentPosition;
+  final FlutterSecureStorage loginDetails;
 
   NearByParking(
       {@required this.showNearByParkingFn,
@@ -26,7 +34,9 @@ class NearByParking extends StatefulWidget {
       @required this.customInfoWindowController,
       @required this.showFullBackground,
       this.searchBarController,
-      this.hideMapButtons});
+      this.hideMapButtons,
+      this.currentPosition,
+      this.loginDetails});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -37,12 +47,35 @@ class _NearByParkingState extends State<NearByParking>
   double _size;
   bool _large;
   String selectedCard = 'Nearby Parking';
+  var parkingLots;
 
   @override
   void initState() {
     super.initState();
     _size = 278.52;
     _large = false;
+  }
+
+  // Make the api call to get the neares parking lots
+  getNearestParkingPlaces(coords, token) async {
+    var accessToken = await token.read(key: 'accessToken');
+    // print(coords);
+    if (coords != null) {
+      getNearbyParkingLots(
+              token: accessToken,
+              longitude: coords.longitude,
+              latitude: coords.latitude,
+              maxDistance: 500)
+          .then((value) {
+        // Add all the nearby parking lots in the area so that.
+        // we can map over them later.
+        setState(() {
+          parkingLots = value;
+        });
+      }).catchError((err) {
+        print(err.message);
+      });
+    }
   }
 
   /// Increases the size of the nearby and recommended widget.
@@ -84,6 +117,10 @@ class _NearByParkingState extends State<NearByParking>
   }
 
   Widget build(BuildContext context) {
+    getNearestParkingPlaces(widget.currentPosition, widget.loginDetails);
+    if (parkingLots != null) {
+      print(parkingLots.lots.length);
+    }
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
@@ -139,30 +176,31 @@ class _NearByParkingState extends State<NearByParking>
   /// by parking model.
   Widget buildParkingPlacesList(title) {
     return ListView.builder(
-        itemCount: parkingPlaces.length,
+        itemCount: parkingLots.lots.length,
         itemBuilder: (context, index) {
           int picIndex = index + 1;
           return Column(
             children: [
               NearByParkingList(
-                  activeCard: title == selectedCard ? true : false,
-                  imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
-                  parkingPrice: parkingPlaces[index].price,
-                  parkingPlaceName: parkingPlaces[index].parkingPlaceName,
-                  rating: parkingPlaces[index].rating,
-                  distance: parkingPlaces[index].distance,
-                  parkingSlots: parkingPlaces[index].parkingSlots,
-                  mapController: widget.mapController,
-                  customInfoWindowController: widget.customInfoWindowController,
-                  parkingData: parkingPlaces[index],
-                  showNearbyParking: widget.showNearByParkingFn,
-                  hideAllDetails: _closeFullSizeWidgetRedirection,
-                  large: _large,
-                  title: title,
-                  selectedCard: selectedCard,
-                  selectCard: selectCard,
-                  searchBarController: widget.searchBarController,
-                  hideMapButtons: widget.hideMapButtons),
+                activeCard: title == selectedCard ? true : false,
+                imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
+                parkingPrice: parkingPlaces[index].price,
+                parkingPlaceName: parkingLots.lots[index].name,
+                rating: parkingLots.lots[index].rating,
+                distance: parkingPlaces[index].distance,
+                parkingSlots: parkingLots.lots[index].spaces,
+                mapController: widget.mapController,
+                customInfoWindowController: widget.customInfoWindowController,
+                parkingData: parkingLots.lots[index],
+                showNearbyParking: widget.showNearByParkingFn,
+                hideAllDetails: _closeFullSizeWidgetRedirection,
+                large: _large,
+                title: title,
+                selectedCard: selectedCard,
+                selectCard: selectCard,
+                searchBarController: widget.searchBarController,
+                hideMapButtons: widget.hideMapButtons,
+              ),
               SizedBox(height: 20.0)
             ],
           );
@@ -235,7 +273,9 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(height: 19.0),
                 SizedBox(
                     height: _large ? 420.0 : 205.0,
-                    child: buildParkingPlacesList(title)),
+                    child: parkingLots != null
+                        ? buildParkingPlacesList(title)
+                        : Loader()),
               ],
             ),
           ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var _activeTab = 'home';
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  GoogleMapController mapController;
+  Completer<GoogleMapController> mapController = Completer();
   Position currentPosition;
   bool showNearByParking;
   bool showTopPageStyling;
@@ -57,12 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
     hideMapButtons = false;
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
+    getCurrentLocation();
   }
 
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
-    mapController = controller;
+    mapController.complete(controller);
     _customInfoWindowController.googleMapController = controller;
   }
 
@@ -129,6 +132,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Get a user's current location.
+  getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      currentPosition = position;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -159,7 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       hideDetails: showFullParkingWidget,
                       showFullBackground: showFullBackground,
                       searchBarController: searchBarController,
-                      hideMapButtons: hideMapButtonsFn)
+                      hideMapButtons: hideMapButtonsFn,
+                      currentPosition: currentPosition,
+                      loginDetails: widget.loginDetails,
+                    )
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
               // on the parking widget.
@@ -189,8 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           FloatingActionButton.extended(
                             onPressed: () {
-                              loadLocation(mapController, currentPosition,
-                                  closeNearByParking);
+                              loadLocation(mapController, closeNearByParking);
                             },
                             icon: Icon(Icons.location_searching),
                             label: Text(
