@@ -1,5 +1,6 @@
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
@@ -13,8 +14,10 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
   final Function showBottomNavigation;
+  FlutterSecureStorage loginDetails;
 
-  HomeScreen({@required this.showBottomNavigation});
+  HomeScreen(
+      {@required this.showBottomNavigation, @required this.loginDetails});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }

@@ -78,8 +78,11 @@ class _LoginPageState extends State<LoginPage> {
         showLoader = true;
       });
       login(email: email.text, password: password.text).then((value) {
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HomePage(
+                  loginDetails: tokens,
+                  clearStorage: clearStorage,
+                )));
         if (value.user.id != null) {
           setState(() {
             showLoader = false;

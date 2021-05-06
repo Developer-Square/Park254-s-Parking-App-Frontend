@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../config/globals.dart' as globals;
 
 /// Creates a grey overlay and centered loader.
 ///
@@ -25,7 +26,9 @@ class Loader extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       color: Colors.grey[300].withOpacity(0.5),
       child: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          backgroundColor: globals.backgroundColor,
+        ),
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/config/home_page_arguements.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         home: OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
-          '/homepage': (context) => HomePage()
+          // '/homepage': (context) => HomePage()
         },
         onGenerateRoute: (settings) {
           if (settings.name == Booking.routeName) {
@@ -54,6 +55,13 @@ class MyApp extends StatelessWidget {
                 price: args.price,
                 imagePath: args.imagePath,
                 address: args.address,
+              );
+            });
+          } else if (settings.name == HomePage.routeName) {
+            final HomePageArguements args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return HomePage(
+                loginDetails: args.loginDetails,
               );
             });
           } else if (settings.name == SearchPage.routeName) {
