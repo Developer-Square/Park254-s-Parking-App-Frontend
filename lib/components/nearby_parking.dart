@@ -119,7 +119,7 @@ class _NearByParkingState extends State<NearByParking>
   Widget build(BuildContext context) {
     getNearestParkingPlaces(widget.currentPosition, widget.loginDetails);
     if (parkingLots != null) {
-      print(parkingLots.lots.length);
+      print(double.parse((parkingLots.lots[1].distance).toStringAsFixed(2)));
     }
     return Align(
       alignment: Alignment.bottomCenter,
@@ -184,10 +184,10 @@ class _NearByParkingState extends State<NearByParking>
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
                 imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
-                parkingPrice: parkingPlaces[index].price,
+                parkingPrice: parkingLots.lots[index].prices,
                 parkingPlaceName: parkingLots.lots[index].name,
                 rating: parkingLots.lots[index].rating,
-                distance: parkingPlaces[index].distance,
+                distance: parkingLots.lots[index].distance,
                 parkingSlots: parkingLots.lots[index].spaces,
                 mapController: widget.mapController,
                 customInfoWindowController: widget.customInfoWindowController,

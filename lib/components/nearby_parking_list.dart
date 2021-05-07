@@ -30,10 +30,10 @@ import './load_location.dart';
 
 class NearByParkingList extends StatefulWidget {
   final String imgPath;
-  final double parkingPrice;
+  final num parkingPrice;
   final String parkingPlaceName;
   final num rating;
-  final double distance;
+  final num distance;
   final int parkingSlots;
   bool activeCard;
   final NearbyParkingLot parkingData;
@@ -120,8 +120,8 @@ class _NearByParkingList extends State<NearByParkingList> {
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     child: Image(
-                      height: 90.0,
-                      width: 85.0,
+                      height: 80.0,
+                      width: 80.0,
                       fit: BoxFit.cover,
                       image: AssetImage(widget.imgPath),
                     ),
@@ -176,17 +176,18 @@ class _NearByParkingList extends State<NearByParkingList> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Icon(Icons.car_rental),
-                    SizedBox(width: 6.0),
+                    SizedBox(width: 2.0),
                     Text('${widget.parkingSlots} spaces',
                         style: globals.buildTextStyle(
                             14.0, true, globals.textColor)),
-                    SizedBox(width: 13.0),
+                    SizedBox(width: 9.0),
                     Icon(
                       Icons.near_me,
                       size: 17.0,
                     ),
-                    SizedBox(width: 6.0),
-                    Text('${widget.distance.toInt()} m',
+                    SizedBox(width: 3.0),
+                    Text(
+                        '${double.parse((widget.distance).toStringAsFixed(2))} m',
                         style: globals.buildTextStyle(
                             14.0, true, globals.textColor)),
                   ],
