@@ -8,9 +8,11 @@ import '../config/globals.dart' as globals;
 class HomePage extends StatefulWidget {
   static const routeName = '/homepage';
   FlutterSecureStorage loginDetails;
+  Function storeLoginDetails;
   Function clearStorage;
 
-  HomePage({@required this.loginDetails, this.clearStorage});
+  HomePage(
+      {@required this.loginDetails, this.storeLoginDetails, this.clearStorage});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -49,6 +51,8 @@ class _HomePageState extends State<HomePage> {
     if (_activeTab == 'home') {
       return HomeScreen(
         loginDetails: widget.loginDetails,
+        storeLoginDetails: widget.storeLoginDetails,
+        clearStorage: widget.clearStorage,
         showBottomNavigation: hideNavigationIcons,
       );
     } else if (_activeTab == 'profile') {

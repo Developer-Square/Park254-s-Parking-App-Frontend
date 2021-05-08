@@ -11,15 +11,21 @@ import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
   final Function showBottomNavigation;
   FlutterSecureStorage loginDetails;
+  final Function storeLoginDetails;
+  final Function clearStorage;
 
   HomeScreen(
-      {@required this.showBottomNavigation, @required this.loginDetails});
+      {@required this.showBottomNavigation,
+      @required this.loginDetails,
+      this.storeLoginDetails,
+      this.clearStorage});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -45,6 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showBackground;
   bool hideMapButtons;
   bool showBookingTab;
+  bool showToolTip;
+  String text;
 
   @override
   void initState() {
@@ -60,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
     getCurrentLocation();
+    showToolTip = false;
   }
 
   /// A function that receives the GoogleMapController when the map is rendered on the page.
@@ -141,6 +150,19 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  hideToolTip() {
+    setState(() {
+      showToolTip = false;
+    });
+  }
+
+  showToolTipFn(message) {
+    setState(() {
+      showToolTip = true;
+      text = message;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -149,6 +171,9 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
+                  clearStorage: widget.clearStorage,
+                  storeLoginDetails: widget.storeLoginDetails,
+                  tokens: widget.loginDetails,
                   showBookNowTab: hideMapButtonsFn,
                   mapCreated: mapCreated,
                   customInfoWindowController: _customInfoWindowController,
@@ -174,6 +199,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       hideMapButtons: hideMapButtonsFn,
                       currentPosition: currentPosition,
                       loginDetails: widget.loginDetails,
+                      storeLoginDetails: widget.storeLoginDetails,
+                      clearStorage: widget.clearStorage,
+                      showToolTipFn: showToolTipFn,
                     )
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
@@ -227,6 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
+              ToolTip(
+                  showToolTip: showToolTip,
+                  text: text,
+                  hideToolTip: hideToolTip),
               // Add CustomInfoWindow as next child to float this on top GoogleMap.
               CustomInfoWindow(
                   controller: _customInfoWindowController,

@@ -66,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   clearStorage() async {
+    print('In clear details');
     await tokens.deleteAll();
   }
 
@@ -81,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => HomePage(
                   loginDetails: tokens,
+                  storeLoginDetails: storeLoginDetails,
                   clearStorage: clearStorage,
                 )));
         if (value.user.id != null) {
@@ -94,17 +96,6 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       }).catchError((err) {
-        // ToDo: Add this to a request that needs an access token.
-        // Retry the request after getting status code of 401.
-        // if (err.code == 401) {
-        //   // Keep track and add to the number of retries made.
-        //   // Make only 3 retries
-        //   if (maxRetries < 3) {
-        //     maxRetries += 1;
-        //     retryFuture(
-        //         sendLoginDetails, tokens, storeLoginDetails, clearStorage);
-        //   }
-        // }
         setState(() {
           showToolTip = true;
           showLoader = false;

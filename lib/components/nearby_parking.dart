@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
+import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -26,6 +27,10 @@ class NearByParking extends StatefulWidget {
   final Function hideMapButtons;
   final Position currentPosition;
   final FlutterSecureStorage loginDetails;
+  final Function storeLoginDetails;
+  final Function clearStorage;
+  final Function showToolTipFn;
+  final Function hideToolTip;
 
   NearByParking(
       {@required this.showNearByParkingFn,
@@ -36,7 +41,11 @@ class NearByParking extends StatefulWidget {
       this.searchBarController,
       this.hideMapButtons,
       this.currentPosition,
-      this.loginDetails});
+      this.loginDetails,
+      this.storeLoginDetails,
+      this.clearStorage,
+      this.showToolTipFn,
+      this.hideToolTip});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -48,21 +57,22 @@ class _NearByParkingState extends State<NearByParking>
   bool _large;
   String selectedCard = 'Nearby Parking';
   var parkingLots;
+  int maxRetries;
 
   @override
   void initState() {
     super.initState();
     _size = 278.52;
     _large = false;
+    maxRetries = 0;
   }
 
   // Make the api call to get the neares parking lots
-  getNearestParkingPlaces(coords, token) async {
-    var accessToken = await token.read(key: 'accessToken');
-    // print(coords);
+  getNearestParkingPlaces(coords) async {
+    var accessToken = await widget.loginDetails.read(key: 'accessToken');
     if (coords != null) {
       getNearbyParkingLots(
-              token: accessToken,
+              token: accessToken.substring(0, 100),
               longitude: coords.longitude,
               latitude: coords.latitude,
               maxDistance: 500)
@@ -73,7 +83,19 @@ class _NearByParkingState extends State<NearByParking>
           parkingLots = value;
         });
       }).catchError((err) {
-        print(err.message);
+        // Retry the request after getting status code of 401.
+        if (err.code == 401) {
+          // Keep track and add to the number of retries made.
+          // Make only 3 retries
+          if (maxRetries < 3) {
+            print(maxRetries);
+            maxRetries += 1;
+            retryFuture(getNearestParkingPlaces, widget.loginDetails,
+                widget.storeLoginDetails, widget.clearStorage, coords);
+          } else {
+            widget.showToolTipFn(err.message);
+          }
+        }
       });
     }
   }
@@ -117,9 +139,8 @@ class _NearByParkingState extends State<NearByParking>
   }
 
   Widget build(BuildContext context) {
-    getNearestParkingPlaces(widget.currentPosition, widget.loginDetails);
-    if (parkingLots != null) {
-      print(double.parse((parkingLots.lots[1].distance).toStringAsFixed(2)));
+    if (maxRetries < 3) {
+      getNearestParkingPlaces(widget.currentPosition);
     }
     return Align(
       alignment: Alignment.bottomCenter,

@@ -83,15 +83,16 @@ class _NearByParkingList extends State<NearByParkingList> {
     if (widget.large) {
       widget.hideAllDetails();
     }
-    // final latitude = widget.parkingData.locationCoords.latitude;
-    // final longitude = widget.parkingData.locationCoords.longitude;
-    // cameraAnimate(widget.mapController, latitude, longitude);
-    // widget.showNearbyParking();
-    // widget.customInfoWindowController.addInfoWindow(
-    //     InfoWindowWidget(value: widget.parkingData),
-    //     widget.parkingData.locationCoords);
-    // widget.searchBarController.text = widget.parkingPlaceName;
-    // widget.hideMapButtons('nearByParkingList');
+    final latitude = widget.parkingData.location.coordinates[1];
+    final longitude = widget.parkingData.location.coordinates[0];
+    cameraAnimate(widget.mapController, latitude, longitude);
+    widget.showNearbyParking();
+    widget.customInfoWindowController.addInfoWindow(
+        InfoWindowWidget(value: widget.parkingData),
+        LatLng(widget.parkingData.location.coordinates[1],
+            widget.parkingData.location.coordinates[0]));
+    widget.searchBarController.text = widget.parkingPlaceName;
+    widget.hideMapButtons('nearByParkingList');
   }
 
   @override
@@ -120,8 +121,8 @@ class _NearByParkingList extends State<NearByParkingList> {
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     child: Image(
-                      height: 80.0,
-                      width: 80.0,
+                      height: 75.0,
+                      width: 75.0,
                       fit: BoxFit.cover,
                       image: AssetImage(widget.imgPath),
                     ),
@@ -131,9 +132,9 @@ class _NearByParkingList extends State<NearByParkingList> {
                     left: 0,
                     child: Container(
                       color: Colors.blue,
-                      padding: EdgeInsets.all(4.0),
+                      padding: EdgeInsets.all(2.0),
                       child: Text('Ksh ${widget.parkingPrice} / hr',
-                          style: globals.buildTextStyle(12.0, true, 'white')),
+                          style: globals.buildTextStyle(11.5, true, 'white')),
                     ),
                   )
                 ],
@@ -144,8 +145,8 @@ class _NearByParkingList extends State<NearByParkingList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.parkingPlaceName.length > 15.0
-                      ? widget.parkingPlaceName.substring(0, 15)
+                  widget.parkingPlaceName.length > 20.0
+                      ? widget.parkingPlaceName.substring(0, 20) + '...'
                       : widget.parkingPlaceName,
                   style: globals.buildTextStyle(
                       15.0,
