@@ -140,7 +140,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 email: email.text,
                 name: name.text,
                 password: createPassword.text,
-                phone: phone.text,
+                phone: int.parse(phone.text),
                 role: selectedValue,
                 model: vehicleModel.text,
                 plate: vehiclePlate.text)

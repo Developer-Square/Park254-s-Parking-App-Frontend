@@ -41,7 +41,6 @@ class NearbyParkingLot {
       name: json['name'],
       spaces: json['spaces'],
       images: (json['images'] as List).toList(),
-      prices: json['prices'],
       location: NearbyLocation.fromJson(json['location']),
       ratingCount: json['ratingCount'],
       ratingValue: json['ratingValue'],
