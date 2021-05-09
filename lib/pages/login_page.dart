@@ -66,7 +66,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   clearStorage() async {
-    print('In clear details');
     await tokens.deleteAll();
   }
 

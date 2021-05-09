@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
 import '../components/registration_screens.dart';
@@ -136,14 +137,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
         setState(() {
           showLoader = true;
         });
+        var vehicles = [
+          Vehicle(model: vehicleModel.text, plate: vehiclePlate.text)
+        ];
         register(
                 email: email.text,
                 name: name.text,
                 password: createPassword.text,
                 phone: int.parse(phone.text),
                 role: selectedValue,
-                model: vehicleModel.text,
-                plate: vehiclePlate.text)
+                vehicles: vehicles)
             .then((value) {
           if (value.user.id != null) {
             setState(() {
