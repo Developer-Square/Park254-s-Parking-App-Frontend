@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import '../../config/globals.dart' as globals;
 
 import '../../models/userWithToken.model.dart';
@@ -11,14 +12,15 @@ import '../../models/userWithToken.model.dart';
 /// Registers a new user
 ///
 /// Returns a user with their access and refresh tokens [UserWithToken]
-/// Parameters: [email], [name], [role], and [password]
+/// Parameters: [email], [name], [role], [password], [phone], and [vehicles]
 /// [role] is not required and defaults to 'user
+
 Future<UserWithToken> register(
     {@required String email,
     @required String name,
     String role = 'user',
     @required String password,
-    @required String phone,
+    @required int phone,
     String model,
     String plate}) async {
   Map<String, String> headers = {
