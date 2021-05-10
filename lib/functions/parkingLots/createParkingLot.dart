@@ -19,6 +19,9 @@ Future<ParkingLot> createParkingLot({
   @required num latitude,
   @required List<String> images,
   @required String token,
+  @required int price,
+  @required String address,
+  String city = 'Nairobi',
 }) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
@@ -34,6 +37,9 @@ Future<ParkingLot> createParkingLot({
       'coordinates': [longitude.toString(), latitude.toString()],
     },
     'images': images,
+    'price': price,
+    'address': address,
+    'city': city,
   });
   final response = await http.post(
     url,

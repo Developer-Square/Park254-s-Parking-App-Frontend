@@ -21,6 +21,9 @@ Future<ParkingLot> updateParkingLot({
   num longitude = 0,
   num latitude = 0,
   List<String> images = const [],
+  int price = 0,
+  String address = '',
+  String city = '',
 }) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
@@ -35,10 +38,11 @@ Future<ParkingLot> updateParkingLot({
       'coordinates': [longitude, latitude],
     },
     'images': images,
+    'price': price,
+    'address': address,
+    'city': city,
   };
-  body.removeWhere(
-    (key, value) => value == '' || value == 0,
-  );
+  body.removeWhere((key, value) => value == '' || value == 0);
   if (longitude == 0 || latitude == 0) {
     body.remove('location');
   }

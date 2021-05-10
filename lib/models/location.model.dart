@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Converts a location object to and from Json
 class Location {
   final String type;
   final List<dynamic> coordinates;
@@ -8,7 +9,7 @@ class Location {
   Location({
     @required this.type,
     @required this.coordinates,
-    this.id,
+    @required this.id,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) {

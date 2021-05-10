@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/rating.model.dart';
 import 'dart:core';
 
+/// Creates a list of Ratings with metadata from Json
 class QueryRatings {
   final List<Rating> ratings;
   final int page;

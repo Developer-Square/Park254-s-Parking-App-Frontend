@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Creates an error object from Json
 class Error {
   final int code;
   final String message;

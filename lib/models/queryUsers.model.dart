@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'user.model.dart';
 import 'dart:core';
 
+/// Creates a list of users with metadata from Json
 class QueryUsers {
   final List<User> users;
   final int page;
