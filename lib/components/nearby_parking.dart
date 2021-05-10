@@ -70,7 +70,6 @@ class _NearByParkingState extends State<NearByParking>
   // Make the api call to get the neares parking lots
   getNearestParkingPlaces(coords) async {
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
-    print(accessToken);
     if (coords != null) {
       getNearbyParkingLots(
               token: accessToken,

@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
@@ -54,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showToolTip;
   String text;
   int index;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -76,6 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
+    setState(() {
+      isLoading = false;
+    });
     mapController.complete(controller);
     _customInfoWindowController.googleMapController = controller;
   }
@@ -183,6 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   mapCreated: mapCreated,
                   customInfoWindowController: _customInfoWindowController,
                   searchBarController: searchBarController),
+              // Show Loader to prevent the black/error screen that appears before.
+              // the map is displayed.
+              isLoading ? Loader() : Container(),
               // The blue background that appears when the nearby parking widget.
               // is enlarged.
               showBackground
