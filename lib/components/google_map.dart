@@ -96,6 +96,10 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   }
 
   // Get a user's current location to redirect the map to that location.
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the funtion will return an error.
   getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -126,7 +130,9 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         zoomGesturesEnabled: true,
         zoomControlsEnabled: true,
         initialCameraPosition: CameraPosition(
-            target: LatLng(currentPosition.latitude, currentPosition.longitude),
+            target: currentPosition != null
+                ? LatLng(currentPosition.latitude, currentPosition.longitude)
+                : LatLng(-1.2834, 36.8235),
             zoom: 14.0),
         markers: Set.from(allMarkers),
         onMapCreated: widget.mapCreated,

@@ -16,12 +16,14 @@ class BookingTab extends StatefulWidget {
   bool homeScreen;
   final Function showNearbyParking;
   final Function hideMapButtons;
+  final int index;
 
   BookingTab(
       {@required this.searchBarController,
       this.homeScreen,
       this.showNearbyParking,
-      this.hideMapButtons});
+      this.hideMapButtons,
+      this.index});
   @override
   _BookingTabState createState() => _BookingTabState();
 }
@@ -69,7 +71,8 @@ class _BookingTabState extends State<BookingTab> {
                   : Container(),
               NearByParkingList(
                   activeCard: false,
-                  imgPath: 'assets/images/parking_photos/parking_9.jpg',
+                  imgPath:
+                      'assets/images/parking_photos/parking_${widget.index}.jpg',
                   parkingPrice: 400,
                   parkingPlaceName: widget.searchBarController.text.length > 20
                       ? widget.searchBarController.text.substring(0, 20) + '...'

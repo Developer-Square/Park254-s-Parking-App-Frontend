@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SearchPageArguments {
   final String specificLocation;
   final String town;
   final Function setShowRecentSearches;
+  final FlutterSecureStorage loginDetails;
 
-  SearchPageArguments({
-    @required this.specificLocation,
-    @required this.town,
-    @required this.setShowRecentSearches,
-  });
+  SearchPageArguments(
+      {@required this.specificLocation,
+      @required this.town,
+      @required this.setShowRecentSearches,
+      @required this.loginDetails});
 }
 
 class RatingTabArguements {

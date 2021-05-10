@@ -12,7 +12,7 @@ class NearbyParkingLot {
   final int ratingCount;
   final num rating;
   final num distance;
-  final num prices;
+  final num price;
 
   NearbyParkingLot(
       {@required this.id,
@@ -25,7 +25,7 @@ class NearbyParkingLot {
       @required this.ratingValue,
       @required this.rating,
       @required this.distance,
-      @required this.prices});
+      @required this.price});
 
   factory NearbyParkingLot.fromJson(Map<String, dynamic> json) {
     return NearbyParkingLot(
@@ -34,7 +34,7 @@ class NearbyParkingLot {
       name: json['name'],
       spaces: json['spaces'],
       images: (json['images'] as List).toList(),
-      prices: json['prices'],
+      price: json['price'],
       location: NearbyLocation.fromJson(json['location']),
       ratingCount: json['ratingCount'],
       ratingValue: json['ratingValue'],

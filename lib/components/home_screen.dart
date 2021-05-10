@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showBookingTab;
   bool showToolTip;
   String text;
+  int index;
 
   @override
   void initState() {
@@ -69,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     searchBarController.addListener(changeSearchText);
     getCurrentLocation();
     showToolTip = false;
+    index = 1;
   }
 
   /// A function that receives the GoogleMapController when the map is rendered on the page.
@@ -102,8 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // Hides the info window when a user want to see the nearby parking locations.
 // This is so that the info window does not overlap the nearby parking widget.
-  void showNearByParkingFn() {
+  void showNearByParkingFn([picIndex]) {
     setState(() {
+      if (picIndex != null) {
+        index = picIndex;
+      }
       showNearByParking = !showNearByParking;
       _customInfoWindowController.hideInfoWindow();
     });
@@ -211,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       margin: EdgeInsets.only(
                           bottom: MediaQuery.of(context).size.height / 20.0),
                       child: BookingTab(
+                          index: index,
                           homeScreen: true,
                           showNearbyParking: showNearByParkingFn,
                           hideMapButtons: hideMapButtonsFn,
@@ -219,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(
+                      loginDetails: widget.loginDetails,
                       searchBarController: searchBarController,
                       currentPage: 'home',
                       widget: null,

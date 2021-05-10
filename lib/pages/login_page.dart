@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
@@ -34,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final tokens = new FlutterSecureStorage();
   var loginDetails;
+  bool locationEnabled;
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     keyboardVisible = false;
     text = '';
     maxRetries = 0;
+    locationEnabled = false;
     // Check whether there's a message to display
     if (widget.message != null) {
       if (widget.message.length > 0) {
@@ -66,8 +69,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   clearStorage() async {
-    print('In clear details');
     await tokens.deleteAll();
+  }
+
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the function will request for permission.
+  Future checkPermissions() async {
+    bool serviceEnabled;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      return Future.value('true');
+    }
+
+    return Future.value('true');
   }
 
   // Make the api call.
@@ -79,28 +102,32 @@ class _LoginPageState extends State<LoginPage> {
         showLoader = true;
       });
       login(email: email.text, password: password.text).then((value) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => HomePage(
-                  loginDetails: tokens,
-                  storeLoginDetails: storeLoginDetails,
-                  clearStorage: clearStorage,
-                )));
-        if (value.user.id != null) {
-          setState(() {
-            showLoader = false;
-            loginDetails = value;
-          });
-          if (loginDetails != null) {
-            // Store the refresh and access tokens.
-            storeLoginDetails(loginDetails);
+        // Only proceed to the HomePage when permissions are granted.
+        checkPermissions().then((permissionValue) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => HomePage(
+                    loginDetails: tokens,
+                    storeLoginDetails: storeLoginDetails,
+                    clearStorage: clearStorage,
+                  )));
+          if (value.user.id != null) {
+            setState(() {
+              showLoader = false;
+              loginDetails = value;
+            });
+            if (loginDetails != null) {
+              // Store the refresh and access tokens.
+              storeLoginDetails(loginDetails);
+            }
           }
-        }
-      }).catchError((err) {
-        setState(() {
-          showToolTip = true;
-          showLoader = false;
-          text = err.message;
         });
+      }).catchError((err) {
+        print(err);
+        // setState(() {
+        //   showToolTip = true;
+        //   showLoader = false;
+        //   text = err.message;
+        // });
       });
     }
   }

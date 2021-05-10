@@ -72,7 +72,7 @@ class _NearByParkingState extends State<NearByParking>
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
     if (coords != null) {
       getNearbyParkingLots(
-              token: accessToken.substring(0, 100),
+              token: accessToken,
               longitude: coords.longitude,
               latitude: coords.latitude,
               maxDistance: 500)
@@ -88,7 +88,6 @@ class _NearByParkingState extends State<NearByParking>
           // Keep track and add to the number of retries made.
           // Make only 3 retries
           if (maxRetries < 3) {
-            print(maxRetries);
             maxRetries += 1;
             retryFuture(getNearestParkingPlaces, widget.loginDetails,
                 widget.storeLoginDetails, widget.clearStorage, coords);
@@ -205,7 +204,7 @@ class _NearByParkingState extends State<NearByParking>
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
                 imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
-                parkingPrice: parkingLots.lots[index].prices,
+                parkingPrice: parkingLots.lots[index].price,
                 parkingPlaceName: parkingLots.lots[index].name,
                 rating: parkingLots.lots[index].rating,
                 distance: parkingLots.lots[index].distance,

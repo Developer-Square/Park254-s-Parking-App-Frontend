@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
                     setShowRecentSearches: args.setShowRecentSearches,
                   ),
                   GoogleMapWidget(
+                    tokens: args.loginDetails,
                     mapCreated: args3.mapCreated,
                     customInfoWindowController:
                         args3.customInfoWindowController,
@@ -107,6 +108,7 @@ class MyApp extends StatelessWidget {
             final NearByParkingArguements args1 = settings.arguments;
             final TopPageStylingArguements args2 = settings.arguments;
             final GoogleMapWidgetArguements args3 = settings.arguments;
+            final HomePageArguements args4 = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return Column(
                 children: [
@@ -131,6 +133,7 @@ class MyApp extends StatelessWidget {
                       currentPage: args2.currentPage,
                       widget: args2.widget),
                   GoogleMapWidget(
+                    tokens: args4.loginDetails,
                     mapCreated: args3.mapCreated,
                     customInfoWindowController:
                         args3.customInfoWindowController,
