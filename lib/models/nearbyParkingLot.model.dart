@@ -14,8 +14,6 @@ class NearbyParkingLot {
   final num rating;
   final num distance;
   final int price;
-  final String address;
-  final String city;
 
   NearbyParkingLot({
     @required this.id,
@@ -28,8 +26,6 @@ class NearbyParkingLot {
     @required this.ratingValue,
     @required this.rating,
     @required this.distance,
-    @required this.address,
-    @required this.city,
     @required this.price,
   });
 
@@ -48,8 +44,6 @@ class NearbyParkingLot {
           : json['ratingValue'] / json['ratingCount'],
       distance: json['address']['distance'],
       price: json['price'],
-      address: json['address'],
-      city: json['city'],
     );
   }
 }
