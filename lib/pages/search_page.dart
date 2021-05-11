@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
@@ -25,6 +26,9 @@ import '../config/globals.dart' as globals;
 /// with the chosen parking place name.
 class SearchPage extends StatefulWidget {
   static const routeName = '/search_page';
+
+  final FlutterSecureStorage loginDetails;
+  SearchPage({this.loginDetails});
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -155,8 +159,10 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       showRatingTab = false;
     });
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => HomePage()));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => HomePage(
+              loginDetails: widget.loginDetails,
+            )));
   }
 
 // When user clicks on a recent search and the booking tab shows up.
@@ -206,6 +212,7 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
+                tokens: widget.loginDetails,
                 showBookNowTab: showBookNowTabFn,
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,

@@ -14,42 +14,40 @@ class NearbyParkingLot {
   final num rating;
   final num distance;
   final int price;
-  final String address;
-  final String city;
+  final dynamic address;
+  final dynamic city;
 
-  NearbyParkingLot({
-    @required this.id,
-    @required this.owner,
-    @required this.name,
-    @required this.spaces,
-    @required this.images,
-    @required this.location,
-    @required this.ratingCount,
-    @required this.ratingValue,
-    @required this.rating,
-    @required this.distance,
-    @required this.address,
-    @required this.city,
-    @required this.price,
-  });
+  NearbyParkingLot(
+      {@required this.id,
+      @required this.owner,
+      @required this.name,
+      @required this.spaces,
+      @required this.images,
+      @required this.location,
+      @required this.ratingCount,
+      @required this.ratingValue,
+      @required this.rating,
+      @required this.distance,
+      @required this.price,
+      @required this.address,
+      @required this.city});
 
   factory NearbyParkingLot.fromJson(Map<String, dynamic> json) {
     return NearbyParkingLot(
-      id: json['_id'],
-      owner: json['owner'],
-      name: json['name'],
-      spaces: json['spaces'],
-      images: (json['images'] as List).toList(),
-      location: NearbyLocation.fromJson(json['location']),
-      ratingCount: json['ratingCount'],
-      ratingValue: json['ratingValue'],
-      rating: (json['ratingCount'] == 0)
-          ? 0
-          : json['ratingValue'] / json['ratingCount'],
-      distance: json['address']['distance'],
-      price: json['price'],
-      address: json['address'],
-      city: json['city'],
-    );
+        id: json['_id'],
+        owner: json['owner'],
+        name: json['name'],
+        spaces: json['spaces'],
+        images: (json['images'] as List).toList(),
+        location: NearbyLocation.fromJson(json['location']),
+        ratingCount: json['ratingCount'],
+        ratingValue: json['ratingValue'],
+        rating: (json['ratingCount'] == 0)
+            ? 0
+            : json['ratingValue'] / json['ratingCount'],
+        distance: json['address']['distance'],
+        price: json['price'],
+        address: json['address'],
+        city: json['city']);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/search_bar.dart';
 
@@ -14,11 +15,13 @@ class TopPageStyling extends StatelessWidget {
   final searchBarController;
   final currentPage;
   final widget;
+  final FlutterSecureStorage loginDetails;
 
   TopPageStyling(
       {this.searchBarController,
       @required this.currentPage,
-      @required this.widget});
+      @required this.widget,
+      this.loginDetails});
   Widget build(BuildContext context) {
     return Container(
       height: currentPage == 'myparking' ? 260.0 : 210.0,
@@ -58,6 +61,7 @@ class TopPageStyling extends StatelessWidget {
                       : 24.0),
               currentPage == 'home'
                   ? SearchBar(
+                      loginDetails: loginDetails,
                       offsetY: 4.0,
                       blurRadius: 6.0,
                       opacity: 0.9,

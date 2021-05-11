@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import '../config/globals.dart' as globals;
 
@@ -24,6 +25,7 @@ class SearchBar extends StatefulWidget {
   final bool searchBarTapped;
   final bool showSuggestion;
   final Function showSuggestionFn;
+  final FlutterSecureStorage loginDetails;
 
   SearchBar(
       {@required this.offsetY,
@@ -32,7 +34,8 @@ class SearchBar extends StatefulWidget {
       @required this.controller,
       @required this.searchBarTapped,
       this.showSuggestion,
-      this.showSuggestionFn});
+      this.showSuggestionFn,
+      this.loginDetails});
   @override
   SearchBarState createState() => SearchBarState();
 }
@@ -67,8 +70,10 @@ class SearchBarState extends State<SearchBar> {
               // If the user is on the home page, navigate to the search page.
               onTap: () {
                 widget.searchBarTapped == false
-                    ? Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => SearchPage()))
+                    ? Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SearchPage(
+                              loginDetails: widget.loginDetails,
+                            )))
                     // If the show suggestions are set to false then the user taps on the.
                     // search bar suggestions should be set to true.
                     : widget.showSuggestion == false

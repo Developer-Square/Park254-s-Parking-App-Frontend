@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/profile_screen.dart';
 import '../config/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/homepage';
+  FlutterSecureStorage loginDetails;
+  Function storeLoginDetails;
+  Function clearStorage;
+
+  HomePage(
+      {@required this.loginDetails, this.storeLoginDetails, this.clearStorage});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -42,10 +50,15 @@ class _HomePageState extends State<HomePage> {
   changeScreens(hideNavigationIcons) {
     if (_activeTab == 'home') {
       return HomeScreen(
+        loginDetails: widget.loginDetails,
+        storeLoginDetails: widget.storeLoginDetails,
+        clearStorage: widget.clearStorage,
         showBottomNavigation: hideNavigationIcons,
       );
     } else if (_activeTab == 'profile') {
       return ProfileScreen(
+        loginDetails: widget.loginDetails,
+        clearStorage: widget.clearStorage,
         profileImgPath: 'assets/images/profile/profile-1.jpg',
         logo1Path: 'assets/images/profile/visa_2.svg',
         logo2Path: 'assets/images/profile/mpesa.svg',

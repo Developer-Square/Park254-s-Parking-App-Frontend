@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:park254_s_parking_app/pages/forgot_password.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import '../config/globals.dart' as globals;
-import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
+  static const routeName = '/login_page';
+
+  String message;
+  LoginPage({this.message});
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -14,8 +25,123 @@ class LoginPage extends StatefulWidget {
 /// Has an option at the bottom, where a user can choose to signup.
 /// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController email = new TextEditingController();
+  TextEditingController password = new TextEditingController();
+  bool showToolTip;
+  bool showLoader;
+  bool keyboardVisible;
+  String text;
+  int maxRetries;
+  final formKey = GlobalKey<FormState>();
+  final tokens = new FlutterSecureStorage();
+  var loginDetails;
+  bool locationEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    email.text = 'ryan254@gmail.com';
+    password.text = 'password1';
+    showToolTip = false;
+    showLoader = false;
+    keyboardVisible = false;
+    text = '';
+    maxRetries = 0;
+    locationEnabled = false;
+    // Check whether there's a message to display
+    if (widget.message != null) {
+      if (widget.message.length > 0) {
+        showToolTip = true;
+        text = widget.message;
+      }
+    }
+  }
+
+  void hideToolTip() {
+    setState(() {
+      showToolTip = false;
+    });
+  }
+
+  storeLoginDetails(details) async {
+    await tokens.write(key: 'accessToken', value: details.accessToken.token);
+    await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+  }
+
+  clearStorage() async {
+    await tokens.deleteAll();
+  }
+
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the function will request for permission.
+  Future checkPermissions() async {
+    bool serviceEnabled;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      return Future.value('true');
+    }
+
+    return Future.value('true');
+  }
+
+  // Make the api call.
+  void sendLoginDetails() async {
+    if (formKey.currentState.validate()) {
+      // Dismiss the keyboard.
+      FocusScope.of(context).unfocus();
+      setState(() {
+        showLoader = true;
+      });
+      login(email: email.text, password: password.text).then((value) {
+        // Only proceed to the HomePage when permissions are granted.
+        checkPermissions().then((permissionValue) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => HomePage(
+                    loginDetails: tokens,
+                    storeLoginDetails: storeLoginDetails,
+                    clearStorage: clearStorage,
+                  )));
+          if (value.user.id != null) {
+            setState(() {
+              showLoader = false;
+              loginDetails = value;
+            });
+            if (loginDetails != null) {
+              // Store the refresh and access tokens.
+              storeLoginDetails(loginDetails);
+            }
+          }
+        });
+      }).catchError((err) {
+        print(err);
+        // setState(() {
+        //   showToolTip = true;
+        //   showLoader = false;
+        //   text = err.message;
+        // });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Check whether the keyboard is visible.
+    MediaQuery.of(context).viewInsets.bottom == 0
+        ? setState(() {
+            keyboardVisible = true;
+          })
+        : setState(() {
+            keyboardVisible = false;
+          });
     return SafeArea(
         child: Scaffold(
       backgroundColor: Colors.white,
@@ -29,74 +155,96 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.of(context).pop();
             }),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              child: SvgPicture.asset(
-                'assets/images/Logo/PARK_254_1000x400-01.svg',
-                width: 260.0,
-                height: 260.0,
+      body: Stack(
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: ToolTip(
+                  showToolTip: showToolTip,
+                  text: text,
+                  hideToolTip: hideToolTip,
+                ),
+                flex: 1,
               ),
-            ),
-            SizedBox(height: 75.0),
-            Container(
-                child: Form(
-              child: Column(children: <Widget>[
-                _buildFormField('Phone number'),
-                SizedBox(height: 15.0),
-                _buildFormField('Password'),
-              ]),
-            )),
-            SizedBox(height: 40.0),
-            Container(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HomePage()));
-                    },
-                    child: Container(
-                        height: 50.0,
-                        width: MediaQuery.of(context).size.width - 50,
-                        decoration: BoxDecoration(
-                            color: globals.backgroundColor,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(25.0))),
-                        child: Center(
-                          child: Text('Log in',
-                              style: globals.buildTextStyle(
-                                  18.0, true, globals.textColor)),
-                        )),
-                  ),
-                  SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'or',
-                        style:
-                            TextStyle(color: globals.textColor, fontSize: 18.0),
+              keyboardVisible
+                  ? Expanded(
+                      child: Container(
+                        child: SvgPicture.asset(
+                          'assets/images/Logo/PARK_254_1000x400-01.svg',
+                          width: 200.0,
+                          height: 200.0,
+                        ),
                       ),
-                      FlatButton(
-                          padding: EdgeInsets.only(right: 10.0),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => RegistrationPage()));
-                          },
-                          child: Text(
-                            'Sign up',
-                            style: globals.buildTextStyle(
-                                18.0, true, globals.backgroundColor),
-                          )),
-                    ],
-                  )
-                ])),
-          ],
-        ),
+                      flex: 3,
+                    )
+                  : Container(),
+              Spacer(
+                flex: 1,
+              ),
+              Expanded(
+                child: Container(
+                    child: Form(
+                  key: formKey,
+                  child: Column(children: <Widget>[
+                    _buildFormField('Phone number'),
+                    SizedBox(height: 15.0),
+                    _buildFormField('Password'),
+                  ]),
+                )),
+                flex: 3,
+              ),
+              Expanded(
+                child: Container(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          sendLoginDetails();
+                        },
+                        child: Container(
+                            height: 50.0,
+                            width: MediaQuery.of(context).size.width - 50,
+                            decoration: BoxDecoration(
+                                color: globals.backgroundColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25.0))),
+                            child: Center(
+                              child: Text('Log in',
+                                  style: globals.buildTextStyle(
+                                      18.0, true, globals.textColor)),
+                            )),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'or',
+                            style: TextStyle(
+                                color: globals.textColor, fontSize: 18.0),
+                          ),
+                          FlatButton(
+                              padding: EdgeInsets.only(right: 10.0),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => RegistrationPage()));
+                              },
+                              child: Text(
+                                'Sign up',
+                                style: globals.buildTextStyle(
+                                    18.0, true, globals.backgroundColor),
+                              )),
+                        ],
+                      )
+                    ])),
+                flex: 2,
+              ),
+            ],
+          ),
+          showLoader ? Loader() : Container()
+        ],
       ),
     ));
   }
@@ -107,6 +255,14 @@ class _LoginPageState extends State<LoginPage> {
       Container(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: TextFormField(
+            validator: (value) {
+              if (value == '' || value.isEmpty) {
+                return 'Please enter your ${text.toLowerCase()}';
+              }
+            },
+            controller: text == 'Password' ? password : email,
+            obscureText: text == 'Password' ? true : false,
+            obscuringCharacter: '*',
             decoration: InputDecoration(
                 hintText: text,
                 hintStyle: TextStyle(color: globals.placeHolderColor)),
@@ -115,7 +271,12 @@ class _LoginPageState extends State<LoginPage> {
           ? (Align(
               alignment: Alignment.centerRight,
               child: FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ForgotResetPassword(
+                              pageType: 'forgot',
+                            )));
+                  },
                   padding: EdgeInsets.only(right: 20.0),
                   child: Text(
                     'Forgot Password',

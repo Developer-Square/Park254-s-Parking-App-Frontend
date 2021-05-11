@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import '../config/globals.dart' as globals;
 import './load_location.dart';
 
@@ -21,16 +27,17 @@ import './load_location.dart';
 /// parkingSlots: 5,
 /// coordinates: LatLng())
 ///```
-class NearByParkingList extends StatelessWidget {
+
+class NearByParkingList extends StatefulWidget {
   final String imgPath;
-  final double parkingPrice;
+  final num parkingPrice;
   final String parkingPlaceName;
-  final double rating;
-  final double distance;
+  final num rating;
+  final num distance;
   final int parkingSlots;
   bool activeCard;
-  final Parking parkingData;
-  final GoogleMapController mapController;
+  final NearbyParkingLot parkingData;
+  final Completer<GoogleMapController> mapController;
   final Function showNearbyParking;
   final CustomInfoWindowController customInfoWindowController;
   final Function hideAllDetails;
@@ -41,54 +48,61 @@ class NearByParkingList extends StatelessWidget {
   final TextEditingController searchBarController;
   final Function hideMapButtons;
 
-  NearByParkingList(
-      {@required this.imgPath,
-      @required this.parkingPrice,
-      @required this.parkingPlaceName,
-      @required this.rating,
-      @required this.distance,
-      @required this.parkingSlots,
-      @required this.activeCard,
-      this.parkingData,
-      this.mapController,
-      this.showNearbyParking,
-      this.customInfoWindowController,
-      this.hideAllDetails,
-      this.large,
-      this.title,
-      this.selectedCard,
-      this.selectCard,
-      this.searchBarController,
-      this.hideMapButtons});
+  NearByParkingList({
+    @required this.imgPath,
+    @required this.parkingPrice,
+    @required this.parkingPlaceName,
+    @required this.rating,
+    @required this.distance,
+    @required this.parkingSlots,
+    @required this.activeCard,
+    this.parkingData,
+    this.mapController,
+    this.showNearbyParking,
+    this.customInfoWindowController,
+    this.hideAllDetails,
+    this.large,
+    this.title,
+    this.selectedCard,
+    this.selectCard,
+    this.searchBarController,
+    this.hideMapButtons,
+  });
+  @override
+  _NearByParkingList createState() => _NearByParkingList();
+}
+
+class _NearByParkingList extends State<NearByParkingList> {
+  // Redirects the user to the specific parking location.
+  // that he/she clicked on the Nearby parking widget or Recommended parking.
+  // Opens up the infoWindow.
+  void redirectToLocation() {
+    // If the nearby parking widget is enlarged.
+    // Then hide the background and parking widget.
+    // when redirecting the user to the clicked location
+    if (widget.large) {
+      widget.hideAllDetails();
+    }
+    final latitude = widget.parkingData.location.coordinates[1];
+    final longitude = widget.parkingData.location.coordinates[0];
+    cameraAnimate(widget.mapController, latitude, longitude);
+    widget.showNearbyParking();
+    widget.customInfoWindowController.addInfoWindow(
+        InfoWindowWidget(value: widget.parkingData),
+        LatLng(widget.parkingData.location.coordinates[1],
+            widget.parkingData.location.coordinates[0]));
+    widget.searchBarController.text = widget.parkingPlaceName;
+    widget.hideMapButtons('nearByParkingList');
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Redirects the user to the specific parking location.
-    // that he/she clicked on the Nearby parking widget or Recommended parking.
-    // Opens up the infoWindow.
-    void redirectToLocation() {
-      // If the nearby parking widget is enlarged.
-      // Then hide the background and parking widget.
-      // when redirecting the user to the clicked location
-      if (large) {
-        hideAllDetails();
-      }
-      final latitude = parkingData.locationCoords.latitude;
-      final longitude = parkingData.locationCoords.longitude;
-      cameraAnimate(mapController, latitude, longitude);
-      showNearbyParking();
-      customInfoWindowController.addInfoWindow(
-          InfoWindowWidget(value: parkingData), parkingData.locationCoords);
-      searchBarController.text = parkingPlaceName;
-      hideMapButtons('nearByParkingList');
-    }
-
     return InkWell(
       // If its the selected card then redirect the user.
       // Else select the card.
-      onTap: title == selectedCard
+      onTap: widget.title == widget.selectedCard
           ? () => redirectToLocation()
-          : () => selectCard(title),
+          : () => widget.selectCard(widget.title),
       child: Container(
           height: 80.0,
           child: Row(children: <Widget>[
@@ -107,10 +121,10 @@ class NearByParkingList extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     child: Image(
-                      height: 90.0,
-                      width: 85.0,
+                      height: 75.0,
+                      width: 75.0,
                       fit: BoxFit.cover,
-                      image: AssetImage(imgPath),
+                      image: AssetImage(widget.imgPath),
                     ),
                   ),
                   Positioned(
@@ -118,9 +132,9 @@ class NearByParkingList extends StatelessWidget {
                     left: 0,
                     child: Container(
                       color: Colors.blue,
-                      padding: EdgeInsets.all(4.0),
-                      child: Text('Ksh $parkingPrice / hr',
-                          style: globals.buildTextStyle(12.0, true, 'white')),
+                      padding: EdgeInsets.all(2.0),
+                      child: Text('Ksh ${widget.parkingPrice} / hr',
+                          style: globals.buildTextStyle(11.5, true, 'white')),
                     ),
                   )
                 ],
@@ -131,20 +145,28 @@ class NearByParkingList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  parkingPlaceName,
+                  widget.parkingPlaceName.length > 20.0
+                      ? widget.parkingPlaceName.substring(0, 20) + '...'
+                      : widget.parkingPlaceName,
                   style: globals.buildTextStyle(
                       15.0,
                       true,
-                      activeCard
+                      widget.activeCard
                           ? globals.textColor
                           : globals.textColor.withOpacity(0.7)),
                 ),
                 SizedBox(height: 4.0),
                 Row(
                   children: [
-                    Text('$rating',
+                    Text('${widget.rating}',
                         style: globals.buildTextStyle(
-                            15.0, true, globals.backgroundColor)),
+                            15.0,
+                            true,
+                            widget.rating > 3.0
+                                ? globals.backgroundColor
+                                : widget.rating == 0
+                                    ? globals.textColor
+                                    : Colors.red)),
                     SizedBox(width: 8.0),
                     Text('PARKING MALL',
                         style: TextStyle(fontSize: 14.0, color: Colors.grey))
@@ -155,17 +177,18 @@ class NearByParkingList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Icon(Icons.car_rental),
-                    SizedBox(width: 6.0),
-                    Text('$parkingSlots Spaces',
+                    SizedBox(width: 2.0),
+                    Text('${widget.parkingSlots} spaces',
                         style: globals.buildTextStyle(
                             14.0, true, globals.textColor)),
-                    SizedBox(width: 15.0),
+                    SizedBox(width: 9.0),
                     Icon(
                       Icons.near_me,
                       size: 17.0,
                     ),
-                    SizedBox(width: 6.0),
-                    Text('$distance m',
+                    SizedBox(width: 3.0),
+                    Text(
+                        '${double.parse((widget.distance).toStringAsFixed(2))} m',
                         style: globals.buildTextStyle(
                             14.0, true, globals.textColor)),
                   ],

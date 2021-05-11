@@ -8,9 +8,12 @@ import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/pages/login_page.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import 'components/booking_tab.dart';
 import 'components/top_page_styling.dart';
@@ -38,7 +41,7 @@ class MyApp extends StatelessWidget {
         home: OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
-          '/homepage': (context) => HomePage()
+          // '/homepage': (context) => HomePage()
         },
         onGenerateRoute: (settings) {
           if (settings.name == Booking.routeName) {
@@ -51,6 +54,13 @@ class MyApp extends StatelessWidget {
                 price: args.price,
                 imagePath: args.imagePath,
                 address: args.address,
+              );
+            });
+          } else if (settings.name == HomePage.routeName) {
+            final HomePageArguements args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return HomePage(
+                loginDetails: args.loginDetails,
               );
             });
           } else if (settings.name == SearchPage.routeName) {
@@ -69,6 +79,7 @@ class MyApp extends StatelessWidget {
                     setShowRecentSearches: args.setShowRecentSearches,
                   ),
                   GoogleMapWidget(
+                    tokens: args.loginDetails,
                     mapCreated: args3.mapCreated,
                     customInfoWindowController:
                         args3.customInfoWindowController,
@@ -97,6 +108,7 @@ class MyApp extends StatelessWidget {
             final NearByParkingArguements args1 = settings.arguments;
             final TopPageStylingArguements args2 = settings.arguments;
             final GoogleMapWidgetArguements args3 = settings.arguments;
+            final HomePageArguements args4 = settings.arguments;
             return MaterialPageRoute(builder: (context) {
               return Column(
                 children: [
@@ -121,6 +133,7 @@ class MyApp extends StatelessWidget {
                       currentPage: args2.currentPage,
                       widget: args2.widget),
                   GoogleMapWidget(
+                    tokens: args4.loginDetails,
                     mapCreated: args3.mapCreated,
                     customInfoWindowController:
                         args3.customInfoWindowController,
@@ -152,6 +165,15 @@ class MyApp extends StatelessWidget {
                 price: args.price,
                 destination: args.destination,
                 address: args.address,
+              );
+            });
+          } else if (settings.name == LoginPage.routeName) {
+            final LoginRegistrationArguements args = settings.arguments;
+            return MaterialPageRoute(builder: (context) {
+              return ToolTip(
+                showToolTip: args.showToolTip,
+                text: args.text,
+                hideToolTip: args.hideToolTip,
               );
             });
           }

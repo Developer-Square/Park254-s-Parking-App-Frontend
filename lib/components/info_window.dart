@@ -17,8 +17,7 @@ class InfoWindowWidget extends StatelessWidget {
           Container(
             height: 40.0,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.0),
-                color: value.searched ? globals.textColor : Colors.white),
+                borderRadius: BorderRadius.circular(30.0), color: Colors.white),
             child: Center(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -37,7 +36,7 @@ class InfoWindowWidget extends StatelessWidget {
                               color: Colors.white),
                           child: Center(
                               child: Text(
-                            value.parkingPlaceName.substring(0, 1),
+                            value.name.substring(0, 1),
                             style: globals.buildTextStyle(
                                 17.0, true, globals.textColor),
                           ))),
@@ -54,17 +53,13 @@ class InfoWindowWidget extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 15.0,
                         fontWeight: FontWeight.bold,
-                        color:
-                            value.searched ? Colors.white : globals.textColor)),
+                        color: globals.textColor)),
               ],
             )),
           ),
           Triangle.isosceles(
             edge: Edge.BOTTOM,
-            child: Container(
-                color: value.searched ? globals.textColor : Colors.white,
-                height: 6.0,
-                width: 10.0),
+            child: Container(color: Colors.white, height: 6.0, width: 10.0),
           )
         ],
       ),

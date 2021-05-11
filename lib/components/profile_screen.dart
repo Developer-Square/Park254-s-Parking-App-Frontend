@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/edit_screen.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/functions/auth/logout.dart';
+import 'package:park254_s_parking_app/pages/login_screen.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a profile screen.
@@ -13,11 +18,15 @@ class ProfileScreen extends StatefulWidget {
   final profileImgPath;
   final logo1Path;
   final logo2Path;
+  FlutterSecureStorage loginDetails;
+  Function clearStorage;
 
   ProfileScreen(
       {@required this.profileImgPath,
       @required this.logo1Path,
-      @required this.logo2Path});
+      @required this.logo2Path,
+      @required this.loginDetails,
+      this.clearStorage});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -28,6 +37,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController emailController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
+  bool showLoader;
+  bool showToolTip;
+  String errMsg;
 
   String fullName = 'Rhonda Rousey';
   String carPlate = 'KCB 8793K';
@@ -36,6 +48,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String email = 'rhondarousey@gmail.com';
   String phone = '78656789';
   String password = 'password1';
+
+  @override
+  void initState() {
+    super.initState();
+    showLoader = false;
+    showToolTip = false;
+    errMsg = '';
+  }
 
   void updateFields(String currentPage) {
     if (currentPage == 'profile') {
@@ -57,78 +77,141 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
+  // Make api call.
+  logoutUser() async {
+    setState(() {
+      showLoader = true;
+    });
+    var token = await widget.loginDetails.read(key: 'refreshToken');
+    logout(refreshToken: token).then((value) {
+      if (value == 'success') {
+        setState(() {
+          showLoader = false;
+        });
+        // Clear all the user's details.
+        widget.clearStorage();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
+    }).catchError((err) {
+      setState(() {
+        showLoader = false;
+        showToolTip = true;
+        errMsg = err.message;
+      });
+    });
+  }
+
+  hideToolTip() {
+    setState(() {
+      showToolTip = false;
+      errMsg = '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-        color: Colors.grey[200],
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              InkWell(
-                onTap: () {
-                  updateFields('profile');
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EditScreen(
-                            profileImgPath: widget.profileImgPath,
-                            fullName: fullNameController,
-                            email: emailController,
-                            phone: phoneController,
-                            password: passwordController,
-                            currentScreen: 'profile',
-                          )));
-                },
-                child: TopPageStyling(
-                  currentPage: 'profile',
-                  widget: buildProfileTab(),
-                ),
-              ),
-              SizedBox(height: 50.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 30.0),
-                child: Text(
-                  'Wallet',
-                  style: globals.buildTextStyle(18.0, true, globals.textColor),
-                ),
-              ),
-              SizedBox(height: 25.0),
-              _buildContainer(widget.logo1Path, true, 'wallet'),
-              SizedBox(height: 1.0),
-              _buildContainer(widget.logo2Path, false, 'wallet'),
-              SizedBox(height: 50.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Vehicles',
-                      style:
-                          globals.buildTextStyle(18.0, true, globals.textColor),
-                    ),
+    return Scaffold(
+      body: Stack(children: <Widget>[
+        ToolTip(showToolTip: showToolTip, text: errMsg, hideToolTip: null),
+        SingleChildScrollView(
+          child: Material(
+              color: Colors.grey[200],
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     InkWell(
                       onTap: () {
-                        updateFields('vehicles');
+                        updateFields('profile');
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => EditScreen(
-                                  currentScreen: 'vehicles',
+                                  profileImgPath: widget.profileImgPath,
+                                  fullName: fullNameController,
+                                  email: emailController,
+                                  phone: phoneController,
+                                  password: passwordController,
+                                  currentScreen: 'profile',
                                 )));
                       },
-                      child: Container(
-                        width: 37.0,
-                        height: 37.0,
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(100.0)),
-                            color: Colors.white),
-                        child: Icon(Icons.add),
+                      child: TopPageStyling(
+                        currentPage: 'profile',
+                        widget: buildProfileTab(),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 25.0),
-              _buildContainer('', false, 'vehicles')
-            ]));
+                    SizedBox(height: 50.0),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30.0),
+                      child: Text(
+                        'Wallet',
+                        style: globals.buildTextStyle(
+                            18.0, true, globals.textColor),
+                      ),
+                    ),
+                    SizedBox(height: 25.0),
+                    _buildContainer(widget.logo1Path, true, 'wallet'),
+                    SizedBox(height: 1.0),
+                    _buildContainer(widget.logo2Path, false, 'wallet'),
+                    SizedBox(height: 50.0),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Vehicles',
+                            style: globals.buildTextStyle(
+                                18.0, true, globals.textColor),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              updateFields('vehicles');
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => EditScreen(
+                                        currentScreen: 'vehicles',
+                                      )));
+                            },
+                            child: Container(
+                              width: 37.0,
+                              height: 37.0,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(100.0)),
+                                  color: Colors.white),
+                              child: Icon(Icons.add),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 25.0),
+                    _buildContainer('', false, 'vehicles'),
+                    SizedBox(height: 20.0),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          logoutUser();
+                        },
+                        child: Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6.0)),
+                                color: Colors.red[400]),
+                            child: Center(
+                                child: Text(
+                              'Logout',
+                              style: globals.buildTextStyle(
+                                  15.0, true, Colors.white),
+                            ))),
+                      ),
+                    ),
+                    SizedBox(height: 80.0)
+                  ])),
+        ),
+        showLoader ? Loader() : Container()
+      ]),
+    );
   }
 
   /// Builds out the card widget.

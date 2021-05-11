@@ -70,5 +70,15 @@ final List<Parking> parkingPlaces = [
       parkingSlots: 3,
       distance: 450,
       locationCoords: LatLng(-1.308173, 36.823869),
+      thumbNail: 'assets/images/parking_photos/parking_3.jpg'),
+  Parking(
+      searched: false,
+      price: 19,
+      parkingPlaceName: 'Parklands Ave, Nairobi',
+      type: 'PARKING MALL',
+      rating: 2.1,
+      parkingSlots: 3,
+      distance: 450,
+      locationCoords: LatLng(-1.308173, 36.823869),
       thumbNail: 'assets/images/parking_photos/parking_3.jpg')
 ];

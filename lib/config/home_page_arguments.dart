@@ -1,6 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:custom_info_window/custom_info_window.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class HomePageArguements {
+  final FlutterSecureStorage loginDetails;
+
+  HomePageArguements({
+    @required this.loginDetails,
+  });
+}
 
 class NearByParkingListArguments {
   final String imgPath;
@@ -23,7 +34,7 @@ class NearByParkingArguements {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
-  final GoogleMapController mapController;
+  final Completer<GoogleMapController> mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
 
