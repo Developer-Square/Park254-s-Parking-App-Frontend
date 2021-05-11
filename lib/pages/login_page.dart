@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
+import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -33,15 +34,15 @@ class _LoginPageState extends State<LoginPage> {
   String text;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
-  final tokens = new FlutterSecureStorage();
+  final userDetails = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
 
   @override
   void initState() {
     super.initState();
-    email.text = 'ryan254@gmail.com';
-    password.text = 'password1';
+    email.text = 'ryanvendor1@gmail.com';
+    password.text = 'ryann254';
     showToolTip = false;
     showLoader = false;
     keyboardVisible = false;
@@ -64,12 +65,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   storeLoginDetails(details) async {
-    await tokens.write(key: 'accessToken', value: details.accessToken.token);
-    await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+    await userDetails.write(
+        key: 'accessToken', value: details.accessToken.token);
+    await userDetails.write(
+        key: 'refreshToken', value: details.refreshToken.token);
+    await userDetails.write(key: 'role', value: details.user.role);
   }
 
   clearStorage() async {
-    await tokens.deleteAll();
+    await userDetails.deleteAll();
   }
 
   /// Determine the current position of the device.
@@ -104,30 +108,40 @@ class _LoginPageState extends State<LoginPage> {
       login(email: email.text, password: password.text).then((value) {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => HomePage(
-                    loginDetails: tokens,
-                    storeLoginDetails: storeLoginDetails,
-                    clearStorage: clearStorage,
-                  )));
           if (value.user.id != null) {
             setState(() {
               showLoader = false;
               loginDetails = value;
             });
+
             if (loginDetails != null) {
-              // Store the refresh and access tokens.
+              // Store the refresh and access userDetails.
               storeLoginDetails(loginDetails);
+              // Choose how to redirect the user based on the role.
+              if (value.user.role == 'user') {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => HomePage(
+                          loginDetails: userDetails,
+                          storeLoginDetails: storeLoginDetails,
+                          clearStorage: clearStorage,
+                        )));
+              } else if (value.user.role == 'vendor') {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => VendorPage(
+                          loginDetails: userDetails,
+                          storeLoginDetails: storeLoginDetails,
+                          clearStorage: clearStorage,
+                        )));
+              }
             }
           }
         });
       }).catchError((err) {
-        print(err);
-        // setState(() {
-        //   showToolTip = true;
-        //   showLoader = false;
-        //   text = err.message;
-        // });
+        setState(() {
+          showToolTip = true;
+          showLoader = false;
+          text = err.message;
+        });
       });
     }
   }

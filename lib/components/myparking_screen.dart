@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import '../config/globals.dart' as globals;
@@ -7,55 +8,110 @@ import '../config/globals.dart' as globals;
 ///
 ///
 class MyParkingScreen extends StatefulWidget {
+  final FlutterSecureStorage loginDetails;
+
+  MyParkingScreen({@required this.loginDetails});
   @override
   MyParkingState createState() => MyParkingState();
 }
 
 class MyParkingState extends State<MyParkingScreen> {
+  var userRole;
+
+  @override
+  initState() {
+    getUserDetails();
+  }
+
+  getUserDetails() async {
+    userRole = await widget.loginDetails.read(key: 'role');
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Material(
             color: Colors.grey[200],
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TopPageStyling(
-                    currentPage: 'myparking', widget: buildParkingTab()),
-                SizedBox(height: 50.0),
-                Padding(
-                  padding: const EdgeInsets.only(left: 35.0),
-                  child: Text(
-                    'History',
-                    style:
-                        globals.buildTextStyle(17.0, true, globals.textColor),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TopPageStyling(
+                      userRole: userRole,
+                      currentPage: 'myparking',
+                      widget: userRole == 'vendor'
+                          ? Container()
+                          : buildParkingTab()),
+                  SizedBox(height: 50.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 35.0),
+                        child: Text(
+                          userRole == 'vendor'
+                              ? 'Your Parking Lots'
+                              : 'History',
+                          style: globals.buildTextStyle(
+                              17.0, true, globals.textColor),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 18.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Container(
+                            width: 37.0,
+                            height: 37.0,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(100.0)),
+                                color: Colors.white),
+                            child: Icon(Icons.add),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                buildParkingContainer(
-                    'MALL: P2 . 5B',
-                    'Ksh 2400',
-                    'First Church of Christ',
-                    'Payment Success',
-                    globals.backgroundColor),
-                SizedBox(height: 10.0),
-                buildParkingContainer(
-                    'MALL: P2 . 5B',
-                    'Ksh 2400',
-                    'Parklands Ave, Nairobi',
-                    'Payment failed',
-                    Colors.orange[800]),
-                SizedBox(height: 10.0),
-                buildParkingContainer(
-                    'MALL: P2 . 5B',
-                    'Ksh 2400',
-                    'Parklands Ave, Nairobi',
-                    'Payment failed',
-                    Colors.orange[800]),
-                SizedBox(height: 100.0)
-              ],
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  userRole == 'vendor'
+                      ? buildParkingContainer(
+                          'Holy Basilica Parking',
+                          'Ksh 240 / hr',
+                          'First Church of Christ...',
+                          'Parking Slots: 600',
+                          Colors.white)
+                      : Column(
+                          children: [
+                            buildParkingContainer(
+                                'MALL: P2 . 5B',
+                                'Ksh 2400',
+                                'First Church of Christ',
+                                'Payment Success',
+                                globals.backgroundColor),
+                            SizedBox(height: 10.0),
+                            buildParkingContainer(
+                                'MALL: P2 . 5B',
+                                'Ksh 2400',
+                                'Parklands Ave, Nairobi',
+                                'Payment failed',
+                                Colors.orange[800]),
+                            SizedBox(height: 10.0),
+                            buildParkingContainer(
+                                'MALL: P2 . 5B',
+                                'Ksh 2400',
+                                'Parklands Ave, Nairobi',
+                                'Payment failed',
+                                Colors.orange[800]),
+                          ],
+                        ),
+                  SizedBox(height: 100.0)
+                ],
+              ),
             )),
       ),
     );
@@ -130,14 +186,18 @@ class MyParkingState extends State<MyParkingScreen> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Container(
-                          height: 20.0,
-                          width: 20,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(100.0)),
-                              color: paymentColor)),
-                      SizedBox(width: 10.0),
+                      userRole == 'vendor'
+                          ? Container(
+                              height: 20.0,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(100.0)),
+                                  color: paymentColor))
+                          : Container(),
+                      userRole == 'vendor'
+                          ? SizedBox(width: 10.0)
+                          : SizedBox(width: 0.0),
                       Text(
                         paymentStatus,
                         style: globals.buildTextStyle(
@@ -158,12 +218,12 @@ class MyParkingState extends State<MyParkingScreen> {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          child: Text('Share Spot'),
+          child: Text(userRole == 'vendor' ? 'Update' : 'Share Spot'),
         ),
         PopupMenuItem(
           value: 2,
           child: Text(
-            'Report an issue',
+            userRole == 'vendor' ? 'Delete' : 'Report an issue',
             style: TextStyle(color: Colors.red),
           ),
         )

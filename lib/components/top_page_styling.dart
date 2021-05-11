@@ -16,21 +16,29 @@ class TopPageStyling extends StatelessWidget {
   final currentPage;
   final widget;
   final FlutterSecureStorage loginDetails;
+  final userRole;
 
   TopPageStyling(
       {this.searchBarController,
       @required this.currentPage,
       @required this.widget,
-      this.loginDetails});
+      this.loginDetails,
+      this.userRole});
   Widget build(BuildContext context) {
     return Container(
-      height: currentPage == 'myparking' ? 260.0 : 210.0,
+      height: currentPage == 'myparking'
+          ? userRole == 'vendor'
+              ? 200.0
+              : 260.0
+          : 210.0,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           color: globals.backgroundColor,
           borderRadius: BorderRadius.only(
               bottomRight: currentPage == 'myparking'
-                  ? Radius.elliptical(400, 270)
+                  ? userRole == 'vendor'
+                      ? Radius.elliptical(450, 270)
+                      : Radius.elliptical(400, 270)
                   : Radius.elliptical(500, 240))),
       child: Padding(
         padding: const EdgeInsets.only(top: 40.0),

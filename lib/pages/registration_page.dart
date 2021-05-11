@@ -137,16 +137,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
         setState(() {
           showLoader = true;
         });
-
+        List<Vehicle> vehicles = [];
+        if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
+          vehicles.add(
+              new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
+        }
         register(
-            email: email.text,
-            name: name.text,
-            password: createPassword.text,
-            phone: phone.text,
-            role: selectedValue,
-            vehicles: [
-              new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text)
-            ]).then((value) {
+                email: email.text,
+                name: name.text,
+                password: createPassword.text,
+                phone: phone.text,
+                role: selectedValue,
+                vehicles: vehicles)
+            .then((value) {
           if (value.user.id != null) {
             setState(() {
               showLoader = false;
