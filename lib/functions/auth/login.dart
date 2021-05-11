@@ -11,7 +11,7 @@ import '../../models/userWithToken.model.dart';
 /// Logs in a user using [email] and [password]
 ///
 /// Returns the user with their access and refresh tokens
-Future login({
+Future<UserWithToken> login({
   @required String email,
   @required String password,
 }) async {

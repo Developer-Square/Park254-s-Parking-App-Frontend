@@ -20,43 +20,27 @@ Future<UserWithToken> register(
     String role = 'user',
     @required String password,
     @required String phone,
-    String model,
-    String plate}) async {
+    @required List<Vehicle> vehicles = const []}) async {
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/auth/register');
-  String body;
+  Map<String, dynamic> body = {
+    'email': email,
+    'role': role,
+    'name': name,
+    'password': password,
+    'phone': phone,
+    'vehicles': vehicles
+  };
 
-  // Choose which data to send depending on whether there's data.
-  // on model or plate.
-  if (model == '' || plate == '') {
-    body = jsonEncode({
-      'email': email,
-      'role': role,
-      'name': name,
-      'password': password,
-      'phone': phone,
-    });
-  } else {
-    body = jsonEncode({
-      'email': email,
-      'role': role,
-      'name': name,
-      'password': password,
-      'phone': phone,
-      'vehicles': [
-        {
-          "model": model,
-          "plate": plate,
-        }
-      ],
-    });
+  if (vehicles.length == 0) {
+    body.remove("vehicles");
   }
 
   final response = await http.post(
     url,
-    body: body,
+    body: jsonEncode(body),
     headers: headers,
   );
 
