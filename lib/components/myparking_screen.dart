@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
+import 'package:park254_s_parking_app/components/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import '../config/globals.dart' as globals;
 
@@ -20,97 +21,111 @@ class MyParkingState extends State<MyParkingScreen> {
 
   @override
   initState() {
-    getUserDetails();
+    super.initState();
+    // getUserDetails();
   }
 
   getUserDetails() async {
-    userRole = await widget.loginDetails.read(key: 'role');
+    var role = await widget.loginDetails.read(key: 'role');
+
+    setState(() {
+      userRole = role;
+    });
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Material(
+    getUserDetails();
+    return SafeArea(
+      child: Scaffold(
+        body: Material(
             color: Colors.grey[200],
             child: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  TopPageStyling(
-                      userRole: userRole,
-                      currentPage: 'myparking',
-                      widget: userRole == 'vendor'
-                          ? Container()
-                          : buildParkingTab()),
-                  SizedBox(height: 50.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 35.0),
-                        child: Text(
-                          userRole == 'vendor'
-                              ? 'Your Parking Lots'
-                              : 'History',
-                          style: globals.buildTextStyle(
-                              17.0, true, globals.textColor),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 18.0),
-                        child: InkWell(
-                          onTap: () {},
-                          child: Container(
-                            width: 37.0,
-                            height: 37.0,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(100.0)),
-                                color: Colors.white),
-                            child: Icon(Icons.add),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TopPageStyling(
+                        userRole: userRole,
+                        currentPage: 'myparking',
+                        widget: userRole == 'vendor'
+                            ? Container()
+                            : buildParkingTab()),
+                    SizedBox(height: 50.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 35.0),
+                          child: Text(
+                            userRole == 'vendor'
+                                ? 'Your Parking Lots'
+                                : 'History',
+                            style: globals.buildTextStyle(
+                                17.0, true, globals.textColor),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  userRole == 'vendor'
-                      ? buildParkingContainer(
-                          'Holy Basilica Parking',
-                          'Ksh 240 / hr',
-                          'First Church of Christ...',
-                          'Parking Slots: 600',
-                          Colors.white)
-                      : Column(
-                          children: [
-                            buildParkingContainer(
-                                'MALL: P2 . 5B',
-                                'Ksh 2400',
-                                'First Church of Christ',
-                                'Payment Success',
-                                globals.backgroundColor),
-                            SizedBox(height: 10.0),
-                            buildParkingContainer(
-                                'MALL: P2 . 5B',
-                                'Ksh 2400',
-                                'Parklands Ave, Nairobi',
-                                'Payment failed',
-                                Colors.orange[800]),
-                            SizedBox(height: 10.0),
-                            buildParkingContainer(
-                                'MALL: P2 . 5B',
-                                'Ksh 2400',
-                                'Parklands Ave, Nairobi',
-                                'Payment failed',
-                                Colors.orange[800]),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(right: 18.0),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => CreateUpdateParkingLot(
+                                        imgPath:
+                                            'assets/images/parking_photos/parking_1.jpg',
+                                      )));
+                            },
+                            child: Container(
+                              width: 37.0,
+                              height: 37.0,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(100.0)),
+                                  color: Colors.white),
+                              child: Icon(Icons.add),
+                            ),
+                          ),
                         ),
-                  SizedBox(height: 100.0)
-                ],
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    userRole == 'vendor'
+                        ? buildParkingContainer(
+                            'Holy Basilica Parking',
+                            'Ksh 240 / hr',
+                            'First Church of Christ...',
+                            'Parking Slots: 600',
+                            Colors.white)
+                        : Column(
+                            children: [
+                              buildParkingContainer(
+                                  'MALL: P2 . 5B',
+                                  'Ksh 2400',
+                                  'First Church of Christ',
+                                  'Payment Success',
+                                  globals.backgroundColor),
+                              SizedBox(height: 10.0),
+                              buildParkingContainer(
+                                  'MALL: P2 . 5B',
+                                  'Ksh 2400',
+                                  'Parklands Ave, Nairobi',
+                                  'Payment failed',
+                                  Colors.orange[800]),
+                              SizedBox(height: 10.0),
+                              buildParkingContainer(
+                                  'MALL: P2 . 5B',
+                                  'Ksh 2400',
+                                  'Parklands Ave, Nairobi',
+                                  'Payment failed',
+                                  Colors.orange[800]),
+                            ],
+                          ),
+                    SizedBox(height: 100.0)
+                  ],
+                ),
               ),
             )),
       ),
