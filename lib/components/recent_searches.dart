@@ -1,8 +1,9 @@
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/load_location.dart';
-import 'package:park254_s_parking_app/components/parking_model.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a List of a user's recent searches.
@@ -28,6 +29,7 @@ class RecentSearches extends StatelessWidget {
   final parkingData;
   final context;
   final Function recentSearchesListFn;
+  final FlutterSecureStorage loginDetails;
 
   RecentSearches(
       {@required this.specificLocation,
@@ -39,29 +41,52 @@ class RecentSearches extends StatelessWidget {
       this.parkingData,
       this.context,
       this.customInfoWindowController,
-      this.recentSearchesListFn});
+      this.recentSearchesListFn,
+      this.loginDetails});
+
+  var parkingLotNames = [];
+
+  getAllParkingLots() async {
+    var accessToken = await loginDetails.read(key: 'accessToken');
+    getParkingLots(token: accessToken).then((value) {
+      value.parkingLots.forEach((element) {
+        parkingLotNames.add(element.name);
+      });
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  runGetFunction() {
+    recentSearchesListFn(specificLocation, specificLocation + ',' + town);
+    getLocation(
+        specificLocation + ',' + town, controller, clearPlaceListFn, context);
+  }
+
   Widget build(BuildContext context) {
-    runGetFunction() {
-      recentSearchesListFn(specificLocation, specificLocation + ',' + town);
-      getLocation(
-          specificLocation + ',' + town, controller, clearPlaceListFn, context);
-    }
+    getAllParkingLots();
 
     return InkWell(
       onTap: () {
         newSearch == true
             ? runGetFunction()
 
-            // ToDo: Search through the saved parking lots if the name.
-            // is not in there then use getLocation to search for it.
-            : setShowRecentSearches(
-                specificLocation,
-                town,
-                controller,
-                clearPlaceListFn,
-                context,
-                customInfoWindowController,
-                parkingData);
+            // Search through the saved parking lots names if the name is there.
+            // then redirect the user and also show the book now tab else.
+            //  just redirect the user.
+            : parkingLotNames.length > 0
+                ? parkingLotNames.contains(specificLocation)
+                    ? setShowRecentSearches(
+                        specificLocation,
+                        town,
+                        controller,
+                        clearPlaceListFn,
+                        context,
+                        customInfoWindowController,
+                        parkingData)
+                    : getLocation(specificLocation + ',' + town, controller,
+                        clearPlaceListFn, context)
+                : () {};
       },
       child: Row(children: <Widget>[
         // If the user is typing in a new location.

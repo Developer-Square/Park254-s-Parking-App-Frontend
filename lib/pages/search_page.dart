@@ -332,6 +332,8 @@ class _SearchPageState extends State<SearchPage> {
                                                     return Column(
                                                       children: [
                                                         RecentSearches(
+                                                            loginDetails: widget
+                                                                .loginDetails,
                                                             recentSearchesListFn:
                                                                 addSearchToList,
                                                             customInfoWindowController:
@@ -479,6 +481,7 @@ class _SearchPageState extends State<SearchPage> {
 
     // Re-using Recent searches widget to display user's suggestions
     return RecentSearches(
+        loginDetails: widget.loginDetails,
         recentSearchesListFn: addSearchToList,
         specificLocation: values[0],
         town: values[1] == null ? 'None' : values[1],
