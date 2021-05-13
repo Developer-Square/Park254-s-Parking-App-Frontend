@@ -25,8 +25,9 @@ class RecentSearches extends StatelessWidget {
   final controller;
   final Function clearPlaceListFn;
   final CustomInfoWindowController customInfoWindowController;
-  final Parking parkingData;
+  final parkingData;
   final context;
+  final Function recentSearchesListFn;
 
   RecentSearches(
       {@required this.specificLocation,
@@ -37,13 +38,22 @@ class RecentSearches extends StatelessWidget {
       this.clearPlaceListFn,
       this.parkingData,
       this.context,
-      this.customInfoWindowController});
+      this.customInfoWindowController,
+      this.recentSearchesListFn});
   Widget build(BuildContext context) {
+    runGetFunction() {
+      recentSearchesListFn(specificLocation, specificLocation + ',' + town);
+      getLocation(
+          specificLocation + ',' + town, controller, clearPlaceListFn, context);
+    }
+
     return InkWell(
       onTap: () {
         newSearch == true
-            ? getLocation(specificLocation + ',' + town, controller,
-                clearPlaceListFn, context)
+            ? runGetFunction()
+
+            // ToDo: Search through the saved parking lots if the name.
+            // is not in there then use getLocation to search for it.
             : setShowRecentSearches(
                 specificLocation,
                 town,
