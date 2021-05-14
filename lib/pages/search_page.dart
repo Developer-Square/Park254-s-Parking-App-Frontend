@@ -200,6 +200,7 @@ class _SearchPageState extends State<SearchPage> {
     // Add the destination that the user was searching for to the search bar.
     setState(() {
       showSuggestion = false;
+      showRecentSearches = false;
       searchBarController.text = searchText;
     });
 
@@ -332,6 +333,8 @@ class _SearchPageState extends State<SearchPage> {
                                                     return Column(
                                                       children: [
                                                         RecentSearches(
+                                                            controller:
+                                                                mapController,
                                                             loginDetails: widget
                                                                 .loginDetails,
                                                             recentSearchesListFn:

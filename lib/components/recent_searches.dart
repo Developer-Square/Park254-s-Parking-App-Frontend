@@ -84,8 +84,7 @@ class RecentSearches extends StatelessWidget {
                         context,
                         customInfoWindowController,
                         parkingData)
-                    : getLocation(specificLocation + ',' + town, controller,
-                        clearPlaceListFn, context)
+                    : runGetFunction()
                 : () {};
       },
       child: Row(children: <Widget>[
