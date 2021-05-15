@@ -5,11 +5,65 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
+import 'package:encrypt/encrypt.dart' as encryptionPackage;
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Encrypts and Decrypts all the login the login details
+encryptDecryptData(String encryptionKey, data, String option) {
+  final key = encryptionPackage.Key.fromUtf8(encryptionKey);
+  final iv = encryptionPackage.IV.fromLength(16);
+
+  final encrypter = encryptionPackage.Encrypter(encryptionPackage.AES(key));
+
+  if (option == 'encrypt') {
+    final encrypted = encrypter.encrypt(data, iv: iv);
+    return encrypted;
+  } else {
+    final decrypted = encrypter.decrypt64(data, iv: iv);
+    return decrypted;
+  }
+}
+
+storeDetailsInMemory(String key, value) async {
+  SharedPreferences.getInstance().then((prefs) {
+    prefs.setString(key, value);
+  }).catchError((err) {
+    print(err);
+  });
+}
+
+/// Stores all the login the login details
+storeLoginDetails(details, user) async {
+  final accessToken = details.accessToken.token;
+  final refreshToken = details.refreshToken.token;
+  final userId = details.user.id;
+  // First encrypt both tokens.
+  var access = encryptDecryptData('userAccessTokens', accessToken, 'encrypt');
+  var refresh = encryptDecryptData('userRefreshToken', refreshToken, 'encrypt');
+  // Then store them in memory.
+  storeDetailsInMemory('accessToken', access.base64);
+  storeDetailsInMemory('refreshToken', refresh.base64);
+  storeDetailsInMemory('userId', userId);
+
+  await user.write(key: 'accessToken', value: details.accessToken.token);
+  await user.write(key: 'refreshToken', value: details.refreshToken.token);
+  await user.write(key: 'role', value: details.user.role);
+  await user.write(key: 'name', value: details.user.name);
+  await user.write(key: 'email', value: details.user.email);
+  await user.write(key: 'phone', value: details.user.phone.toString());
+  await user.write(key: 'userId', value: userId);
+}
+
+// Clears the details when a user logouts.
+// ToDo: Clear from memory too when done.
+clearStorage(user) async {
+  await user.deleteAll();
+}
 
 BitmapDescriptor bitmapDescriptor;
 
-// Gets the svg image, converts it to a png image then returns it.
-// as BitmapDescriptor to be displayed as an icon on the map.
+/// Gets the svg image, converts it to a png image then returns it.
+/// as BitmapDescriptor to be displayed as an icon on the map.
 Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
     BuildContext context, String assetName) async {
   // Read SVG file as String

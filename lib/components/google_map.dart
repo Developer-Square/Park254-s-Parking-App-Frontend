@@ -8,7 +8,7 @@ import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart'
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 
 import 'info_window.dart';
-import 'load_location.dart';
+import 'helper_functions.dart';
 
 /// Creates the google map and map markers on the page.
 ///

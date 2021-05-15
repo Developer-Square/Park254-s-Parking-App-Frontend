@@ -2,7 +2,7 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import '../config/globals.dart' as globals;
 

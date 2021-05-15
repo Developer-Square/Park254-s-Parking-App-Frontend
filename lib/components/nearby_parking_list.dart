@@ -10,7 +10,7 @@ import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import '../config/globals.dart' as globals;
-import './load_location.dart';
+import 'helper_functions.dart';
 
 /// Creates the single components present in nearby parking.
 ///

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
@@ -11,10 +13,14 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
+import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
+import 'package:park254_s_parking_app/pages/vendor_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'components/booking_tab.dart';
 import 'components/top_page_styling.dart';
 import 'config/home_page_arguments.dart';
@@ -26,22 +32,110 @@ import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final Color primaryColor = Color(0xff14eeb5);
+  final userDetails = new FlutterSecureStorage();
+
+  // Encrypted token.
+  var data;
+  // User's Id from memory.
+  var userId;
+  var role;
   // This widget is the root of your application.
+
+  initState() {
+    super.initState();
+    checkForCredentials();
+  }
+
+  // Get the encrypted token from memory.
+  getDetailsFromMemory() async {
+    await SharedPreferences.getInstance().then((prefs) {
+      var refresh = prefs.getString('refreshToken');
+      var user = prefs.getString('userId');
+      setState(() {
+        data = refresh;
+        userId = user;
+      });
+    });
+  }
+
+  storeDetailsInMemory(String key, value) async {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString(key, value);
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  checkForCredentials() {
+    getDetailsFromMemory();
+    if (data != null) {
+      var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
+      if (token != null && userId != null) {
+        refreshTokens(refreshToken: token).then((value) {
+          getUserById(token: value.accessToken.token, userId: userId)
+              .then((details) async {
+            // Set the user's role to be used later for redirection.
+            setState(() {
+              role = details.role;
+            });
+            await userDetails.write(
+                key: 'accessToken', value: value.accessToken.token);
+            await userDetails.write(
+                key: 'refreshToken', value: value.refreshToken.token);
+            await userDetails.write(key: 'role', value: details.role);
+            await userDetails.write(key: 'name', value: details.name);
+            await userDetails.write(key: 'email', value: details.email);
+            await userDetails.write(
+                key: 'phone', value: details.phone.toString());
+            await userDetails.write(key: 'userId', value: userId);
+          }).catchError((err) {
+            print(err);
+          });
+          var access = encryptDecryptData(
+              'userAccessTokens', value.accessToken.token, 'encrypt');
+          var refresh = encryptDecryptData(
+              'userRefreshToken', value.refreshToken.token, 'encrypt');
+          storeDetailsInMemory('accessToken', access.base64);
+          storeDetailsInMemory('refreshToken', refresh.base64);
+
+          // Then redirect the user to the homepage.
+        }).catchError((err) {
+          print(err);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Initialized the InfoWindowModel so that I can use it.
-    // in the homescreen tab
+    // checkForCredentials();
     return MaterialApp(
         title: 'Park254 Parking App',
         theme: ThemeData(
           primaryColor: primaryColor,
         ),
-        home: OnBoardingPage(),
+        home: data != null
+            ? role == 'user'
+                ? HomePage(
+                    loginDetails: userDetails,
+                    storeLoginDetails: storeLoginDetails,
+                    clearStorage: clearStorage,
+                  )
+                : VendorPage(
+                    loginDetails: userDetails,
+                    storeLoginDetails: storeLoginDetails,
+                    clearStorage: clearStorage,
+                  )
+            : OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
-          // '/homepage': (context) => HomePage()
         },
         onGenerateRoute: (settings) {
           if (settings.name == Booking.routeName) {

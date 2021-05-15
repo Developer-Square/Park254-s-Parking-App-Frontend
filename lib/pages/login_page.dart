@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
@@ -10,6 +11,8 @@ import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
+import 'package:encrypt/encrypt.dart' as encryptionPackage;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -64,22 +67,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  storeLoginDetails(details) async {
-    await userDetails.write(
-        key: 'accessToken', value: details.accessToken.token);
-    await userDetails.write(
-        key: 'refreshToken', value: details.refreshToken.token);
-    await userDetails.write(key: 'role', value: details.user.role);
-    await userDetails.write(key: 'name', value: details.user.name);
-    await userDetails.write(key: 'email', value: details.user.email);
-    await userDetails.write(key: 'phone', value: details.user.phone.toString());
-    await userDetails.write(key: 'userId', value: details.user.id);
-  }
-
-  clearStorage() async {
-    await userDetails.deleteAll();
-  }
-
   /// Determine the current position of the device.
   ///
   /// When the location services are not enabled or permissions
@@ -120,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              storeLoginDetails(loginDetails);
+              storeLoginDetails(loginDetails, userDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(
