@@ -41,13 +41,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool showToolTip;
   String errMsg;
 
-  String fullName = 'Rhonda Rousey';
+  String fullName;
   String carPlate = 'KCB 8793K';
-  String carModel = 'BMW';
+  // String carModel = 'BMW';
   String balance = 'Ksh 2005\nbalance';
-  String email = 'rhondarousey@gmail.com';
-  String phone = '78656789';
-  String password = 'password1';
+  // String email = 'rhondarousey@gmail.com';
+  // String phone = '78656789';
+  // String password = 'password1';
 
   @override
   void initState() {
@@ -55,14 +55,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showLoader = false;
     showToolTip = false;
     errMsg = '';
+    fullName = '';
+    // Add user's details to the inputs fields.
+    updateFields('profile');
   }
 
-  void updateFields(String currentPage) {
+  void updateFields(String currentPage) async {
     if (currentPage == 'profile') {
-      fullNameController.text = fullName;
-      emailController.text = email;
-      phoneController.text = phone;
-      passwordController.text = password;
+      var name = await widget.loginDetails.read(key: 'name');
+      fullNameController.text = name;
+      emailController.text = await widget.loginDetails.read(key: 'email');
+      phoneController.text = await widget.loginDetails.read(key: 'phone');
+
+      setState(() {
+        fullName = name;
+      });
     }
   }
 
@@ -122,9 +129,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: <Widget>[
                     InkWell(
                       onTap: () {
-                        updateFields('profile');
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => EditScreen(
+                                  loginDetails: widget.loginDetails,
                                   profileImgPath: widget.profileImgPath,
                                   fullName: fullNameController,
                                   email: emailController,
@@ -334,7 +341,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   SizedBox(width: 10.0),
                   Text(
-                    fullName,
+                    fullNameController.text == ''
+                        ? 'User'
+                        : fullNameController.text,
                     style:
                         globals.buildTextStyle(16.0, true, globals.textColor),
                   )

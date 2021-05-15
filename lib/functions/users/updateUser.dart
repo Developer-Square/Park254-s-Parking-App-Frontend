@@ -35,6 +35,7 @@ Future<User> updateUser({
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
+  // print(jsonEncode(body));
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response =
       await http.patch(url, headers: headers, body: jsonEncode(body));

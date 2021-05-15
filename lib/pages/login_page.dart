@@ -70,6 +70,10 @@ class _LoginPageState extends State<LoginPage> {
     await userDetails.write(
         key: 'refreshToken', value: details.refreshToken.token);
     await userDetails.write(key: 'role', value: details.user.role);
+    await userDetails.write(key: 'name', value: details.user.name);
+    await userDetails.write(key: 'email', value: details.user.email);
+    await userDetails.write(key: 'phone', value: details.user.phone.toString());
+    await userDetails.write(key: 'userId', value: details.user.id);
   }
 
   clearStorage() async {
