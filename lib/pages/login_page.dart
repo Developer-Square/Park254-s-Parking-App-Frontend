@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
@@ -36,6 +37,8 @@ class _LoginPageState extends State<LoginPage> {
   final tokens = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -93,6 +96,20 @@ class _LoginPageState extends State<LoginPage> {
     return Future.value('true');
   }
 
+  Future showNotification() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('0', 'loginMsg',
+            'shows a notification when there\'s an error or success message',
+            importance: Importance.max, priority: Priority.high);
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, 'An error', 'dkdkd', platformChannelSpecifics,
+        payload: 'sdddd');
+  }
+
   // Make the api call.
   void sendLoginDetails() async {
     if (formKey.currentState.validate()) {
@@ -122,7 +139,25 @@ class _LoginPageState extends State<LoginPage> {
           }
         });
       }).catchError((err) {
-        print(err);
+        setState(() {
+          showLoader = false;
+        });
+        showDialog(
+            context: context,
+            builder: (context) {
+              // Create button
+              Widget okButton = FlatButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              );
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('This is an alert message'),
+                actions: [okButton],
+              );
+            });
         // setState(() {
         //   showToolTip = true;
         //   showLoader = false;

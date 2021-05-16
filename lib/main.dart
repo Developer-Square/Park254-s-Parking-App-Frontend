@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
@@ -16,6 +17,7 @@ import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import 'package:park254_s_parking_app/pages/search_page.dart';
 import 'components/booking_tab.dart';
+import 'components/notification_service.dart';
 import 'components/top_page_styling.dart';
 import 'config/home_page_arguments.dart';
 import 'config/search_page_arguments.dart';
@@ -24,15 +26,53 @@ import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
 import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   final Color primaryColor = Color(0xff14eeb5);
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  // Initializing and configuring local notifications for both Android and IOS.
+  Future<void> init() async {
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('Error_icon.png');
+
+    final IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
+      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+    );
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS,
+            macOS: null);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: selectNotification);
+  }
+
+  Future onDidReceiveLocalNotification(
+      int id, String title, String body, String payload) async {
+    // ToDo: Complete the function.
+    // display a dialog with the notification details, tap ok to go to another page.
+  }
+
+  Future selectNotification(String payload) async {
+    // Handle notification tapped logic here.
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // Initialized the InfoWindowModel so that I can use it.
-    // in the homescreen tab
     return MaterialApp(
         title: 'Park254 Parking App',
         theme: ThemeData(
@@ -41,7 +81,6 @@ class MyApp extends StatelessWidget {
         home: OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),
-          // '/homepage': (context) => HomePage()
         },
         onGenerateRoute: (settings) {
           if (settings.name == Booking.routeName) {
