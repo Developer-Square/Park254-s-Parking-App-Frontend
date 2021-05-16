@@ -58,6 +58,9 @@ storeLoginDetails(details, user) async {
 // ToDo: Clear from memory too when done.
 clearStorage(user) async {
   await user.deleteAll();
+  await SharedPreferences.getInstance().then((prefs) {
+    prefs.clear();
+  });
 }
 
 BitmapDescriptor bitmapDescriptor;
@@ -96,7 +99,7 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
 /// animates the Camera twice:
 /// First to a place near the marker, then to the marker.
 void cameraAnimate(_controller, latitude, longitude) async {
-  final GoogleMapController mapController = await _controller;
+  final GoogleMapController mapController = await _controller.future;
   await mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(target: LatLng(latitude - 0.0001, latitude), zoom: 14.0)));
 
@@ -126,14 +129,12 @@ void loadLocation(_controller, closeNearByParking) async {
 ///
 /// Requires [address], Map [controller] and [placeList]
 void getLocation(address, _controller, _clearPlaceList, _context) async {
-  final c = await _controller.future;
-
   try {
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(address);
 
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    cameraAnimate(c, locations[0].latitude, locations[0].longitude);
+    cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
     _clearPlaceList(address);
   } catch (e) {
     print(e);

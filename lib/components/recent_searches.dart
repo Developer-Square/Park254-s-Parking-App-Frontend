@@ -58,7 +58,7 @@ class RecentSearches extends StatelessWidget {
   }
 
   runGetFunction() {
-    recentSearchesListFn(specificLocation, specificLocation + ',' + town);
+    recentSearchesListFn(specificLocation, town);
     getLocation(
         specificLocation + ',' + town, controller, clearPlaceListFn, context);
   }

@@ -8,6 +8,7 @@ import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a profile screen.
@@ -96,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           showLoader = false;
         });
         // Clear all the user's details.
-        widget.clearStorage(widget.loginDetails);
+        clearStorage(widget.loginDetails);
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }

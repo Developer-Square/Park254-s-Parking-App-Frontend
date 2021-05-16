@@ -5,6 +5,7 @@ import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> {
 
   initState() {
     super.initState();
-    checkForCredentials();
+    getDetailsFromMemory();
   }
 
   // Get the encrypted token from memory.
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
         userId = user;
       });
     });
+    checkForCredentials();
   }
 
   storeDetailsInMemory(String key, value) async {
@@ -74,7 +76,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   checkForCredentials() {
-    getDetailsFromMemory();
     if (data != null) {
       var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
       if (token != null && userId != null) {
@@ -122,17 +123,19 @@ class _MyAppState extends State<MyApp> {
           primaryColor: primaryColor,
         ),
         home: data != null
-            ? role == 'user'
-                ? HomePage(
-                    loginDetails: userDetails,
-                    storeLoginDetails: storeLoginDetails,
-                    clearStorage: clearStorage,
-                  )
-                : VendorPage(
-                    loginDetails: userDetails,
-                    storeLoginDetails: storeLoginDetails,
-                    clearStorage: clearStorage,
-                  )
+            ? role != null
+                ? role == 'user'
+                    ? HomePage(
+                        loginDetails: userDetails,
+                        storeLoginDetails: storeLoginDetails,
+                        clearStorage: clearStorage,
+                      )
+                    : VendorPage(
+                        loginDetails: userDetails,
+                        storeLoginDetails: storeLoginDetails,
+                        clearStorage: clearStorage,
+                      )
+                : Loader()
             : OnBoardingPage(),
         routes: {
           '/login_screen': (context) => LoginScreen(),

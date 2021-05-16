@@ -196,15 +196,19 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  addSearchToList(value, searchText) {
+  addSearchToList(value, town) {
     // Add the destination that the user was searching for to the search bar.
+    var location = [];
+    location.add(value);
+    location.add(town);
     setState(() {
       showSuggestion = false;
       showRecentSearches = false;
-      searchBarController.text = searchText;
+      searchBarController.text = '$value, $town';
     });
 
     // If the location is already in the list then don't add it.
+    // ToDo: Add a better way of testing this.
     if (!_recentSearchesList.contains(value)) {
       // If the list has five items remove the first one since it's.
       // the oldest and add the latest one.
@@ -214,10 +218,11 @@ class _SearchPageState extends State<SearchPage> {
         setState(() {
           addedSearch = true;
         });
+
         _recentSearchesList.removeAt(0);
-        _recentSearchesList.add(value);
+        _recentSearchesList.add(location);
       } else {
-        _recentSearchesList.add(value);
+        _recentSearchesList.add(location);
       }
     }
     saveRecentSearches();
@@ -342,25 +347,25 @@ class _SearchPageState extends State<SearchPage> {
                                                             customInfoWindowController:
                                                                 _customInfoWindowController,
                                                             // Reverve the list to get the most recent search first.
-                                                            parkingData:
-                                                                _recentSearchesList[
-                                                                    _recentSearchesList
-                                                                            .length -
-                                                                        (index +
-                                                                            1)],
+                                                            parkingData: _recentSearchesList[
+                                                                _recentSearchesList
+                                                                        .length -
+                                                                    (index +
+                                                                        1)][0],
                                                             specificLocation:
-                                                                _recentSearchesList[
-                                                                    _recentSearchesList
-                                                                            .length -
-                                                                        (index +
-                                                                            1)],
-                                                            town: 'Nairobi',
+                                                                _recentSearchesList[_recentSearchesList.length - (index + 1)]
+                                                                    [0],
+                                                            town: _recentSearchesList[
+                                                                _recentSearchesList
+                                                                        .length -
+                                                                    (index +
+                                                                        1)][1],
                                                             setShowRecentSearches:
                                                                 _setShowRecentSearches),
                                                         SizedBox(height: 20.0),
                                                       ],
                                                     );
-                                                  })),
+                                                  }))
                                         ],
                                       ),
                                     )
