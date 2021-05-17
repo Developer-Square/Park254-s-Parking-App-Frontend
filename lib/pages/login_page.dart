@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/components/notification_service.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
+import 'package:overlay_support/overlay_support.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -37,13 +37,11 @@ class _LoginPageState extends State<LoginPage> {
   final tokens = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    email.text = 'ryan254@gmail.com';
+    email.text = 'ryan25@gmail.com';
     password.text = 'password1';
     showToolTip = false;
     showLoader = false;
@@ -96,20 +94,6 @@ class _LoginPageState extends State<LoginPage> {
     return Future.value('true');
   }
 
-  Future showNotification() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('0', 'loginMsg',
-            'shows a notification when there\'s an error or success message',
-            importance: Importance.max, priority: Priority.high);
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidNotificationDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-        0, 'An error', 'dkdkd', platformChannelSpecifics,
-        payload: 'sdddd');
-  }
-
   // Make the api call.
   void sendLoginDetails() async {
     if (formKey.currentState.validate()) {
@@ -142,27 +126,7 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           showLoader = false;
         });
-        showDialog(
-            context: context,
-            builder: (context) {
-              // Create button
-              Widget okButton = FlatButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              );
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('This is an alert message'),
-                actions: [okButton],
-              );
-            });
-        // setState(() {
-        //   showToolTip = true;
-        //   showLoader = false;
-        //   text = err.message;
-        // });
+        buildNotification(err.message, 'error');
       });
     }
   }
@@ -195,14 +159,6 @@ class _LoginPageState extends State<LoginPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Expanded(
-                child: ToolTip(
-                  showToolTip: showToolTip,
-                  text: text,
-                  hideToolTip: hideToolTip,
-                ),
-                flex: 1,
-              ),
               keyboardVisible
                   ? Expanded(
                       child: Container(

@@ -1,14 +1,17 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// ToDo: Add a reusable alert widget.
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
+import '../config/globals.dart' as globals;
 
-class NotificationService {
-  static final NotificationService _notificationService =
-      NotificationService._internal();
-
-  factory NotificationService() {
-    return _notificationService;
-  }
-
-  NotificationService._internal();
-
-  static init() {}
+buildNotification(textMsg, msgType) {
+  return showSimpleNotification(Text(textMsg),
+      background: msgType == 'error' ? Colors.red : globals.backgroundColor,
+      autoDismiss: false, trailing: Builder(builder: (context) {
+    return FlatButton(
+        onPressed: () {
+          OverlaySupportEntry.of(context).dismiss();
+        },
+        child: Text('Dismiss'));
+  }));
 }
