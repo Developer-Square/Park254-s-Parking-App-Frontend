@@ -18,6 +18,11 @@ class MyParkingScreen extends StatefulWidget {
 
 class MyParkingState extends State<MyParkingScreen> {
   var userRole;
+  TextEditingController fullNameController = new TextEditingController();
+  TextEditingController spacesController = new TextEditingController();
+  TextEditingController pricesController = new TextEditingController();
+  TextEditingController addressController = new TextEditingController();
+  TextEditingController cityController = new TextEditingController();
 
   @override
   initState() {
@@ -72,8 +77,12 @@ class MyParkingState extends State<MyParkingScreen> {
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => CreateUpdateParkingLot(
-                                        imgPath:
-                                            'assets/images/parking_photos/parking_1.jpg',
+                                        currentScreen: 'create',
+                                        name: fullNameController,
+                                        spaces: spacesController,
+                                        prices: pricesController,
+                                        address: addressController,
+                                        city: cityController,
                                       )));
                             },
                             child: Container(

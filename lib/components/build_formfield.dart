@@ -71,8 +71,10 @@ class BuildFormFieldState extends State<BuildFormField> {
                       // Create radio buttons for role selection.
                       : widget.text == 'Role'
                           ? buildRoleRadioButtons()
-                          // Create the input fields in the Profile page and Add vehicle page.
-                          : widget.text == 'Profile' || widget.text == 'vehicle'
+                          // Create the input fields in the Profile page, Add Parking Lot page and Add vehicle page.
+                          : widget.text == 'Profile' ||
+                                  widget.text == 'vehicle' ||
+                                  widget.text == 'Parking Lot'
                               ? buildSingleTextField(
                                   widget.label,
                                   widget.placeholder,
@@ -198,7 +200,7 @@ class BuildFormFieldState extends State<BuildFormField> {
       obscureText: placeholder == 'Password' ? true : false,
       decoration: InputDecoration(
           labelText: label != '' ? label : null,
-          labelStyle: text == 'Profile'
+          labelStyle: text == 'Profile' || text == 'Parking Lot'
               ? TextStyle(
                   color: Colors.grey.withOpacity(0.7),
                   fontWeight: FontWeight.bold,

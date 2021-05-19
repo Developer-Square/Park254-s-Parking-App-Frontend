@@ -6,6 +6,10 @@
 	<string>This app needs access to location when open.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to the gallery to select images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to the microphone to record sound when taking a video.</string>
 	<key>NSCameraUsageDescription</key>
     <string>This app needs access to camera to take and store user images.</string>
 	<key>CFBundleDevelopmentRegion</key>

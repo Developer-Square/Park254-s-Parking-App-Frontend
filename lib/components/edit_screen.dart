@@ -57,8 +57,6 @@ class _EditScreenState extends State<EditScreen> {
       });
       var accessToken = await widget.loginDetails.read(key: 'accessToken');
       var userId = await widget.loginDetails.read(key: 'userId');
-      // print(userId);
-      // print(accessToken);
       updateUser(
               token: accessToken,
               userId: userId,

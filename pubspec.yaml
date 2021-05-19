@@ -38,6 +38,8 @@ dependencies:
   flutter_secure_storage: ^3.3.5
   shared_preferences: ^0.5.12+4
   encrypt: ^4.1.0
+  image_cropper: ^1.3.1
+  image_picker: ^0.6.7+22
   
 dev_dependencies:
   flutter_test:
