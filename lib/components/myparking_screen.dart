@@ -77,6 +77,7 @@ class MyParkingState extends State<MyParkingScreen> {
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => CreateUpdateParkingLot(
+                                        loginDetails: widget.loginDetails,
                                         currentScreen: 'create',
                                         name: fullNameController,
                                         spaces: spacesController,

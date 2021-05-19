@@ -17,7 +17,7 @@ Future<ParkingLot> createParkingLot({
   @required int spaces,
   @required num longitude,
   @required num latitude,
-  @required List<String> images,
+  @required List<dynamic> images,
   @required String token,
   @required int price,
   @required String address,
