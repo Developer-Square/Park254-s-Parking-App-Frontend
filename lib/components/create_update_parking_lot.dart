@@ -10,6 +10,7 @@ import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dar
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import '../config/globals.dart' as globals;
 
 /// Builds a page where vendors can create or update their parking lots.
@@ -22,6 +23,7 @@ class CreateUpdateParkingLot extends StatefulWidget {
   TextEditingController city;
   final FlutterSecureStorage loginDetails;
   final currentScreen;
+  final parkingData;
 
   CreateUpdateParkingLot(
       {@required this.name,
@@ -30,7 +32,8 @@ class CreateUpdateParkingLot extends StatefulWidget {
       @required this.address,
       @required this.city,
       @required this.loginDetails,
-      this.currentScreen});
+      this.currentScreen,
+      this.parkingData});
   @override
   _CreateUpdateParkingLotState createState() => _CreateUpdateParkingLotState();
 }
@@ -48,6 +51,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   var index;
   bool showLoader;
   final picker = ImagePicker();
+  var fields;
 
   initState() {
     super.initState();
@@ -97,6 +101,16 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     });
   }
 
+  clearFields() {
+    setState(() {
+      widget.name.text = '';
+      widget.spaces.text = '';
+      widget.prices.text = '';
+      widget.address.text = '';
+      widget.city.text = '';
+    });
+  }
+
   createUpdateParkingLots(links) async {
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
     var userId = await widget.loginDetails.read(key: 'userId');
@@ -104,23 +118,59 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(
         widget.address.text + ', ' + widget.city.text);
-    createParkingLot(
-            token: accessToken,
-            owner: userId,
-            name: widget.name.text,
-            spaces: int.parse(widget.spaces.text),
-            images: links,
-            price: int.parse(widget.prices.text),
-            address: widget.address.text,
-            city: widget.city.text,
-            latitude: locations[0].latitude,
-            longitude: locations[0].longitude)
-        .then((value) {
-      print('success');
-      print(value);
-    }).catchError((err) {
-      print(err);
-    });
+
+    if (widget.currentScreen == 'create') {
+      createParkingLot(
+              token: accessToken,
+              owner: userId,
+              name: widget.name.text,
+              spaces: int.parse(widget.spaces.text),
+              images: links,
+              price: int.parse(widget.prices.text),
+              address: widget.address.text,
+              city: widget.city.text,
+              latitude: locations[0].latitude,
+              longitude: locations[0].longitude)
+          .then((value) {
+        setState(() {
+          showLoader = false;
+        });
+        clearFields();
+        Navigator.of(context).pop();
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
+        });
+        print(err);
+      });
+    } else if (widget.currentScreen == 'update') {
+      setState(() {
+        showLoader = true;
+      });
+      // ToDo: Add a way to check if the values were changed.
+      updateParkingLot(
+              token: accessToken,
+              parkingLotId: widget.parkingData.id,
+              name: widget.name.text,
+              spaces: int.parse(widget.spaces.text),
+              price: int.parse(widget.prices.text),
+              address: widget.address.text,
+              city: widget.city.text,
+              latitude: locations[0].latitude,
+              longitude: locations[0].longitude)
+          .then((value) {
+        setState(() {
+          showLoader = false;
+        });
+        clearFields();
+        Navigator.of(context).pop();
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
+        });
+        print(err);
+      });
+    }
   }
 
   createUpdateParking() async {
@@ -135,9 +185,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
       _imagesToSend.forEach((image) {
         // Upload the images to cloudinary.
         uploadImages(imagePath: image).then((value) {
-          setState(() {
-            showLoader = false;
-          });
           cloudinaryLinks.add(value.secureUrl);
 
           // check if the forEach is done.
@@ -152,10 +199,45 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
           print(err);
         });
       });
+    } else {
+      // For updating the backend with the altered or deleted links.
+      createUpdateParkingLots(cloudinaryLinks);
     }
   }
 
   Widget build(BuildContext context) {
+    fields = [
+      {
+        'text': 'Parking Lot',
+        'label': 'Parking Lot Name',
+        'placeholder': 'Holy Basilica Parking',
+        'controller': widget.name
+      },
+      {
+        'text': 'Parking Lot',
+        'label': 'Spaces Available',
+        'placeholder': '500',
+        'controller': widget.spaces
+      },
+      {
+        'text': 'Parking Lot',
+        'label': 'Price per hour',
+        'placeholder': '110',
+        'controller': widget.prices
+      },
+      {
+        'text': 'Parking Lot',
+        'label': 'Address',
+        'placeholder': 'Parliament Road',
+        'controller': widget.address
+      },
+      {
+        'text': 'Parking Lot',
+        'label': 'City',
+        'placeholder': 'Nairobi',
+        'controller': widget.city
+      },
+    ];
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -290,41 +372,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                       Text('Kindly fill in the following details',
                           style: globals.buildTextStyle(
                               17.0, true, globals.textColor)),
-                      BuildFormField(
-                        text: 'Parking Lot',
-                        label: 'Parking Lot Name',
-                        placeholder: 'Holy Basilica Parking',
-                        controller: widget.name,
-                      ),
-                      SizedBox(height: 20.0),
-                      BuildFormField(
-                        text: 'Parking Lot',
-                        label: 'Spaces Available',
-                        placeholder: '500',
-                        controller: widget.spaces,
-                      ),
-                      SizedBox(height: 20.0),
-                      BuildFormField(
-                        text: 'Parking Lot',
-                        label: 'Price per hour',
-                        placeholder: '110',
-                        controller: widget.prices,
-                      ),
-                      SizedBox(height: 20.0),
-                      BuildFormField(
-                        text: 'Parking Lot',
-                        label: 'Address',
-                        placeholder: 'Parliament Road',
-                        controller: widget.address,
-                      ),
-                      SizedBox(height: 20.0),
-                      BuildFormField(
-                        text: 'Parking Lot',
-                        label: 'City',
-                        placeholder: 'Nairobi',
-                        controller: widget.city,
-                      ),
-                      SizedBox(height: 35.0),
+                      fields != null ? buildFields(fields) : Container(),
+                      SizedBox(height: 18.0),
                       InkWell(
                           onTap: createUpdateParking,
                           child: Container(
@@ -348,6 +397,26 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                 showLoader ? Loader() : Container()
               ],
             )));
+  }
+
+  /// Builds out all the form fields on the page.
+  Widget buildFields(List fields) {
+    return new Column(
+        children: fields
+            .map(
+              (item) => Column(
+                children: [
+                  BuildFormField(
+                    text: item['text'],
+                    label: item['label'],
+                    placeholder: item['placeholder'],
+                    controller: item['controller'],
+                  ),
+                  SizedBox(height: 18.0)
+                ],
+              ),
+            )
+            .toList());
   }
 
   Widget helperMessage(text) {
