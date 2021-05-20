@@ -36,6 +36,7 @@ dependencies:
   path_provider: ^1.6.28
   path: ^1.7.0
   flutter_secure_storage: ^3.3.5
+  overlay_support: ^1.0.5
   
 dev_dependencies:
   flutter_test:

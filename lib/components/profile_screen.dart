@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import '../config/globals.dart' as globals;
+import 'load_location.dart';
 
 /// Creates a profile screen.
 ///
@@ -38,7 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool showLoader;
-  bool showToolTip;
   String errMsg;
 
   String fullName = 'Rhonda Rousey';
@@ -53,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     showLoader = false;
-    showToolTip = false;
     errMsg = '';
   }
 
@@ -94,18 +93,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
     }).catchError((err) {
+      buildNotification(err.message, 'error');
       setState(() {
         showLoader = false;
-        showToolTip = true;
-        errMsg = err.message;
       });
-    });
-  }
-
-  hideToolTip() {
-    setState(() {
-      showToolTip = false;
-      errMsg = '';
     });
   }
 
@@ -113,7 +104,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: <Widget>[
-        ToolTip(showToolTip: showToolTip, text: errMsg, hideToolTip: null),
         SingleChildScrollView(
           child: Material(
               color: Colors.grey[200],
