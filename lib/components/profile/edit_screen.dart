@@ -6,7 +6,7 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
 import 'package:intl/intl.dart';
-import '../config/globals.dart' as globals;
+import '../../config/globals.dart' as globals;
 
 /// Creates a dynamic edit screen page for user profiles and adding vehicles.
 ///

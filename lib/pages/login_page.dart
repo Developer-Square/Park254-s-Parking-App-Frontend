@@ -4,9 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
-import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
@@ -31,10 +30,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
-  bool showToolTip;
   bool showLoader;
   bool keyboardVisible;
-  String text;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
   final userDetails = new FlutterSecureStorage();
@@ -44,27 +41,40 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     email.text = 'ryanvendor1@gmail.com';
     password.text = 'ryann254';
     showToolTip = false;
+=======
+    email.text = 'ryan25@gmail.com';
+    password.text = 'password1';
+>>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
     showLoader = false;
     keyboardVisible = false;
-    text = '';
     maxRetries = 0;
     locationEnabled = false;
     // Check whether there's a message to display
     if (widget.message != null) {
       if (widget.message.length > 0) {
-        showToolTip = true;
-        text = widget.message;
+        buildNotification(widget.message, 'success');
       }
     }
   }
 
+<<<<<<< HEAD
   void hideToolTip() {
     setState(() {
       showToolTip = false;
     });
+=======
+  storeLoginDetails(details) async {
+    await tokens.write(key: 'accessToken', value: details.accessToken.token);
+    await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+  }
+
+  clearStorage() async {
+    await tokens.deleteAll();
+>>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
   }
 
   /// Determine the current position of the device.
@@ -129,10 +139,16 @@ class _LoginPageState extends State<LoginPage> {
         });
       }).catchError((err) {
         setState(() {
+<<<<<<< HEAD
           showToolTip = true;
           showLoader = false;
           text = err.message;
         });
+=======
+          showLoader = false;
+        });
+        buildNotification(err.message, 'error');
+>>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
       });
     }
   }
@@ -165,14 +181,6 @@ class _LoginPageState extends State<LoginPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Expanded(
-                child: ToolTip(
-                  showToolTip: showToolTip,
-                  text: text,
-                  hideToolTip: hideToolTip,
-                ),
-                flex: 1,
-              ),
               keyboardVisible
                   ? Expanded(
                       child: Container(

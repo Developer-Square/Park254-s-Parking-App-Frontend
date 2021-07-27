@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/myparking_screen.dart';
-import 'package:park254_s_parking_app/components/profile_screen.dart';
+import 'package:park254_s_parking_app/components/profile/profile_screen.dart';
 import '../config/globals.dart' as globals;
 
 class VendorPage extends StatefulWidget {

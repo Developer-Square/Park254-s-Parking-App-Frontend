@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
+<<<<<<< HEAD:lib/components/helper_functions.dart
 import 'package:encrypt/encrypt.dart' as encryptionPackage;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -61,6 +63,24 @@ clearStorage(user) async {
   await SharedPreferences.getInstance().then((prefs) {
     prefs.clear();
   });
+=======
+import 'package:overlay_support/overlay_support.dart';
+import '../config/globals.dart' as globals;
+
+/// Builds a notification widget that appears at the top of the page.
+///
+/// It can be used to show success or error messages.
+buildNotification(textMsg, msgType) {
+  return showSimpleNotification(Text(textMsg),
+      background: msgType == 'error' ? Colors.red : globals.backgroundColor,
+      autoDismiss: false, trailing: Builder(builder: (context) {
+    return FlatButton(
+        onPressed: () {
+          OverlaySupportEntry.of(context).dismiss();
+        },
+        child: Text('Dismiss'));
+  }));
+>>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e:lib/components/load_location.dart
 }
 
 BitmapDescriptor bitmapDescriptor;
