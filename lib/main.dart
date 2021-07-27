@@ -114,6 +114,12 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  clear() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
     // checkForCredentials();

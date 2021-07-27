@@ -47,7 +47,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   // Image files to be sent to cloudinary.
   var _imagesToSend = [];
   // Used when selecting which image to remove or crop.
-  File selected;
+  var selected;
   var index;
   bool showLoader;
   final picker = ImagePicker();
@@ -56,11 +56,44 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   initState() {
     super.initState();
     showLoader = false;
+    if (widget.currentScreen == 'update') {
+      // Add all the links to the cloudinary images so that we can display them.
+      widget.parkingData.images.forEach((image) {
+        _imagesToSend.add(image);
+        // Get the images from cloudinary and indicate progress while retrieving them.
+        _imageFiles.add(Image.network(
+          image,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loaddingProgress) {
+            if (loaddingProgress == null) return child;
+            return Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Loading...',
+                  style: globals.buildTextStyle(15.0, true, Colors.grey),
+                ),
+                SizedBox(height: 10.0),
+                CircularProgressIndicator(
+                  backgroundColor: globals.backgroundColor,
+                  value: loaddingProgress.expectedTotalBytes != null
+                      ? loaddingProgress.cumulativeBytesLoaded /
+                          loaddingProgress.expectedTotalBytes
+                      : null,
+                ),
+              ],
+            ));
+          },
+        ));
+      });
+    }
   }
 
   // Select an image via gallery or camera.
   Future<void> _pickImage(ImageSource source) async {
-    final selected = await picker.getImage(source: source);
+    final selected = await picker.getImage(source: source, imageQuality: 50);
 
     setState(() {
       if (selected != null) {
@@ -90,7 +123,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   void _clear() {
     setState(() {
       _imageFiles.remove(selected);
+      _imagesToSend.removeAt(index);
       selected = null;
+      // ToDo: Add a way to delete images from cloudinary.
     });
   }
 
@@ -112,6 +147,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   }
 
   createUpdateParkingLots(links) async {
+    // Combine the newly added images with the old ones.
+    _imagesToSend = links + _imagesToSend;
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
     var userId = await widget.loginDetails.read(key: 'userId');
     // Get the coordinates of the address the user entered.
@@ -155,6 +192,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               spaces: int.parse(widget.spaces.text),
               price: int.parse(widget.prices.text),
               address: widget.address.text,
+              images: _imagesToSend,
               city: widget.city.text,
               latitude: locations[0].latitude,
               longitude: locations[0].longitude)
@@ -168,7 +206,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        print(err);
+        print(err.message);
       });
     }
   }
@@ -176,28 +214,34 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   createUpdateParking() async {
     // Links to send to the backend.
     var cloudinaryLinks = [];
+    var iterations = 0;
 
     setState(() {
       showLoader = true;
     });
-
     if (_imagesToSend.length != 0) {
       _imagesToSend.forEach((image) {
-        // Upload the images to cloudinary.
-        uploadImages(imagePath: image).then((value) {
-          cloudinaryLinks.add(value.secureUrl);
+        iterations += 1;
+        // Make sure that we're not sending images that have already been uploaded.
+        if (!image.contains('https')) {
+          // Upload the images to cloudinary.
+          uploadImages(imagePath: image).then((value) {
+            cloudinaryLinks.add(value.secureUrl);
 
-          // check if the forEach is done.
-          if (cloudinaryLinks.length == _imagesToSend.length) {
-            // Call backend api.
-            createUpdateParkingLots(cloudinaryLinks);
-          }
-        }).catchError((err) {
-          setState(() {
-            showLoader = false;
+            // check if the forEach is done.
+            if (iterations == _imagesToSend.length) {
+              // Call backend api.
+              createUpdateParkingLots(cloudinaryLinks);
+            }
+          }).catchError((err) {
+            setState(() {
+              showLoader = false;
+            });
+            print(err);
           });
-          print(err);
-        });
+        } else if (iterations == _imagesToSend.length) {
+          createUpdateParkingLots(cloudinaryLinks);
+        }
       });
     } else {
       // For updating the backend with the altered or deleted links.
@@ -334,8 +378,20 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                                                             _imageFiles[index],
                                                             index);
                                                       },
-                                                      child: Image.file(
-                                                          _imageFiles[index]))),
+                                                      child: widget
+                                                                  .currentScreen ==
+                                                              'update'
+                                                          // &&
+                                                          // // To allow a user to add new pictures when updating.
+                                                          // _imageFiles[index]
+                                                          //         .runtimeType ==
+                                                          //     'Image'
+                                                          ? Image.file(
+                                                              _imageFiles[
+                                                                  index])
+                                                          : Image.file(
+                                                              _imageFiles[
+                                                                  index]))),
                                               SizedBox(
                                                 width: 8.0,
                                               )
@@ -348,14 +404,22 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                                           children: [
                                             Container(
                                                 height: 145.0,
-                                                child: Image.file(selected)),
+                                                child: widget.currentScreen ==
+                                                        'update'
+                                                    ? selected
+                                                    : Image.file(selected)),
                                             Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: <Widget>[
-                                                  FlatButton(
-                                                      onPressed: _cropImage,
-                                                      child: Icon(Icons.crop)),
+                                                  // User should not be able to crop an uploaded image.
+                                                  widget.currentScreen !=
+                                                          'update'
+                                                      ? FlatButton(
+                                                          onPressed: _cropImage,
+                                                          child:
+                                                              Icon(Icons.crop))
+                                                      : Container(),
                                                   FlatButton(
                                                       onPressed: _clear,
                                                       child: Icon(Icons.close))
