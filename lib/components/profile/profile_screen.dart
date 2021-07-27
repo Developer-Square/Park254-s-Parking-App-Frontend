@@ -4,13 +4,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
+// import 'package:park254_s_parking_app/components/profile/helpers.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
-import 'package:park254_s_parking_app/components/helper_functions.dart';
+// import 'package:park254_s_parking_app/components/helper_functions.dart';
 import '../../config/globals.dart' as globals;
-import 'helpers.dart';
 
 /// Creates a profile screen.
 ///
@@ -40,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool showLoader;
-  bool showToolTip;
   String errMsg;
 
   String fullName;
@@ -55,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     showLoader = false;
-    showToolTip = false;
     errMsg = '';
     fullName = '';
     // Add user's details to the inputs fields.
@@ -98,14 +97,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           showLoader = false;
         });
         // Clear all the user's details.
-        clearStorage(widget.loginDetails);
+        // clearStorage(widget.loginDetails);
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
     }).catchError((err) {
       setState(() {
         showLoader = false;
-        showToolTip = true;
         errMsg = err.message;
       });
     });
@@ -113,7 +111,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   hideToolTip() {
     setState(() {
-      showToolTip = false;
       errMsg = '';
     });
   }
@@ -122,7 +119,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: <Widget>[
-        ToolTip(showToolTip: showToolTip, text: errMsg, hideToolTip: null),
         SingleChildScrollView(
           child: Material(
               color: Colors.grey[200],
@@ -142,11 +138,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   currentScreen: 'profile',
                                 )));
                       },
-                      child: TopPageStyling(
-                        currentPage: 'profile',
-                        widget: buildProfileTab(
-                            context, widget, fullNameController, balance),
-                      ),
+                      // child: TopPageStyling(
+                      //   currentPage: 'profile',
+                      //   widget: buildProfileTab(
+                      //       context, widget, fullNameController, balance),
+                      // ),
                     ),
                     SizedBox(height: 50.0),
                     Padding(
@@ -158,9 +154,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    buildContainer(widget.logo1Path, true, 'wallet', carPlate),
+                    // buildContainer(widget.logo1Path, true, 'wallet', carPlate),
                     SizedBox(height: 1.0),
-                    buildContainer(widget.logo2Path, false, 'wallet', carPlate),
+                    // buildContainer(widget.logo2Path, false, 'wallet', carPlate),
                     SizedBox(height: 50.0),
                     Padding(
                       padding: const EdgeInsets.only(left: 30.0, right: 30.0),
@@ -194,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    buildContainer('', false, 'vehicles', carPlate),
+                    // buildContainer('', false, 'vehicles', carPlate),
                     SizedBox(height: 20.0),
                     Center(
                       child: InkWell(

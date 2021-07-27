@@ -1,9 +1,10 @@
+import 'dart:async';
+import 'dart:core';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-=======
 import 'package:overlay_support/overlay_support.dart';
->>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
+import 'package:overlay_support/overlay_support.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
@@ -44,7 +45,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Color primaryColor = Color(0xff14eeb5);
-<<<<<<< HEAD
   final userDetails = new FlutterSecureStorage();
 
   // Encrypted token.
@@ -52,7 +52,6 @@ class _MyAppState extends State<MyApp> {
   // User's Id from memory.
   var userId;
   var role;
-=======
 
   Future onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
@@ -64,9 +63,7 @@ class _MyAppState extends State<MyApp> {
     // Handle notification tapped logic here.
   }
 
->>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
   // This widget is the root of your application.
-
   initState() {
     super.initState();
     getDetailsFromMemory();
@@ -132,120 +129,29 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  clear() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
-    return Container();
-  }
-
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    // checkForCredentials();
-    return MaterialApp(
-        title: 'Park254 Parking App',
-        theme: ThemeData(
-          primaryColor: primaryColor,
-        ),
-        home: data != null
-            ? role != null
-                ? role == 'user'
-                    ? HomePage(
-                        loginDetails: userDetails,
-                        storeLoginDetails: storeLoginDetails,
-                        clearStorage: clearStorage,
-                      )
-                    : VendorPage(
-                        loginDetails: userDetails,
-                        storeLoginDetails: storeLoginDetails,
-                        clearStorage: clearStorage,
-                      )
-                : Loader()
-            : OnBoardingPage(),
-        routes: {
-          '/login_screen': (context) => LoginScreen(),
-        },
-        onGenerateRoute: (settings) {
-          if (settings.name == Booking.routeName) {
-            final BookingArguments args = settings.arguments;
-            return MaterialPageRoute(builder: (context) {
-              return Booking(
-                bookingNumber: args.bookingNumber,
-                destination: args.destination,
-                parkingLotNumber: args.parkingLotNumber,
-                price: args.price,
-                imagePath: args.imagePath,
-                address: args.address,
-              );
-            });
-          } else if (settings.name == HomePage.routeName) {
-            final HomePageArguements args = settings.arguments;
-            return MaterialPageRoute(builder: (context) {
-              return HomePage(
-                loginDetails: args.loginDetails,
-              );
-            });
-          } else if (settings.name == SearchPage.routeName) {
-            final SearchPageArguments args = settings.arguments;
-            final RatingTabArguements args2 = settings.arguments;
-            final GoogleMapWidgetArguements args3 = settings.arguments;
-            final SearchBarArguements args4 = settings.arguments;
-            final RecentSearches args5 = settings.arguments;
-            final BookingTabArguements args6 = settings.arguments;
-            return MaterialPageRoute(builder: (context) {
-              return Column(
-                children: [
-                  RecentSearches(
-                    specificLocation: args.specificLocation,
-                    town: args.specificLocation,
-                    setShowRecentSearches: args.setShowRecentSearches,
-                  ),
-                  GoogleMapWidget(
-                    tokens: args.loginDetails,
-                    mapCreated: args3.mapCreated,
-                    customInfoWindowController:
-                        args3.customInfoWindowController,
-                  ),
-                  RatingTab(
-                    hideRatingTabFn: args2.hideRatingTabFn,
-                    parkingPlaceName: args2.parkingPlaceName,
-                  ),
-                  SearchBar(
-                      offsetY: args4.offsetY,
-                      blurRadius: args4.blurRadius,
-                      opacity: args4.opacity,
-                      controller: args4.controller,
-                      searchBarTapped: args4.searchBarTapped),
-                  RecentSearches(
-                    setShowRecentSearches: args5.setShowRecentSearches,
-                    town: args5.town,
-                    specificLocation: args5.specificLocation,
-                  ),
-                  BookingTab(searchBarController: args6.searchBarControllerText)
-                ],
-              );
-            });
-          } else if (settings.name == HomeScreen.routeName) {
-            final NearByParkingListArguments args = settings.arguments;
-            final NearByParkingArguements args1 = settings.arguments;
-            final TopPageStylingArguements args2 = settings.arguments;
-            final GoogleMapWidgetArguements args3 = settings.arguments;
-            final HomePageArguements args4 = settings.arguments;
-            return MaterialPageRoute(builder: (context) {
-              return Column(
-                children: [
-                  NearByParking(
-                      showNearByParkingFn: args1.showNearByParkingFn,
-                      hideDetails: args1.hideDetails,
-                      mapController: args1.mapController,
-=======
     return OverlaySupport(
       child: MaterialApp(
           title: 'Park254 Parking App',
           theme: ThemeData(
             primaryColor: primaryColor,
           ),
-          home: OnBoardingPage(),
+          home: data != null
+              ? role != null
+                  ? role == 'user'
+                      ? HomePage(
+                          loginDetails: userDetails,
+                          storeLoginDetails: storeLoginDetails,
+                          clearStorage: clearStorage,
+                        )
+                      : VendorPage(
+                          loginDetails: userDetails,
+                          storeLoginDetails: storeLoginDetails,
+                          clearStorage: clearStorage,
+                        )
+                  : Loader()
+              : OnBoardingPage(),
           routes: {
             '/login_screen': (context) => LoginScreen(),
           },
@@ -287,7 +193,6 @@ class _MyAppState extends State<MyApp> {
                     GoogleMapWidget(
                       tokens: args.loginDetails,
                       mapCreated: args3.mapCreated,
->>>>>>> 12fab5757ce093f7ec7f5cb0cc784c2f14709b2e
                       customInfoWindowController:
                           args3.customInfoWindowController,
                     ),

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import '../../config/globals.dart' as globals;
@@ -54,6 +56,39 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
   );
 }
 
+/// Builds out the card widget.
+///
+/// Requires a [card] variable.
+Widget buildCardDetails(card) {
+  return Row(
+    children: [
+      buildDots(false, card),
+      SizedBox(width: 10.0),
+      buildDots(false, card),
+      SizedBox(width: 10.0),
+      buildDots(false, card),
+      SizedBox(width: 10.0),
+      buildDots(true, card),
+    ],
+  );
+}
+
+/// Builds out the wallet section
+///
+/// Requires [logo] and [card] variables.
+Widget buildWalletItem(logo, card) {
+  return Row(children: <Widget>[
+    SvgPicture.asset(
+      logo,
+      color: Colors.grey,
+      width: 40.0,
+    ),
+    SizedBox(width: 15.0),
+    card ? (buildCardDetails(card)) : (buildDots(false, card)),
+    SizedBox(width: 10.0),
+  ]);
+}
+
 /// Builds out the vehicle section.
 Widget buildVehicleItem(carPlate) {
   return Expanded(
@@ -106,38 +141,5 @@ Widget buildDots(number, card) {
             : '● ● ● ●'
         : '● ● ● ● ● ● 7328',
     style: globals.buildTextStyle(16.0, true, Colors.black),
-  );
-}
-
-/// Builds out the wallet section
-///
-/// Requires [logo] and [card] variables.
-Widget buildWalletItem(logo, card) {
-  return Row(children: <Widget>[
-    SvgPicture.asset(
-      logo,
-      color: Colors.grey,
-      width: 40.0,
-    ),
-    SizedBox(width: 15.0),
-    card ? (buildCardDetails(card)) : (buildDots(false, card)),
-    SizedBox(width: 10.0),
-  ]);
-}
-
-/// Builds out the card widget.
-///
-/// Requires a [card] variable.
-Widget buildCardDetails(card) {
-  return Row(
-    children: [
-      buildDots(false, card),
-      SizedBox(width: 10.0),
-      buildDots(false, card),
-      SizedBox(width: 10.0),
-      buildDots(false, card),
-      SizedBox(width: 10.0),
-      buildDots(true, card),
-    ],
   );
 }
