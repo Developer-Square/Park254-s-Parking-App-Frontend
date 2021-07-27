@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
@@ -38,7 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool showLoader;
-  bool showToolTip;
   String errMsg;
 
   String fullName;
@@ -53,7 +51,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     showLoader = false;
-    showToolTip = false;
     errMsg = '';
     fullName = '';
     // Add user's details to the inputs fields.
@@ -103,16 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }).catchError((err) {
       setState(() {
         showLoader = false;
-        showToolTip = true;
-        errMsg = err.message;
       });
-    });
-  }
-
-  hideToolTip() {
-    setState(() {
-      showToolTip = false;
-      errMsg = '';
     });
   }
 
@@ -120,7 +108,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: <Widget>[
-        ToolTip(showToolTip: showToolTip, text: errMsg, hideToolTip: null),
         SingleChildScrollView(
           child: Material(
               color: Colors.grey[200],

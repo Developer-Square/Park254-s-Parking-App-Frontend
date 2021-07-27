@@ -46,7 +46,6 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     email.text = 'ryanvendor1@gmail.com';
     password.text = 'ryann254';
-    showToolTip = false;
     showLoader = false;
     keyboardVisible = false;
     text = '';
@@ -54,17 +53,8 @@ class _LoginPageState extends State<LoginPage> {
     locationEnabled = false;
     // Check whether there's a message to display
     if (widget.message != null) {
-      if (widget.message.length > 0) {
-        showToolTip = true;
-        text = widget.message;
-      }
+      if (widget.message.length > 0) {}
     }
-  }
-
-  void hideToolTip() {
-    setState(() {
-      showToolTip = false;
-    });
   }
 
   /// Determine the current position of the device.
@@ -129,9 +119,7 @@ class _LoginPageState extends State<LoginPage> {
         });
       }).catchError((err) {
         setState(() {
-          showToolTip = true;
           showLoader = false;
-          text = err.message;
         });
       });
     }
@@ -165,14 +153,6 @@ class _LoginPageState extends State<LoginPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Expanded(
-                child: ToolTip(
-                  showToolTip: showToolTip,
-                  text: text,
-                  hideToolTip: hideToolTip,
-                ),
-                flex: 1,
-              ),
               keyboardVisible
                   ? Expanded(
                       child: Container(
