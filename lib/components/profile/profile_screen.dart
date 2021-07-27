@@ -98,6 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
     }).catchError((err) {
+      // buildNotification(err.message, 'error');
       setState(() {
         showLoader = false;
       });

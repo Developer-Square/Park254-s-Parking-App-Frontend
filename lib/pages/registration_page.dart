@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
 import 'package:park254_s_parking_app/models/vehicle.model.dart';
@@ -20,7 +21,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   int _step;
   String selectedValue;
   String verification;
-  bool showToolTip;
   bool showLoader;
   String roleError;
   var details = [];
@@ -37,7 +37,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   void initState() {
     super.initState();
     _step = 1;
-    showToolTip = false;
     showLoader = false;
     roleError = '';
   }
@@ -45,12 +44,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   void validateRadioButton(value) {
     setState(() {
       selectedValue = value;
-    });
-  }
-
-  void hideToolTip() {
-    setState(() {
-      showToolTip = false;
     });
   }
 
@@ -91,9 +84,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
         selectedValue: selectedValue,
         validateFn: validateRadioButton,
         formKey: formKey,
-        showToolTip: showToolTip,
-        hideToolTip: hideToolTip,
-        text: roleError,
       );
     } else if (_step == 4) {
       return RegistrationScreens(
@@ -109,8 +99,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
           info: 'Enter your password',
           step: _step,
           formKey: formKey,
-          showToolTip: showToolTip,
-          hideToolTip: hideToolTip,
           text: roleError,
           createPasswordController: createPassword,
           confirmPasswordController: confirmPassword);
@@ -123,10 +111,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     //
     // Verify that the user has chosen a role.
     if (_step == 3 && selectedValue == null) {
-      setState(() {
-        showToolTip = true;
-        roleError = 'Kindly choose a role';
-      });
+      buildNotification('Kindly choose a role', 'error');
     } else if (_step == 3 && selectedValue == 'vendor') {
       setState(() {
         _step += 2;
@@ -160,17 +145,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 builder: (context) => LoginPage(message: roleError)));
           }
         }).catchError((err) {
+          buildNotification(err.message, 'error');
           setState(() {
             showLoader = false;
-            showToolTip = true;
-            roleError = err.message;
           });
         });
       } else {
-        setState(() {
-          showToolTip = true;
-          roleError = 'Passwords don\'t match';
-        });
+        buildNotification('Passwords don\'t match', 'error');
       }
     } else {
       setState(() {

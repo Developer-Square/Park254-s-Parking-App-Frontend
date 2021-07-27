@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates the input widgets that are displayed on each of the registration pages.
@@ -53,13 +53,10 @@ class RegistrationScreens extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          // Render only if we are on the Role page.
-          title == 'Role' || title == 'Password'
-              ? ToolTip(
-                  showToolTip: showToolTip,
-                  text: text,
-                  hideToolTip: hideToolTip)
-              : Container(),
+          // Render only if we are on the Role or Password page.
+          // title == 'Role' && text == null || title == 'Password' && text != ''
+          //     ? buildNotification(text, 'error')
+          //     : Container(),
           Padding(
             padding: title == 'Password'
                 ? const EdgeInsets.only(left: 30.0, right: 30.0, top: 130.0)

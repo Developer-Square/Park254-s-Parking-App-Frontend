@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,6 +50,17 @@ class _MyAppState extends State<MyApp> {
   // User's Id from memory.
   var userId;
   var role;
+
+  Future onDidReceiveLocalNotification(
+      int id, String title, String body, String payload) async {
+    // ToDo: Complete the function.
+    // display a dialog with the notification details, tap ok to go to another page.
+  }
+
+  Future selectNotification(String payload) async {
+    // Handle notification tapped logic here.
+  }
+
   // This widget is the root of your application.
 
   initState() {
@@ -115,19 +128,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) async {
-    // ToDo: Complete the function.
-    // display a dialog with the notification details, tap ok to go to another page.
-  }
-
-  Future selectNotification(String payload) async {
-    // Handle notification tapped logic here.
-  }
-
   @override
   Widget build(BuildContext context) {
-    // checkForCredentials();
     return OverlaySupport(
       child: MaterialApp(
           title: 'Park254 Parking App',

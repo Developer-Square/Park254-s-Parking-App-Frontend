@@ -4,9 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+// import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
-import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
@@ -31,10 +30,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
-  bool showToolTip;
   bool showLoader;
   bool keyboardVisible;
-  String text;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
   final userDetails = new FlutterSecureStorage();
@@ -48,13 +45,23 @@ class _LoginPageState extends State<LoginPage> {
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
-    text = '';
     maxRetries = 0;
     locationEnabled = false;
     // Check whether there's a message to display
     if (widget.message != null) {
-      if (widget.message.length > 0) {}
+      if (widget.message.length > 0) {
+        // buildNotification(widget.message, 'success');
+      }
     }
+  }
+
+  storeLoginDetails(details) async {
+    // await tokens.write(key: 'accessToken', value: details.accessToken.token);
+    // await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+  }
+
+  clearStorage() async {
+    // await tokens.deleteAll();
   }
 
   /// Determine the current position of the device.
@@ -97,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              storeLoginDetails(loginDetails, userDetails);
+              // storeLoginDetails(loginDetails, userDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(
@@ -121,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           showLoader = false;
         });
+        // buildNotification(err.message, 'error');
       });
     }
   }
