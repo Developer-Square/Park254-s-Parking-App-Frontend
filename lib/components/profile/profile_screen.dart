@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
-import 'package:park254_s_parking_app/components/loader.dart';
-// import 'package:park254_s_parking_app/components/profile/helpers.dart';
+import 'package:park254_s_parking_app/components/profile/helpers.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
-// import 'package:park254_s_parking_app/components/helper_functions.dart';
 import '../../config/globals.dart' as globals;
+import '../helper_functions.dart';
 
 /// Creates a profile screen.
 ///
@@ -93,6 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var token = await widget.loginDetails.read(key: 'refreshToken');
     logout(refreshToken: token).then((value) {
       if (value == 'success') {
+        buildNotification('Logged out successfully', 'success');
         setState(() {
           showLoader = false;
         });
@@ -104,7 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }).catchError((err) {
       setState(() {
         showLoader = false;
-        errMsg = err.message;
+        buildNotification(err.message, 'error');
+        print("In profile_screen");
+        print(err);
       });
     });
   }
@@ -138,11 +137,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   currentScreen: 'profile',
                                 )));
                       },
-                      // child: TopPageStyling(
-                      //   currentPage: 'profile',
-                      //   widget: buildProfileTab(
-                      //       context, widget, fullNameController, balance),
-                      // ),
+                      child: TopPageStyling(
+                        currentPage: 'profile',
+                        widget: buildProfileTab(
+                            context, widget, fullNameController, balance),
+                      ),
                     ),
                     SizedBox(height: 50.0),
                     Padding(
@@ -154,9 +153,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    // buildContainer(widget.logo1Path, true, 'wallet', carPlate),
+                    buildContainer(widget.logo1Path, true, 'wallet', carPlate),
                     SizedBox(height: 1.0),
-                    // buildContainer(widget.logo2Path, false, 'wallet', carPlate),
+                    buildContainer(widget.logo2Path, false, 'wallet', carPlate),
                     SizedBox(height: 50.0),
                     Padding(
                       padding: const EdgeInsets.only(left: 30.0, right: 30.0),

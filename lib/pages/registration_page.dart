@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
 import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
 import '../components/registration_screens.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -78,13 +78,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     } else if (_step == 3) {
       return RegistrationScreens(
-        title: 'Role',
-        info: 'Kindly choose the type of account you\'re creating',
-        step: _step,
-        selectedValue: selectedValue,
-        validateFn: validateRadioButton,
-        formKey: formKey,
-      );
+          title: 'Role',
+          info: 'Kindly choose the type of account you\'re creating',
+          step: _step,
+          selectedValue: selectedValue,
+          validateFn: validateRadioButton,
+          formKey: formKey,
+          text: roleError);
     } else if (_step == 4) {
       return RegistrationScreens(
           title: 'Vehicle Details',
@@ -138,8 +138,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
           if (value.user.id != null) {
             setState(() {
               showLoader = false;
-              roleError =
-                  'You were registered successfully. \n Try Logging in now.';
+              buildNotification(
+                  'You were registered successfully. Try Logging in now.',
+                  'success');
             });
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => LoginPage(message: roleError)));

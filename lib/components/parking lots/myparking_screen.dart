@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
-import 'package:park254_s_parking_app/components/create_update_parking_lot.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
-import '../config/globals.dart' as globals;
+import '../../config/globals.dart' as globals;
 
 /// Creates a my parking screen that shows you a history of places you've parked.
 ///

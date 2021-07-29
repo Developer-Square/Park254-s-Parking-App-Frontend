@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
 

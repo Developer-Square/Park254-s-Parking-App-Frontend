@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
-import 'package:intl/intl.dart';
 import '../../config/globals.dart' as globals;
 
 /// Creates a dynamic edit screen page for user profiles and adding vehicles.
@@ -66,8 +66,7 @@ class _EditScreenState extends State<EditScreen> {
           .then((value) {
         setState(() {
           showLoader = false;
-          showToolTip = true;
-          text = 'Profile updated successfully.';
+          buildNotification('Profile updated successfully.', 'success');
         });
         //ToDo: Update the fields on the page
         print('success');
@@ -75,8 +74,7 @@ class _EditScreenState extends State<EditScreen> {
         //ToDo: Add the error message pop-up.
         setState(() {
           showLoader = false;
-          showToolTip = true;
-          text = err.message;
+          buildNotification(err.message, 'error');
         });
       });
     }

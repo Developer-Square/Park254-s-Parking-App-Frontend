@@ -5,13 +5,14 @@ import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/functions/cloudinary/upload_images.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
-import '../config/globals.dart' as globals;
+import '../../config/globals.dart' as globals;
 
 /// Builds a page where vendors can create or update their parking lots.
 
@@ -146,6 +147,16 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     });
   }
 
+  // Update details after API call.
+  void updateParkingDetails(value) {
+    print(value);
+    widget.name = value.name;
+    widget.spaces = value.spaces;
+    widget.prices = value.prices;
+    widget.address = value.address;
+    widget.city = value.city;
+  }
+
   createUpdateParkingLots(links) async {
     // Combine the newly added images with the old ones.
     _imagesToSend = links + _imagesToSend;
@@ -169,15 +180,18 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               latitude: locations[0].latitude,
               longitude: locations[0].longitude)
           .then((value) {
+        buildNotification('Parking lot created successfully', 'success');
         setState(() {
           showLoader = false;
         });
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
+        buildNotification(err.message, 'error');
         setState(() {
           showLoader = false;
         });
+        print("In create_update_parking_lot");
         print(err);
       });
     } else if (widget.currentScreen == 'update') {
@@ -197,16 +211,20 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               latitude: locations[0].latitude,
               longitude: locations[0].longitude)
           .then((value) {
+        buildNotification('Parking lot updated successfully', 'success');
         setState(() {
           showLoader = false;
         });
+        updateParkingDetails(value);
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
         setState(() {
           showLoader = false;
         });
-        print(err.message);
+        buildNotification(err.message, 'error');
+        print("In create_update_parking_lot");
+        print(err);
       });
     }
   }
@@ -386,9 +404,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                                                           // _imageFiles[index]
                                                           //         .runtimeType ==
                                                           //     'Image'
-                                                          ? Image.file(
-                                                              _imageFiles[
-                                                                  index])
+                                                          ? _imageFiles[index]
                                                           : Image.file(
                                                               _imageFiles[
                                                                   index]))),

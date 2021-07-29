@@ -123,7 +123,8 @@ class _MyAppState extends State<MyApp> {
 
           // Then redirect the user to the homepage.
         }).catchError((err) {
-          print(err);
+          print(err.message);
+          print("In main.dart");
         });
       }
     }

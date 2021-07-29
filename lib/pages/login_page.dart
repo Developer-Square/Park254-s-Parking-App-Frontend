@@ -4,14 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-// import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
-import 'package:encrypt/encrypt.dart' as encryptionPackage;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -50,18 +47,20 @@ class _LoginPageState extends State<LoginPage> {
     // Check whether there's a message to display
     if (widget.message != null) {
       if (widget.message.length > 0) {
-        // buildNotification(widget.message, 'success');
+        buildNotification(widget.message, 'success');
       }
     }
   }
 
   storeLoginDetails(details) async {
-    // await tokens.write(key: 'accessToken', value: details.accessToken.token);
-    // await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
+    await userDetails.write(
+        key: 'accessToken', value: details.accessToken.token);
+    await userDetails.write(
+        key: 'refreshToken', value: details.refreshToken.token);
   }
 
   clearStorage() async {
-    // await tokens.deleteAll();
+    await userDetails.deleteAll();
   }
 
   /// Determine the current position of the device.
@@ -97,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
           if (value.user.id != null) {
+            buildNotification('Logged in successfully', 'success');
             setState(() {
               showLoader = false;
               loginDetails = value;
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              // storeLoginDetails(loginDetails, userDetails);
+              storeLoginDetails(loginDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(
@@ -125,7 +125,9 @@ class _LoginPageState extends State<LoginPage> {
           }
         });
       }).catchError((err) {
-        // buildNotification(err.message, 'error');
+        buildNotification(err.message, 'error');
+        print("In login_page");
+        print(err);
         setState(() {
           showLoader = false;
         });
