@@ -3,8 +3,6 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
@@ -86,11 +84,14 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString(key, value);
     }).catchError((err) {
+      print("In storeDetailsMemory, main.dart");
       print(err);
     });
   }
 
   checkForCredentials() {
+    print("data");
+    print(data);
     if (data != null) {
       var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
       if (token != null && userId != null) {
@@ -112,6 +113,7 @@ class _MyAppState extends State<MyApp> {
                 key: 'phone', value: details.phone.toString());
             await userDetails.write(key: 'userId', value: userId);
           }).catchError((err) {
+            print("In checkCredentials, main.dart");
             print(err);
           });
           var access = encryptDecryptData(
@@ -123,6 +125,11 @@ class _MyAppState extends State<MyApp> {
 
           // Then redirect the user to the homepage.
         }).catchError((err) {
+          setState(() {
+            data = null;
+            userId = null;
+          });
+          clearStorage(userDetails);
           print(err.message);
           print("In main.dart");
         });

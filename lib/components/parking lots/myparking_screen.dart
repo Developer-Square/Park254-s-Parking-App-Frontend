@@ -6,7 +6,11 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/globals.dart' as globals;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../helper_functions.dart';
 
 /// Creates a my parking screen that shows you a history of places you've parked.
 ///
@@ -21,6 +25,8 @@ class MyParkingScreen extends StatefulWidget {
 
 class MyParkingState extends State<MyParkingScreen> {
   var userRole;
+  var accessToken;
+  var userId;
   var parkingLotsResults;
   bool showLoader;
   TextEditingController fullNameController = new TextEditingController();
@@ -30,9 +36,11 @@ class MyParkingState extends State<MyParkingScreen> {
   TextEditingController cityController = new TextEditingController();
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     showLoader = false;
+    getUserDetails();
+    getParkingDetails();
   }
 
   @override
@@ -45,12 +53,16 @@ class MyParkingState extends State<MyParkingScreen> {
     cityController.dispose();
   }
 
+  // For the functions that need to access the loginDetails when the page,
+  // loads, use sharedPrefs.
   getUserDetails() async {
-    var role = await widget.loginDetails.read(key: 'role');
-
-    setState(() {
-      userRole = role;
+    await SharedPreferences.getInstance().then((value) {
+      var role = value.getString('role');
+      setState(() {
+        userRole = role;
+      });
     });
+    print(userRole);
   }
 
   redirectToCreateorUpdatePage(text, [parkingData]) {
@@ -69,14 +81,29 @@ class MyParkingState extends State<MyParkingScreen> {
 
 // Get all the parking lots owned by the current user.
   getParkingDetails() async {
-    var token = await widget.loginDetails.read(key: 'accessToken');
-    var userId = await widget.loginDetails.read(key: 'userId');
+    await SharedPreferences.getInstance().then((value) {
+      var encryptedToken = value.getString('accessToken');
+      var storedId = value.getString('userId');
+      var token =
+          encryptDecryptData('userAccessTokens', encryptedToken, 'decrypt');
 
-    getParkingLots(token: token, owner: userId).then((value) {
-      parkingLotsResults = value.parkingLots;
-    }).catchError((err) {
-      print(err);
+      setState(() {
+        accessToken = token;
+        userId = storedId;
+      });
     });
+    print(userRole);
+
+    if (accessToken != null && userId != null) {
+      getParkingLots(token: accessToken, owner: userId).then((value) {
+        setState(() {
+          parkingLotsResults = value.parkingLots;
+        });
+      }).catchError((err) {
+        print("In getParkingDetails, myparking_screen");
+        print(err.message);
+      });
+    }
   }
 
   _updateParking(parkingLotData) {
@@ -106,13 +133,12 @@ class MyParkingState extends State<MyParkingScreen> {
       setState(() {
         showLoader = false;
       });
-      print(err);
+      print("In deleteParkingLot, myparking_screen");
+      print(err.message);
     });
   }
 
   Widget build(BuildContext context) {
-    getUserDetails();
-    getParkingDetails();
     return SafeArea(
       child: Scaffold(
         body: Stack(children: [

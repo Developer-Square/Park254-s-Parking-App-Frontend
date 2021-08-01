@@ -33,12 +33,6 @@ class _VendorPageState extends State<VendorPage> {
     super.initState();
     //Pass initial values
     showBottomNavigation = true;
-    getDetails();
-  }
-
-  getDetails() async {
-    var loginDetails = await widget.loginDetails.read(key: 'accessToken');
-    print(loginDetails);
   }
 
   /// Hide navigation icons when showing full nearby parking widget and vice versa.

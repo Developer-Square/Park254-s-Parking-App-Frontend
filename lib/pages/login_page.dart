@@ -31,14 +31,14 @@ class _LoginPageState extends State<LoginPage> {
   bool keyboardVisible;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
-  final userDetails = new FlutterSecureStorage();
+  var userDetails = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
 
   @override
   void initState() {
     super.initState();
-    email.text = 'ryanvendor1@gmail.com';
+    email.text = 'ryanvendor2@gmail.com';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
@@ -50,13 +50,6 @@ class _LoginPageState extends State<LoginPage> {
         buildNotification(widget.message, 'success');
       }
     }
-  }
-
-  storeLoginDetails(details) async {
-    await userDetails.write(
-        key: 'accessToken', value: details.accessToken.token);
-    await userDetails.write(
-        key: 'refreshToken', value: details.refreshToken.token);
   }
 
   clearStorage() async {
@@ -104,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              storeLoginDetails(loginDetails);
+              storeLoginDetails(loginDetails, userDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(

@@ -31,11 +31,12 @@ storeDetailsInMemory(String key, value) async {
   SharedPreferences.getInstance().then((prefs) {
     prefs.setString(key, value);
   }).catchError((err) {
+    print("In helper_functions");
     print(err);
   });
 }
 
-/// Stores all the login the login details
+/// Stores all the login details
 storeLoginDetails(details, user) async {
   final accessToken = details.accessToken.token;
   final refreshToken = details.refreshToken.token;
@@ -47,9 +48,10 @@ storeLoginDetails(details, user) async {
   storeDetailsInMemory('accessToken', access.base64);
   storeDetailsInMemory('refreshToken', refresh.base64);
   storeDetailsInMemory('userId', userId);
+  storeDetailsInMemory('role', details.user.role);
 
-  await user.write(key: 'accessToken', value: details.accessToken.token);
-  await user.write(key: 'refreshToken', value: details.refreshToken.token);
+  await user.write(key: 'accessToken', value: accessToken);
+  await user.write(key: 'refreshToken', value: refreshToken);
   await user.write(key: 'role', value: details.user.role);
   await user.write(key: 'name', value: details.user.name);
   await user.write(key: 'email', value: details.user.email);

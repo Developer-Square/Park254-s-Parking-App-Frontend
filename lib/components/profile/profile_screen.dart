@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           showLoader = false;
         });
         // Clear all the user's details.
-        // clearStorage(widget.loginDetails);
+        clearStorage(widget.loginDetails);
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }

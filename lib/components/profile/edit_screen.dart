@@ -71,7 +71,6 @@ class _EditScreenState extends State<EditScreen> {
         //ToDo: Update the fields on the page
         print('success');
       }).catchError((err) {
-        //ToDo: Add the error message pop-up.
         setState(() {
           showLoader = false;
           buildNotification(err.message, 'error');
