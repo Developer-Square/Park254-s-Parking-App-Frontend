@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
@@ -256,13 +257,32 @@ class MyParkingState extends State<MyParkingScreen> {
             .map(
               (item) => Column(
                 children: [
-                  buildParkingContainer(
+                  InkWell(
+                    child: buildParkingContainer(
                       item.name,
                       'Ksh ${item.price} / hr',
                       item.address,
                       'Parking Slots: ${item.spaces}',
                       Colors.white,
-                      item),
+                      item,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ParkingInfo(
+                            images: item.images,
+                            name: item.name,
+                            accessibleParking: item.features.accessibleParking,
+                            cctv: item.features.cctv,
+                            carWash: item.features.carWash,
+                            evCharging: item.features.evCharging,
+                            valetParking: item.features.valetParking,
+                            rating: item.rating,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   SizedBox(height: 15.0)
                 ],
               ),

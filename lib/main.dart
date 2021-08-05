@@ -11,11 +11,13 @@ import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
+import 'package:park254_s_parking_app/config/parkingInfoArguments.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
@@ -295,6 +297,20 @@ class _MyAppState extends State<MyApp> {
                   showToolTip: args.showToolTip,
                   text: args.text,
                   hideToolTip: args.hideToolTip,
+                );
+              });
+            } else if (settings.name == ParkingInfo.routeName) {
+              final ParkingInfoArguments args = settings.arguments;
+              return MaterialPageRoute(builder: (context) {
+                return ParkingInfo(
+                  images: args.images,
+                  name: args.name,
+                  accessibleParking: args.accessibleParking,
+                  cctv: args.cctv,
+                  carWash: args.carWash,
+                  evCharging: args.evCharging,
+                  valetParking: args.valetParking,
+                  rating: args.rating,
                 );
               });
             }
