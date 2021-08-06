@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
+import 'package:park254_s_parking_app/components/Image_loader.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
@@ -65,27 +66,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         _imageFiles.add(Image.network(
           image,
           loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent loaddingProgress) {
-            if (loaddingProgress == null) return child;
-            return Center(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Loading...',
-                  style: globals.buildTextStyle(15.0, true, Colors.grey),
-                ),
-                SizedBox(height: 10.0),
-                CircularProgressIndicator(
-                  backgroundColor: globals.backgroundColor,
-                  value: loaddingProgress.expectedTotalBytes != null
-                      ? loaddingProgress.cumulativeBytesLoaded /
-                          loaddingProgress.expectedTotalBytes
-                      : null,
-                ),
-              ],
-            ));
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return imageLoader(loadingProgress);
           },
         ));
       });
