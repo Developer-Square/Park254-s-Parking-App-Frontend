@@ -258,9 +258,12 @@ class _ParkingInfoState extends State<ParkingInfo> {
                   child: _amenities(),
                   padding: EdgeInsets.only(left: 22, right: 22, bottom: 10)),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 22, right: 22, top: 20),
-              child: PrimaryText(content: 'Ratings'),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 22, right: 22, top: 20),
+                child: PrimaryText(content: 'Ratings'),
+              ),
+              color: Colors.white,
             ),
             Expanded(
               child: Container(
