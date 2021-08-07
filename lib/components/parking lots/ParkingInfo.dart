@@ -131,13 +131,13 @@ class _ParkingInfoState extends State<ParkingInfo> {
     return Icon(
       status ? Icons.star : Icons.star_border,
       color: status ? Colors.yellow : Colors.grey.withOpacity(0.7),
-      size: 15.0,
+      size: 20.0,
     );
   }
 
   Widget _rating() {
     return Container(
-      width: 90.0,
+      width: 120.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -182,41 +182,76 @@ class _ParkingInfoState extends State<ParkingInfo> {
     );
   }
 
+  int convertBoolToInt({@required bool value}) {
+    return value ? 1 : 0;
+  }
+
+  String convertRatingToString() {
+    if (widget.rating == 5) {
+      return 'Excellent';
+    } else if (widget.rating >= 4) {
+      return 'Very Good';
+    } else if (widget.rating >= 3) {
+      return 'Good';
+    } else if (widget.rating >= 2) {
+      return 'Bad';
+    } else if (widget.rating >= 1) {
+      return 'Very Bad';
+    } else if (widget.rating > 0) {
+      return 'Poor';
+    } else {
+      return 'Unrated';
+    }
+  }
+
+  String generateComment() {
+    int count = 0;
+    List amenities = [
+      widget.accessibleParking,
+      widget.carWash,
+      widget.cctv,
+      widget.evCharging,
+      widget.valetParking,
+    ];
+    amenities.forEach((amenity) {
+      count += convertBoolToInt(value: amenity);
+    });
+    String comment = (count == 5)
+        ? 'Your amenities look good!!'
+        : 'Please consider adding amenities to your facility';
+    return '${convertRatingToString()}. $comment';
+  }
+
   Widget _ratingBlock() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 15.0, left: 22.0, right: 22.0),
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width / 3.0,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('4.5',
-                        style: globals.buildTextStyle(
-                            46.0, true, globals.textColor)),
-                    _rating(),
-                    SizedBox(height: 5.0),
-                    Text('3, 000',
-                        style: globals.buildTextStyle(
-                            16.0, false, globals.textColor.withOpacity(0.8)))
-                  ]),
-            ),
-            SizedBox(width: 25.0),
-            Expanded(
-              child: Column(
-                children: [
-                  _ratingTab(5, 0.8),
-                  _ratingTab(4, 0.5),
-                  _ratingTab(3, 0.3),
-                  _ratingTab(2, 0.1),
-                  _ratingTab(1, 0.0)
-                ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0, left: 22.0, right: 22.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                widget.rating.toString(),
+                style: globals.buildTextStyle(30, true, globals.textColor),
               ),
-            )
-          ],
-        ),
+            ),
+            flex: 2,
+          ),
+          _rating(),
+          Expanded(
+            child: Text(
+              generateComment(),
+              style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
+            flex: 2,
+          ),
+          Spacer(),
+        ],
       ),
     );
   }

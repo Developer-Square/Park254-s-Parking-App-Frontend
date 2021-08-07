@@ -47,7 +47,6 @@ class Booking extends StatefulWidget {
       @required this.imagePath,
       @required this.address});
 
-
   @override
   _BookingState createState() => _BookingState();
 }
@@ -190,14 +189,17 @@ class _BookingState extends State<Booking> {
 
   /// Generates receipt
   void _generateReceipt() {
-    Navigator.pushNamed(context, PaymentSuccessful.routeName,
-        arguments: ReceiptArguments(
-          bookingNumber: widget.bookingNumber,
-          parkingSpace: widget.parkingLotNumber,
-          price: amount,
-          destination: widget.destination,
-          address: widget.address,
-        ));
+    Navigator.pushNamed(
+      context,
+      PaymentSuccessful.routeName,
+      arguments: ReceiptArguments(
+        bookingNumber: widget.bookingNumber,
+        parkingSpace: widget.parkingLotNumber,
+        price: amount,
+        destination: widget.destination,
+        address: widget.address,
+      ),
+    );
   }
 
   Widget _dropDown(
