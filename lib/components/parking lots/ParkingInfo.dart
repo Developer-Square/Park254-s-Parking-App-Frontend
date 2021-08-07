@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
-import 'package:park254_s_parking_app/components/DottedHorizontalLine.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import '../../config/globals.dart' as globals;
 import '../Image_loader.dart';
@@ -243,9 +242,10 @@ class _ParkingInfoState extends State<ParkingInfo> {
             child: Text(
               generateComment(),
               style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic),
+                color: Colors.black54,
+                fontSize: 16,
+                fontStyle: FontStyle.italic,
+              ),
               textAlign: TextAlign.center,
             ),
             flex: 2,
