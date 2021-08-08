@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
@@ -44,6 +46,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   /// We are storing the images twice because inorder to display the images.
   /// need to put them in [File] format while sending them to cloudinary requires.
   /// them to be [String] format.
+  // Intial images links in the backend.
+  final List _backendImages = [];
   // Active image files to be displayed to the user.
   var _imageFiles = [];
   // Image files to be sent to cloudinary.
@@ -61,6 +65,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     if (widget.currentScreen == 'update') {
       // Add all the links to the cloudinary images so that we can display them.
       widget.parkingData.images.forEach((image) {
+        // The list of backend images will be merged when into the cloudinaryLinks list
+        // for updating in the createUpdateParkingLots function.
+        _backendImages.add(image);
         _imagesToSend.add(image);
         // Get the images from cloudinary and indicate progress while retrieving them.
         _imageFiles.add(Image.network(
@@ -81,7 +88,12 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
 
     setState(() {
       if (selected != null) {
-        _imageFiles.add(File(selected.path));
+        // If it's an update then add the image.file so that it can be displayed.
+        if (widget.currentScreen == 'update') {
+          _imageFiles.add(Image.file(File(selected.path)));
+        } else {
+          _imageFiles.add(File(selected.path));
+        }
         _imagesToSend.add(selected.path);
       } else {
         print('No image selected.');
@@ -132,17 +144,16 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
 
   // Update details after API call.
   void updateParkingDetails(value) {
-    print(value);
-    widget.name = value.name;
-    widget.spaces = value.spaces;
-    widget.prices = value.prices;
-    widget.address = value.address;
-    widget.city = value.city;
+    widget.name.text = value.name;
+    widget.spaces.text = value.spaces.toString();
+    widget.prices.text = value.price.toString();
+    widget.address.text = value.address;
+    widget.city.text = value.city;
   }
 
   createUpdateParkingLots(links) async {
     // Combine the newly added images with the old ones.
-    _imagesToSend = links + _imagesToSend;
+    var updatedImages = links + _backendImages;
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
     var userId = await widget.loginDetails.read(key: 'userId');
     // Get the coordinates of the address the user entered.
@@ -150,6 +161,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     List<dynamic> locations = await locationFromAddress(
         widget.address.text + ', ' + widget.city.text);
 
+    setState(() {
+      showLoader = false;
+    });
     if (widget.currentScreen == 'create') {
       createParkingLot(
               token: accessToken,
@@ -189,7 +203,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               spaces: int.parse(widget.spaces.text),
               price: int.parse(widget.prices.text),
               address: widget.address.text,
-              images: _imagesToSend,
+              images: updatedImages,
               city: widget.city.text,
               latitude: locations[0].latitude,
               longitude: locations[0].longitude)
@@ -205,9 +219,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        buildNotification(err.message, 'error');
+        // buildNotification(err.toString(), 'error');
         print("In create_update_parking_lot");
-        print(err);
+        log(err.toString());
       });
     }
   }
@@ -216,21 +230,22 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     // Links to send to the backend.
     var cloudinaryLinks = [];
     var iterations = 0;
-
+    // Make a fixed list from the _imagesToSend array so that we can use its values as indexes.
+    final List fixedList =
+        Iterable<int>.generate(_imagesToSend.length).toList();
     setState(() {
       showLoader = true;
     });
     if (_imagesToSend.length != 0) {
-      _imagesToSend.forEach((image) {
-        iterations += 1;
+      fixedList.map((index) {
         // Make sure that we're not sending images that have already been uploaded.
-        if (!image.contains('https')) {
+        if (!_imagesToSend[index].contains('https')) {
           // Upload the images to cloudinary.
-          uploadImages(imagePath: image).then((value) {
+          uploadImages(imagePath: _imagesToSend[index]).then((value) {
             cloudinaryLinks.add(value.secureUrl);
 
-            // check if the forEach is done.
-            if (iterations == _imagesToSend.length) {
+            // check if the map is done.
+            if (index == _imagesToSend.length - 1) {
               // Call backend api.
               createUpdateParkingLots(cloudinaryLinks);
             }
@@ -240,10 +255,13 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
             });
             print(err);
           });
-        } else if (iterations == _imagesToSend.length) {
+        }
+        // If the mapping is done, make sure cloudinaryLinks has some value before updating the backend
+        else if (index == _imagesToSend.length - 1 &&
+            cloudinaryLinks.length > 0) {
           createUpdateParkingLots(cloudinaryLinks);
         }
-      });
+      }).toList();
     } else {
       // For updating the backend with the altered or deleted links.
       createUpdateParkingLots(cloudinaryLinks);
@@ -379,18 +397,14 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                                                             _imageFiles[index],
                                                             index);
                                                       },
-                                                      child: widget
-                                                                  .currentScreen ==
-                                                              'update'
-                                                          // &&
-                                                          // // To allow a user to add new pictures when updating.
-                                                          // _imageFiles[index]
-                                                          //         .runtimeType ==
-                                                          //     'Image'
-                                                          ? _imageFiles[index]
-                                                          : Image.file(
-                                                              _imageFiles[
-                                                                  index]))),
+                                                      child:
+                                                          widget.currentScreen ==
+                                                                  'update'
+                                                              ? _imageFiles[
+                                                                  index]
+                                                              : Image.file(
+                                                                  _imageFiles[
+                                                                      index]))),
                                               SizedBox(
                                                 width: 8.0,
                                               )

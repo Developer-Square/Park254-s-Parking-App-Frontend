@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
@@ -126,6 +128,7 @@ class MyParkingState extends State<MyParkingScreen> {
     var token = await widget.loginDetails.read(key: 'accessToken');
     deleteParkingLot(token: token, parkingLotId: parkingLotId).then((value) {
       if (value == 'success') {
+        buildNotification('Deleted parking lot successfully', 'success');
         setState(() {
           showLoader = false;
         });
@@ -135,7 +138,8 @@ class MyParkingState extends State<MyParkingScreen> {
         showLoader = false;
       });
       print("In deleteParkingLot, myparking_screen");
-      print(err.message);
+      buildNotification(err.message, 'success');
+      log(err.toString());
     });
   }
 
