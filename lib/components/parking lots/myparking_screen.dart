@@ -79,6 +79,7 @@ class MyParkingState extends State<MyParkingScreen> {
               address: addressController,
               city: cityController,
               parkingData: parkingData,
+              getParkingDetails: getParkingDetails,
             )));
   }
 
@@ -95,12 +96,12 @@ class MyParkingState extends State<MyParkingScreen> {
         userId = storedId;
       });
     });
-    print(userRole);
 
     if (accessToken != null && userId != null) {
       getParkingLots(token: accessToken, owner: userId).then((value) {
         setState(() {
           parkingLotsResults = value.parkingLots;
+          log(value.parkingLots[0].name.toString());
         });
       }).catchError((err) {
         print("In getParkingDetails, myparking_screen");
@@ -109,8 +110,8 @@ class MyParkingState extends State<MyParkingScreen> {
     }
   }
 
+  // Update the form fields then move to the page.
   _updateParking(parkingLotData) {
-    // Update the form fields then move to the page.
     setState(() {
       fullNameController.text = parkingLotData.name;
       spacesController.text = parkingLotData.spaces.toString();
@@ -183,14 +184,15 @@ class MyParkingState extends State<MyParkingScreen> {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         CreateUpdateParkingLot(
-                                          loginDetails: widget.loginDetails,
-                                          currentScreen: 'create',
-                                          name: fullNameController,
-                                          spaces: spacesController,
-                                          prices: pricesController,
-                                          address: addressController,
-                                          city: cityController,
-                                        )));
+                                            loginDetails: widget.loginDetails,
+                                            currentScreen: 'create',
+                                            name: fullNameController,
+                                            spaces: spacesController,
+                                            prices: pricesController,
+                                            address: addressController,
+                                            city: cityController,
+                                            getParkingDetails:
+                                                getParkingDetails)));
                               },
                               child: Container(
                                 width: 37.0,
@@ -309,7 +311,7 @@ class MyParkingState extends State<MyParkingScreen> {
   ///
   /// Requires [parkingLotNumber], [parkingPrice], [parkingLocation], [paymentStatus], [paymentColor] and [parkingLotData].
   /// The parkingLotData will be used when updating and deleting parking lots.
-  Widget buildParkingContainer(parkingLotNumber, parkingPrice, parkingLocation,
+  Widget buildParkingContainer(parkingLotName, parkingPrice, parkingLocation,
       paymentStatus, paymentColor,
       [parkingLotData]) {
     return BoxShadowWrapper(
@@ -332,7 +334,7 @@ class MyParkingState extends State<MyParkingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  parkingLotNumber,
+                  parkingLotName,
                   style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
                 ),
                 Text(

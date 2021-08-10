@@ -24,7 +24,6 @@ Future<ParkingLot> updateParkingLot({
   int price = 0,
   String address = '',
   String city = '',
-  bool nameChanged = false,
 }) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
@@ -50,10 +49,7 @@ Future<ParkingLot> updateParkingLot({
   if (images.length == 0) {
     body.remove('images');
   }
-  // If the name wasn't changed then don't send it.
-  if (!nameChanged) {
-    body.remove('name');
-  }
+
   final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.patch(
     url,

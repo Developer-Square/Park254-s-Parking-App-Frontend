@@ -28,6 +28,7 @@ class CreateUpdateParkingLot extends StatefulWidget {
   final FlutterSecureStorage loginDetails;
   final currentScreen;
   final parkingData;
+  Function getParkingDetails;
 
   CreateUpdateParkingLot(
       {@required this.name,
@@ -36,6 +37,7 @@ class CreateUpdateParkingLot extends StatefulWidget {
       @required this.address,
       @required this.city,
       @required this.loginDetails,
+      @required this.getParkingDetails,
       this.currentScreen,
       this.parkingData});
   @override
@@ -52,6 +54,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   var _imageFiles = [];
   // Image files to be sent to cloudinary.
   var _imagesToSend = [];
+  // Set the links parameter to an empty array as its default value.
+  static const linksParam = [];
   // Used when selecting which image to remove or crop.
   var selected;
   var index;
@@ -142,16 +146,16 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     });
   }
 
-  // Update details after API call.
-  void updateParkingDetails(value) {
-    widget.name.text = value.name;
-    widget.spaces.text = value.spaces.toString();
-    widget.prices.text = value.price.toString();
-    widget.address.text = value.address;
-    widget.city.text = value.city;
-  }
+  // // Update details after API call.
+  // void updateParkingDetails(value) {
+  //   widget.name.text = value.name;
+  //   widget.spaces.text = value.spaces.toString();
+  //   widget.prices.text = value.price.toString();
+  //   widget.address.text = value.address;
+  //   widget.city.text = value.city;
+  // }
 
-  createUpdateParkingLots(links) async {
+  createUpdateParkingLots([links = linksParam]) async {
     // Combine the newly added images with the old ones.
     var updatedImages = links + _backendImages;
     var accessToken = await widget.loginDetails.read(key: 'accessToken');
@@ -178,6 +182,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               longitude: locations[0].longitude)
           .then((value) {
         buildNotification('Parking lot created successfully', 'success');
+        // Retrieve the new details from the backend.
+        widget.getParkingDetails();
         setState(() {
           showLoader = false;
         });
@@ -212,7 +218,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        updateParkingDetails(value);
+        // updateParkingDetails(value);
+        // Retrieve the new details from the backend.
+        widget.getParkingDetails();
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
@@ -229,7 +237,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   createUpdateParking() async {
     // Links to send to the backend.
     var cloudinaryLinks = [];
-    var iterations = 0;
     // Make a fixed list from the _imagesToSend array so that we can use its values as indexes.
     final List fixedList =
         Iterable<int>.generate(_imagesToSend.length).toList();
@@ -257,8 +264,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
           });
         }
         // If the mapping is done, make sure cloudinaryLinks has some value before updating the backend
-        else if (index == _imagesToSend.length - 1 &&
-            cloudinaryLinks.length > 0) {
+        else if (index == _imagesToSend.length - 1) {
           createUpdateParkingLots(cloudinaryLinks);
         }
       }).toList();
