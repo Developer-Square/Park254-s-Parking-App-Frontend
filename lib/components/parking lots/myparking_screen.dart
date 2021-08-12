@@ -130,6 +130,7 @@ class MyParkingState extends State<MyParkingScreen> {
     deleteParkingLot(token: token, parkingLotId: parkingLotId).then((value) {
       if (value == 'success') {
         buildNotification('Deleted parking lot successfully', 'success');
+        getParkingDetails();
         setState(() {
           showLoader = false;
         });

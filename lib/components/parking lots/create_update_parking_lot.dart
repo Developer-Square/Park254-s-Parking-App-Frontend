@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -146,15 +147,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     });
   }
 
-  // // Update details after API call.
-  // void updateParkingDetails(value) {
-  //   widget.name.text = value.name;
-  //   widget.spaces.text = value.spaces.toString();
-  //   widget.prices.text = value.price.toString();
-  //   widget.address.text = value.address;
-  //   widget.city.text = value.city;
-  // }
-
   createUpdateParkingLots([links = linksParam]) async {
     // Combine the newly added images with the old ones.
     var updatedImages = links + _backendImages;
@@ -218,7 +210,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        // updateParkingDetails(value);
         // Retrieve the new details from the backend.
         widget.getParkingDetails();
         clearFields();
@@ -227,9 +218,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        // buildNotification(err.toString(), 'error');
+        buildNotification(err.toString(), 'error');
         print("In create_update_parking_lot");
-        log(err.toString());
+        log(json.encode(err));
       });
     }
   }
