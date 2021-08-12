@@ -8,7 +8,7 @@ import '../../config/globals.dart' as globals;
 /// Deletes transaction using id
 ///
 /// Requires [token], [transactionId]
-Future<bool> deleteTransaction({
+Future<String> deleteTransaction({
   @required String token,
   @required String transactionId,
 }) async {
@@ -19,7 +19,7 @@ Future<bool> deleteTransaction({
   final response = await http.delete(url, headers: headers);
 
   if (response.statusCode == 204) {
-    return true;
+    return 'success';
   } else {
     handleError(response.body);
   }
