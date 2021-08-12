@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import '../../config/globals.dart' as globals;
 
+/// Deletes transaction using id
+///
+/// Requires [token], [transactionId]
 Future<bool> deleteTransaction({
   @required String token,
   @required String transactionId,

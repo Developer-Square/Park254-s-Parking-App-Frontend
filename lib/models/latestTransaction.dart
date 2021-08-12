@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'transaction.model.dart';
 import 'dart:core';
 
+/// Converts the latest transaction from json
 class LatestTransaction {
   final List<Transaction> transactions;
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Converts a transaction object from json
 class Transaction {
   final String id;
   final String merchantRequestID;

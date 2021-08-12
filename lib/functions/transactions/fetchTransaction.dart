@@ -8,6 +8,11 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/latestTransaction.dart';
 import '../../config/globals.dart' as globals;
 
+/// Fetches transaction after payment. Called by [pay]
+///
+/// IMPORTANT: Call from [pay]
+/// Retries for 5 times as long as the response status code is 404
+/// Requires [phoneNumber], [amount], [token], and [createdAt]
 Future<LatestTransaction> fetchTransaction({
   @required num phoneNumber,
   @required num amount,

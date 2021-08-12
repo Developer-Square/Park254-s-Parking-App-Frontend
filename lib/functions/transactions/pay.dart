@@ -8,6 +8,9 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/latestTransaction.dart';
 import '../../config/globals.dart' as globals;
 
+/// Carries out MPESA transaction and returns [Transaction]
+///
+/// Requires [phoneNumber], [amount], and [token]
 Future<LatestTransaction> pay({
   @required num phoneNumber,
   @required num amount,

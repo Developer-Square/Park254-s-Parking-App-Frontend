@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'transaction.model.dart';
 import 'dart:core';
 
+/// Converts a list of transactions from json
 class QueryTransactions {
   final List<Transaction> transactions;
   final int page;

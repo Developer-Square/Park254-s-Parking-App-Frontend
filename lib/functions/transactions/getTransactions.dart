@@ -7,6 +7,9 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/queryTransactions.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets transactions based on filter properties
+///
+/// filter properties: [phoneNumber], [sortBy], [limit], and [page]
 Future<QueryTransactions> getTransactions({
   @required String token,
   num phoneNumber = 0,

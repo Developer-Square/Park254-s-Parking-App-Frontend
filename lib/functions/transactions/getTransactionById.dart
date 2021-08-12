@@ -7,6 +7,9 @@ import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/transaction.model.dart';
 import '../../config/globals.dart' as globals;
 
+/// Gets single transaction using id
+///
+/// Requires [token], [transactionId]
 Future<Transaction> getTransactionById({
   @required String token,
   @required String transactionId,
