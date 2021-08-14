@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String fullName;
   String carPlate = 'KCB 8793K';
   // String carModel = 'BMW';
-  String balance = 'Ksh 2005\nbalance';
+  String balance = 'Ksh 2005';
   // String email = 'rhondarousey@gmail.com';
   // String phone = '78656789';
   // String password = 'password1';

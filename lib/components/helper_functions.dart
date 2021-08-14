@@ -60,7 +60,6 @@ storeLoginDetails(details, user) async {
 }
 
 // Clears the details when a user logouts.
-// ToDo: Clear from memory too when done.
 clearStorage(user) async {
   await user.deleteAll();
   await SharedPreferences.getInstance().then((prefs) {

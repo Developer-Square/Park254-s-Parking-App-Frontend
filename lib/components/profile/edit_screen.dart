@@ -36,6 +36,7 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   TextEditingController vehicleTypeController = new TextEditingController();
   TextEditingController vehiclePlateController = new TextEditingController();
+  FlutterSecureStorage userDetails = new FlutterSecureStorage();
   bool showLoader;
   bool showToolTip;
   String text;
@@ -50,34 +51,39 @@ class _EditScreenState extends State<EditScreen> {
     showToolTip = false;
   }
 
-  Widget build(BuildContext context) {
-    updateProfile() async {
+  updateProfile() async {
+    setState(() {
+      showLoader = true;
+    });
+    var accessToken = await widget.loginDetails.read(key: 'accessToken');
+    var userId = await widget.loginDetails.read(key: 'userId');
+    updateUser(
+            token: accessToken,
+            userId: userId,
+            name: widget.fullName.text,
+            email: widget.email.text,
+            phone: int.parse(widget.phone.text))
+        .then((value) async {
+      // Add the new values to the store.
+      await userDetails.write(key: 'name', value: widget.fullName.text);
+      await userDetails.write(key: 'email', value: widget.email.text);
+      await userDetails.write(key: 'phone', value: widget.phone.text);
       setState(() {
-        showLoader = true;
+        showLoader = false;
       });
-      var accessToken = await widget.loginDetails.read(key: 'accessToken');
-      var userId = await widget.loginDetails.read(key: 'userId');
-      updateUser(
-              token: accessToken,
-              userId: userId,
-              name: widget.fullName.text,
-              email: widget.email.text,
-              phone: int.parse(widget.phone.text))
-          .then((value) {
-        setState(() {
-          showLoader = false;
-          buildNotification('Profile updated successfully.', 'success');
-        });
-        //ToDo: Update the fields on the page
-        print('success');
-      }).catchError((err) {
-        setState(() {
-          showLoader = false;
-          buildNotification(err.message, 'error');
-        });
-      });
-    }
 
+      buildNotification('Profile updated successfully.', 'success');
+      Navigator.pop(context);
+      //ToDo: Update the fields on the page
+    }).catchError((err) {
+      setState(() {
+        showLoader = false;
+        buildNotification(err.message, 'error');
+      });
+    });
+  }
+
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
