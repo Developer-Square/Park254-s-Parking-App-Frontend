@@ -16,7 +16,7 @@ Future<Transaction> pay({
   @required num amount,
   @required String token,
 }) async {
-  String createdAt = DateTime.now().toIso8601String();
+  String createdAt = DateTime.now().toUtc().toIso8601String();
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
     HttpHeaders.contentTypeHeader: "application/json",
