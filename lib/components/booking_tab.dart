@@ -1,5 +1,9 @@
+import 'dart:developer';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
 
@@ -17,18 +21,27 @@ class BookingTab extends StatefulWidget {
   final Function showNearbyParking;
   final Function hideMapButtons;
   final int index;
+  NearbyParkingLot selectedParkingLot;
 
   BookingTab(
       {@required this.searchBarController,
       this.homeScreen,
       this.showNearbyParking,
       this.hideMapButtons,
-      this.index});
+      this.index,
+      this.selectedParkingLot});
   @override
   _BookingTabState createState() => _BookingTabState();
 }
 
 class _BookingTabState extends State<BookingTab> {
+  getRandomNumber() {
+    Random rng = new Random();
+    List<String> randomList =
+        new List<String>.generate(4, (_) => rng.nextInt(100).toString());
+    return randomList.join();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -63,7 +76,7 @@ class _BookingTabState extends State<BookingTab> {
                           onTap: widget.homeScreen
                               ? () {
                                   widget.showNearbyParking();
-                                  widget.hideMapButtons('bookingTab');
+                                  widget.hideMapButtons('bookingTab', null);
                                   widget.searchBarController.text = '';
                                 }
                               : () {},
@@ -71,15 +84,14 @@ class _BookingTabState extends State<BookingTab> {
                   : Container(),
               NearByParkingList(
                   activeCard: false,
-                  imgPath:
-                      'assets/images/parking_photos/parking_${widget.index}.jpg',
-                  parkingPrice: 400,
-                  parkingPlaceName: widget.searchBarController.text.length > 20
-                      ? widget.searchBarController.text.substring(0, 20) + '...'
-                      : widget.searchBarController.text,
-                  rating: 4.2,
-                  distance: 350,
-                  parkingSlots: 6),
+                  imgPath: widget.selectedParkingLot.images[0],
+                  parkingPrice: widget.selectedParkingLot.price,
+                  parkingPlaceName: widget.selectedParkingLot.name.length > 20
+                      ? widget.selectedParkingLot.name.substring(0, 20) + '...'
+                      : widget.selectedParkingLot.name,
+                  rating: widget.selectedParkingLot.rating,
+                  distance: widget.selectedParkingLot.distance,
+                  parkingSlots: widget.selectedParkingLot.spaces),
               SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -102,13 +114,12 @@ class _BookingTabState extends State<BookingTab> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => Booking(
-                  address:
-                      '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
-                  bookingNumber: 'haaga5441',
-                  destination: 'Nairobi',
-                  parkingLotNumber: 'pajh5114',
-                  price: 11,
-                  imagePath: 'assets/images/Park254_logo.png')));
+                  address: widget.selectedParkingLot.location.toString(),
+                  bookingNumber: getRandomNumber(),
+                  destination: widget.selectedParkingLot.name,
+                  parkingLotNumber: getRandomNumber(),
+                  price: 1,
+                  imagePath: widget.selectedParkingLot.images[0])));
         },
         child: Container(
           decoration: BoxDecoration(

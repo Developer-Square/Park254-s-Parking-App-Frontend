@@ -14,6 +14,8 @@ import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -42,7 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
   var _activeTab = 'home';
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  Completer<GoogleMapController> mapController = Completer();
+  // Completer<GoogleMapController> mapController = Completer();
+  GoogleMapController mapController;
   Position currentPosition;
   bool showNearByParking;
   bool showTopPageStyling;
@@ -56,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String text;
   int index;
   bool isLoading = true;
+  NearbyParkingLot selectedParkingLot;
+  GoogleMapController homeScreenController;
 
   @override
   void initState() {
@@ -81,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isLoading = false;
     });
-    mapController.complete(controller);
+    mapController = controller;
     _customInfoWindowController.googleMapController = controller;
   }
 
@@ -90,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    mapController.dispose();
     _customInfoWindowController.dispose();
     super.dispose();
   }
@@ -141,12 +147,16 @@ class _HomeScreenState extends State<HomeScreen> {
   // This widget is also used to determine when to show the booking tab.
   // i.e. The booking tab will only show if the map buttons aren't being.
   // displayed.
-  void hideMapButtonsFn(widget) {
+  void hideMapButtonsFn(currentWidget, parkingData) {
     // If the function is being called by the booking tab close icon.
     // then add hide/show functionality else hide map buttons remains true
-    if (widget == 'bookingTab') {
+    if (currentWidget == 'bookingTab') {
       hideMapButtons = !hideMapButtons;
     } else {
+      setState(() {
+        // Set the selected parkingLot.
+        selectedParkingLot = parkingData;
+      });
       hideMapButtons = true;
     }
   }
@@ -187,7 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   showBookNowTab: hideMapButtonsFn,
                   mapCreated: mapCreated,
                   customInfoWindowController: _customInfoWindowController,
-                  searchBarController: searchBarController),
+                  searchBarController: searchBarController,
+                  mapController: mapController),
               // Show Loader to prevent the black/error screen that appears before.
               // the map is displayed.
               isLoading ? Loader() : Container(),
@@ -215,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       storeLoginDetails: widget.storeLoginDetails,
                       clearStorage: widget.clearStorage,
                       showToolTipFn: showToolTipFn,
-                    )
+                      selectedParkingLot: selectedParkingLot)
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
               // on the parking widget.
@@ -228,7 +239,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           homeScreen: true,
                           showNearbyParking: showNearByParkingFn,
                           hideMapButtons: hideMapButtonsFn,
-                          searchBarController: searchBarController),
+                          searchBarController: searchBarController,
+                          selectedParkingLot: selectedParkingLot),
                     )
                   : Container(),
               showTopPageStyling

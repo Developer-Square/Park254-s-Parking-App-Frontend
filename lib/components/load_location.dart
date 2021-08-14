@@ -90,8 +90,6 @@ void loadLocation(_controller, closeNearByParking) async {
 ///
 /// Requires [address], Map [controller] and [placeList]
 void getLocation(address, _controller, _clearPlaceList, _context) async {
-  final c = await _controller;
-
   try {
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(address);

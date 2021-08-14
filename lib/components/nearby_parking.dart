@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -20,7 +23,7 @@ class NearByParking extends StatefulWidget {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
-  final Completer<GoogleMapController> mapController;
+  final GoogleMapController mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
   final TextEditingController searchBarController;
@@ -31,6 +34,7 @@ class NearByParking extends StatefulWidget {
   final Function clearStorage;
   final Function showToolTipFn;
   final Function hideToolTip;
+  NearbyParkingLot selectedParkingLot;
 
   NearByParking(
       {@required this.showNearByParkingFn,
@@ -45,7 +49,8 @@ class NearByParking extends StatefulWidget {
       this.storeLoginDetails,
       this.clearStorage,
       this.showToolTipFn,
-      this.hideToolTip});
+      this.hideToolTip,
+      this.selectedParkingLot});
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -56,7 +61,7 @@ class _NearByParkingState extends State<NearByParking>
   double _size;
   bool _large;
   String selectedCard = 'Nearby Parking';
-  var parkingLots;
+  NearbyParkingLots parkingLots;
   int maxRetries;
 
   @override
@@ -79,10 +84,13 @@ class _NearByParkingState extends State<NearByParking>
           .then((value) {
         // Add all the nearby parking lots in the area so that.
         // we can map over them later.
-        setState(() {
-          parkingLots = value;
-        });
+        if (mounted) {
+          setState(() {
+            parkingLots = value;
+          });
+        }
       }).catchError((err) {
+        log(err.toString());
         // Retry the request after getting status code of 401.
         if (err.code == 401) {
           // Keep track and add to the number of retries made.
@@ -101,30 +109,36 @@ class _NearByParkingState extends State<NearByParking>
 
   /// Increases the size of the nearby and recommended widget.
   void _updateSize() {
-    setState(() {
-      widget.hideDetails();
-      _large = true;
-      _size = _large ? 502.0 : _size;
-      widget.showFullBackground();
-    });
+    if (mounted) {
+      setState(() {
+        widget.hideDetails();
+        _large = true;
+        _size = _large ? 502.0 : _size;
+        widget.showFullBackground();
+      });
+    }
   }
 
   /// Closes the full sized nearyby parking widget and returns everything back to normal.
   void _closeFullSizeWidget() {
-    setState(() {
-      _large = false;
-      _size = 278.52;
-      widget.hideDetails();
-      widget.showFullBackground();
-    });
+    if (mounted) {
+      setState(() {
+        _large = false;
+        _size = 278.52;
+        widget.hideDetails();
+        widget.showFullBackground();
+      });
+    }
   }
 
   /// Closes the full sized nearyby parking widget and redirects user to the chosen location.
   _closeFullSizeWidgetRedirection() {
-    setState(() {
-      _large = false;
-      widget.hideDetails();
-    });
+    if (mounted) {
+      setState(() {
+        _large = false;
+        widget.hideDetails();
+      });
+    }
   }
 
   /// Adds opacity to make the selected widget more visible.
@@ -132,9 +146,11 @@ class _NearByParkingState extends State<NearByParking>
     if (!_large) {
       _updateSize();
     }
-    setState(() {
-      selectedCard = cardTitle;
-    });
+    if (mounted) {
+      setState(() {
+        selectedCard = cardTitle;
+      });
+    }
   }
 
   Widget build(BuildContext context) {
@@ -202,25 +218,25 @@ class _NearByParkingState extends State<NearByParking>
           return Column(
             children: [
               NearByParkingList(
-                activeCard: title == selectedCard ? true : false,
-                imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
-                parkingPrice: parkingLots.lots[index].price,
-                parkingPlaceName: parkingLots.lots[index].name,
-                rating: parkingLots.lots[index].rating,
-                distance: parkingLots.lots[index].distance,
-                parkingSlots: parkingLots.lots[index].spaces,
-                mapController: widget.mapController,
-                customInfoWindowController: widget.customInfoWindowController,
-                parkingData: parkingLots.lots[index],
-                showNearbyParking: widget.showNearByParkingFn,
-                hideAllDetails: _closeFullSizeWidgetRedirection,
-                large: _large,
-                title: title,
-                selectedCard: selectedCard,
-                selectCard: selectCard,
-                searchBarController: widget.searchBarController,
-                hideMapButtons: widget.hideMapButtons,
-              ),
+                  activeCard: title == selectedCard ? true : false,
+                  imgPath: parkingLots.lots[index].images[0],
+                  parkingPrice: parkingLots.lots[index].price,
+                  parkingPlaceName: parkingLots.lots[index].name,
+                  rating: parkingLots.lots[index].rating,
+                  distance: parkingLots.lots[index].distance,
+                  parkingSlots: parkingLots.lots[index].spaces,
+                  mapController: widget.mapController,
+                  customInfoWindowController: widget.customInfoWindowController,
+                  parkingData: parkingLots.lots[index],
+                  showNearbyParking: widget.showNearByParkingFn,
+                  hideAllDetails: _closeFullSizeWidgetRedirection,
+                  large: _large,
+                  title: title,
+                  selectedCard: selectedCard,
+                  selectCard: selectCard,
+                  searchBarController: widget.searchBarController,
+                  hideMapButtons: widget.hideMapButtons,
+                  selectedParkingLot: widget.selectedParkingLot),
               SizedBox(height: 20.0)
             ],
           );

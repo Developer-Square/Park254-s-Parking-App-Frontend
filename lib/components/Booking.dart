@@ -5,6 +5,7 @@ import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PayUp.dart';
 import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
@@ -47,7 +48,6 @@ class Booking extends StatefulWidget {
       @required this.imagePath,
       @required this.address});
 
-
   @override
   _BookingState createState() => _BookingState();
 }
@@ -65,6 +65,7 @@ class _BookingState extends State<Booking> {
   String paymentMethod = 'MPESA';
   int amount = 0;
   bool showPayUp = false;
+  bool isLoading;
   final List<String> paymentMethodList = <String>['MPESA'];
   final List<String> vehicleList = <String>['Camri', 'Prius'];
   final List<String> numberPlateList = <String>[
@@ -73,6 +74,18 @@ class _BookingState extends State<Booking> {
     'KDA 345Y'
   ];
   final List<String> driverList = <String>['Linus', 'Ryan'];
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = false;
+  }
+
+  void showHideLoader(value) {
+    setState(() {
+      isLoading = value;
+    });
+  }
 
   ///shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async {
@@ -251,11 +264,12 @@ class _BookingState extends State<Booking> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Flexible(
-                  child: Image(
-                    image: AssetImage(
-                      widget.imagePath,
-                    ),
-                  ),
+                  child: widget.imagePath.contains('https')
+                      ? Image.network(widget.imagePath)
+                      : Image(
+                          image: AssetImage(
+                              'assets/images/parking_photos/parking_1.jpg'),
+                        ),
                   flex: 2,
                   fit: FlexFit.loose,
                 ),
@@ -275,7 +289,7 @@ class _BookingState extends State<Booking> {
                       ),
                       Flexible(
                         child: Text(
-                          widget.parkingLotNumber,
+                          '${widget.destination}-${widget.parkingLotNumber.substring(0, 3)}',
                           style: TextStyle(
                               color: Colors.blue[400],
                               fontSize: 18,
@@ -429,7 +443,7 @@ class _BookingState extends State<Booking> {
                   content: 'Booking',
                 ),
                 Text(
-                  widget.bookingNumber,
+                  'BookingID: ${widget.bookingNumber}',
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 16,
@@ -495,8 +509,10 @@ class _BookingState extends State<Booking> {
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
                       receiptGenerator: () => _generateReceipt(),
+                      showHideLoader: showHideLoader,
                     )
                   : Container(),
+              isLoading ? Loader() : Container()
             ],
           ),
         ),

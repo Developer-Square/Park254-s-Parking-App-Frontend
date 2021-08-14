@@ -79,7 +79,10 @@ flutter:
     - assets/images/Logo/PARK_254_1000x400_wht.png
     - assets/images/Logo/PARK_254_1000x400_wht-01.svg
     - assets/images/Logo/PARK_254_1000x400-01.svg
-    - assets/images/pin_icons/car-parking-icon-2.svg
+    - assets/images/pin_icons/
+    - assets/images/pin_icons/parking-icon-1.svg
+    - assets/images/pin_icons/parking-icon-2.svg
+    - assets/images/pin_icons/parking-icon-3.svg
     - assets/images/pin_icons/location-pin.svg
     - assets/images/qrcode.png
 

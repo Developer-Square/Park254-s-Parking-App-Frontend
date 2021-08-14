@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -29,20 +30,23 @@ Future<LatestTransaction> fetchTransaction({
     'createdAt': createdAt,
   };
   final url = Uri.https(globals.apiKey, '/v1/mpesaWebHook', queryParameters);
-  final client = RetryClient(
-    http.Client(),
-    when: (http.BaseResponse response) {
-      return response.statusCode == 404;
-    },
-    retries: 5,
-  );
+  final client = RetryClient(http.Client(),
+      when: (http.BaseResponse response) {
+        return response.statusCode == 404;
+      },
+      retries: 10,
+      delay: (retryCount) {
+        log(retryCount.toString());
+        return Duration(seconds: 3);
+      });
   try {
     final response = await client.get(url, headers: headers);
     if (response.statusCode == 200) {
       final transaction = LatestTransaction.fromJson(jsonDecode(response.body));
+      log(transaction.toString());
       return transaction;
-    } else {
-      handleError(response.body);
+    } else if (response.statusCode == 404) {
+      // handleError(response.body);
     }
   } finally {
     client.close();

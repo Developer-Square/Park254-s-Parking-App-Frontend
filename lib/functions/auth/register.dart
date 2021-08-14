@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
@@ -22,7 +22,7 @@ Future<UserWithToken> register(
     @required String phone,
     @required List<Vehicle> vehicles = const []}) async {
   Map<String, String> headers = {
-    HttpHeaders.contentTypeHeader: "application/json",
+    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/auth/register');
   Map<String, dynamic> body = {
