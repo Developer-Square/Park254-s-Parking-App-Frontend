@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_retry/http_retry.dart';
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/latestTransaction.dart';
+import 'package:park254_s_parking_app/models/transaction.model.dart';
 import '../../config/globals.dart' as globals;
 
 /// Fetches transaction after payment. Called by [pay]
@@ -13,7 +13,7 @@ import '../../config/globals.dart' as globals;
 /// IMPORTANT: Call from [pay]
 /// Retries for 5 times as long as the response status code is 404
 /// Requires [phoneNumber], [amount], [token], and [createdAt]
-Future<LatestTransaction> fetchTransaction({
+Future<Transaction> fetchTransaction({
   @required num phoneNumber,
   @required num amount,
   @required String token,
@@ -39,7 +39,7 @@ Future<LatestTransaction> fetchTransaction({
   try {
     final response = await client.get(url, headers: headers);
     if (response.statusCode == 200) {
-      final transaction = LatestTransaction.fromJson(jsonDecode(response.body));
+      final transaction = Transaction.fromJson(jsonDecode(response.body));
       return transaction;
     } else {
       handleError(response.body);

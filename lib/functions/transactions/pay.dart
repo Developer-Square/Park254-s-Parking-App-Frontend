@@ -5,13 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/latestTransaction.dart';
+import 'package:park254_s_parking_app/models/transaction.model.dart';
 import '../../config/globals.dart' as globals;
 
 /// Carries out MPESA transaction and returns [Transaction]
 ///
 /// Requires [phoneNumber], [amount], and [token]
-Future<LatestTransaction> pay({
+Future<Transaction> pay({
   @required num phoneNumber,
   @required num amount,
   @required String token,
