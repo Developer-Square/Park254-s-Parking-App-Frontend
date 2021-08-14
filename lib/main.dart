@@ -12,9 +12,13 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
+import 'package:park254_s_parking_app/dataModels/RatingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
@@ -54,6 +58,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ParkingLotModel>(
             create: (context) => ParkingLotModel()),
         ChangeNotifierProvider<UserModel>(create: (context) => UserModel()),
+        ChangeNotifierProvider<ParkingLotListModel>(
+            create: (context) => ParkingLotListModel()),
+        ChangeNotifierProvider<NearbyParkingListModel>(
+            create: (context) => NearbyParkingListModel()),
+        ChangeNotifierProvider<UsersListModel>(
+            create: (context) => UsersListModel()),
+        ChangeNotifierProvider<RatingListModel>(
+            create: (context) => RatingListModel()),
       ],
       child: OverlaySupport(
         child: MaterialApp(
