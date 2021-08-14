@@ -65,7 +65,6 @@ class MyParkingState extends State<MyParkingScreen> {
         userRole = role;
       });
     });
-    print(userRole);
   }
 
   redirectToCreateorUpdatePage(text, [parkingData]) {
@@ -83,7 +82,7 @@ class MyParkingState extends State<MyParkingScreen> {
             )));
   }
 
-// Get all the parking lots owned by the current user.
+  // Get all the parking lots owned by the current user.
   getParkingDetails() async {
     await SharedPreferences.getInstance().then((value) {
       var encryptedToken = value.getString('accessToken');

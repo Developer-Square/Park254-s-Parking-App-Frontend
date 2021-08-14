@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
@@ -38,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController passwordController = new TextEditingController();
   bool showLoader;
   String errMsg;
-
+  String userRole;
   String fullName;
   String carPlate = 'KCB 8793K';
   // String carModel = 'BMW';
@@ -59,11 +61,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void updateFields(String currentPage) async {
     if (currentPage == 'profile') {
+      userRole = await widget.loginDetails.read(key: 'role');
       var name = await widget.loginDetails.read(key: 'name');
       fullNameController.text = name;
       emailController.text = await widget.loginDetails.read(key: 'email');
       phoneController.text = await widget.loginDetails.read(key: 'phone');
-
       setState(() {
         fullName = name;
       });
@@ -157,37 +159,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 1.0),
                     buildContainer(widget.logo2Path, false, 'wallet', carPlate),
                     SizedBox(height: 50.0),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Vehicles',
-                            style: globals.buildTextStyle(
-                                18.0, true, globals.textColor),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              updateFields('vehicles');
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => EditScreen(
-                                        currentScreen: 'vehicles',
-                                      )));
-                            },
-                            child: Container(
-                              width: 37.0,
-                              height: 37.0,
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(100.0)),
-                                  color: Colors.white),
-                              child: Icon(Icons.add),
+                    userRole != 'vendor'
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.only(left: 30.0, right: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Vehicles',
+                                  style: globals.buildTextStyle(
+                                      18.0, true, globals.textColor),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    updateFields('vehicles');
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) => EditScreen(
+                                                  currentScreen: 'vehicles',
+                                                )));
+                                  },
+                                  child: Container(
+                                    width: 37.0,
+                                    height: 37.0,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(100.0)),
+                                        color: Colors.white),
+                                    child: Icon(Icons.add),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          )
+                        : Container(),
                     SizedBox(height: 25.0),
                     // buildContainer('', false, 'vehicles', carPlate),
                     SizedBox(height: 20.0),

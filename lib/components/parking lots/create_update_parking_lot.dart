@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/Image_loader.dart';
-import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,6 +16,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import '../../config/globals.dart' as globals;
+import 'widgets/helpers.dart';
 
 /// Builds a page where vendors can create or update their parking lots.
 
@@ -88,7 +88,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   }
 
   // Select an image via gallery or camera.
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> pickImage(ImageSource source) async {
     final selected = await picker.getImage(source: source, imageQuality: 50);
 
     setState(() {
@@ -327,47 +327,11 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                             : MediaQuery.of(context).size.height / 2,
                         child: Column(
                           children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                color: Colors.grey[200],
-                                child: Center(
-                                    child: InkWell(
-                                  onTap: () {
-                                    _pickImage(ImageSource.gallery);
-                                  },
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text('Add photo from gallery'),
-                                        Icon(Icons.add)
-                                      ]),
-                                )),
-                              ),
-                              flex: 2,
-                            ),
+                            buildImageFromGallery(pickImage),
                             SizedBox(
                               height: 15.0,
                             ),
-                            Expanded(
-                              child: Container(
-                                color: Colors.grey[200],
-                                child: Center(
-                                    child: InkWell(
-                                  onTap: () {
-                                    _pickImage(ImageSource.camera);
-                                  },
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text('Take a new photo'),
-                                        Icon(Icons.add_a_photo)
-                                      ]),
-                                )),
-                              ),
-                              flex: 2,
-                            ),
+                            buildTakeNewPhoto(pickImage),
                             SizedBox(
                               height: 15.0,
                             ),
@@ -381,63 +345,10 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                             _imageFiles.length != 0
                                 // If the user selects an image, expand it and to show the crop and clear button.
                                 ? selected == null
-                                    ? Expanded(
-                                        child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: _imageFiles.length,
-                                          itemBuilder: (context, index) {
-                                            return Row(children: [
-                                              Container(
-                                                  child: InkWell(
-                                                      onTap: () {
-                                                        displayPicture(
-                                                            _imageFiles[index],
-                                                            index);
-                                                      },
-                                                      child:
-                                                          widget.currentScreen ==
-                                                                  'update'
-                                                              ? _imageFiles[
-                                                                  index]
-                                                              : Image.file(
-                                                                  _imageFiles[
-                                                                      index]))),
-                                              SizedBox(
-                                                width: 8.0,
-                                              )
-                                            ]);
-                                          },
-                                        ),
-                                        flex: 3)
-                                    : Expanded(
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                                height: 145.0,
-                                                child: widget.currentScreen ==
-                                                        'update'
-                                                    ? selected
-                                                    : Image.file(selected)),
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  // User should not be able to crop an uploaded image.
-                                                  widget.currentScreen !=
-                                                          'update'
-                                                      ? FlatButton(
-                                                          onPressed: _cropImage,
-                                                          child:
-                                                              Icon(Icons.crop))
-                                                      : Container(),
-                                                  FlatButton(
-                                                      onPressed: _clear,
-                                                      child: Icon(Icons.close))
-                                                ]),
-                                          ],
-                                        ),
-                                        flex: 7,
-                                      )
+                                    ? editLocalImage(widget.currentScreen,
+                                        displayPicture, _imageFiles)
+                                    : editUploadedImage(widget.currentScreen,
+                                        selected, _cropImage, _clear)
                                 : Container(),
                           ],
                         ),
@@ -471,32 +382,5 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                 showLoader ? Loader() : Container()
               ],
             )));
-  }
-
-  /// Builds out all the form fields on the page.
-  Widget buildFields(List fields) {
-    return new Column(
-        children: fields
-            .map(
-              (item) => Column(
-                children: [
-                  BuildFormField(
-                    text: item['text'],
-                    label: item['label'],
-                    placeholder: item['placeholder'],
-                    controller: item['controller'],
-                  ),
-                  SizedBox(height: 18.0)
-                ],
-              ),
-            )
-            .toList());
-  }
-
-  Widget helperMessage(text) {
-    return Container(
-        padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-        child: Text(text,
-            style: globals.buildTextStyle(13.0, true, globals.textColor)));
   }
 }
