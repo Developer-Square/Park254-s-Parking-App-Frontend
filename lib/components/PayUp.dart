@@ -32,7 +32,7 @@ class PayUp extends StatefulWidget {
       @required this.timeDatePicker,
       @required this.toggleDisplay,
       @required this.receiptGenerator,
-      this.showHideLoader});
+      @required this.showHideLoader});
   @override
   _PayUpState createState() => _PayUpState();
 }
@@ -46,10 +46,16 @@ class _PayUpState extends State<PayUp> {
     if (access != null) {
       pay(phoneNumber: 254796867328, amount: widget.total, token: access)
           .then((value) {
-        if (value != null) {
+        // If resultCode is equal to 0 then the transcation other than that.
+        // then it failed.
+        if (value.resultCode == 0) {
           buildNotification('Payment Successful', 'success');
           widget.showHideLoader(false);
-          log(value.transactions[0].toString());
+          // Move the payment successful page.
+          widget.receiptGenerator(
+              value.mpesaReceiptNumber, value.transactionDate);
+        } else {
+          buildNotification(value.resultDesc, 'error');
         }
       }).catchError((err) {
         widget.showHideLoader(false);

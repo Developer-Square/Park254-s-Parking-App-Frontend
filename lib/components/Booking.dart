@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
@@ -202,14 +204,17 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt() {
+  void _generateReceipt(mpesaReceipt, transactionDate) {
     Navigator.pushNamed(context, PaymentSuccessful.routeName,
         arguments: ReceiptArguments(
-          bookingNumber: widget.bookingNumber,
           parkingSpace: widget.parkingLotNumber,
           price: amount,
           destination: widget.destination,
           address: widget.address,
+          mpesaReceiptNo: mpesaReceipt,
+          transactionDate: transactionDate.toString(),
+          arrivalTime: arrivalTime,
+          leavingTime: leavingTime,
         ));
   }
 
@@ -508,9 +513,9 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: () => _generateReceipt(),
-                      showHideLoader: showHideLoader,
-                    )
+                      receiptGenerator: (mpesaReceipt, transactionDate) =>
+                          _generateReceipt(mpesaReceipt, transactionDate),
+                      showHideLoader: showHideLoader)
                   : Container(),
               isLoading ? Loader() : Container()
             ],

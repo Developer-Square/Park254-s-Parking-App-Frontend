@@ -60,7 +60,7 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
 /// animates the Camera twice:
 /// First to a place near the marker, then to the marker.
 void cameraAnimate(_controller, latitude, longitude) async {
-  final GoogleMapController mapController = await _controller.future;
+  final GoogleMapController mapController = await _controller;
   await mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(target: LatLng(latitude - 0.0001, latitude), zoom: 14.0)));
 
@@ -76,7 +76,7 @@ void cameraAnimate(_controller, latitude, longitude) async {
 /// [currentPosition] and [load].
 void loadLocation(_controller, closeNearByParking) async {
   closeNearByParking();
-  final c = await _controller.future;
+  final c = await _controller;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
   LatLng latLngPosition = LatLng(position.latitude, position.longitude);

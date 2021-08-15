@@ -112,10 +112,10 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    // if (position != null) {
-    //   cameraAnimate(
-    //       widget.mapController, position.latitude, position.longitude);
-    // }
+    if (position != null) {
+      cameraAnimate(
+          widget.mapController, position.latitude, position.longitude);
+    }
   }
 
   // Load the svg icon.

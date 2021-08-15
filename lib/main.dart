@@ -171,11 +171,14 @@ class MyApp extends StatelessWidget {
               final ReceiptArguments args = settings.arguments;
               return MaterialPageRoute(builder: (context) {
                 return PaymentSuccessful(
-                  bookingNumber: args.bookingNumber,
-                  parkingSpace: args.parkingSpace,
+                  parkingSpaces: args.parkingSpace,
                   price: args.price,
                   destination: args.destination,
                   address: args.address,
+                  mpesaReceiptNo: args.mpesaReceiptNo,
+                  transactionDate: args.transactionDate,
+                  arrivalTime: args.arrivalTime,
+                  leavingTime: args.leavingTime,
                 );
               });
             } else if (settings.name == LoginPage.routeName) {

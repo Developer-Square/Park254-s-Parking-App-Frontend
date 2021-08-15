@@ -25,19 +25,25 @@ import 'DottedHorizontalLine.dart';
 ///   )
 ///);
 class PaymentSuccessful extends StatefulWidget {
-  final String bookingNumber;
-  final String parkingSpace;
+  final String parkingSpaces;
   final int price;
   final String destination;
   final String address;
+  final String mpesaReceiptNo;
+  final TimeOfDay arrivalTime;
+  final TimeOfDay leavingTime;
+  final String transactionDate;
   static const routeName = '/receipt';
 
   PaymentSuccessful(
-      {@required this.bookingNumber,
-      @required this.parkingSpace,
+      {@required this.parkingSpaces,
       @required this.price,
       @required this.destination,
-      @required this.address});
+      @required this.address,
+      @required this.mpesaReceiptNo,
+      @required this.arrivalTime,
+      @required this.leavingTime,
+      @required this.transactionDate});
 
   @override
   _PaymentSuccessfulState createState() => _PaymentSuccessfulState();
@@ -119,7 +125,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         PrimaryText(content: 'Payment Successful'),
-                        SecondaryText(content: widget.bookingNumber),
                       ],
                     ),
                   ),
@@ -132,12 +137,17 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _messageRow('Space', widget.parkingSpace),
+                        _messageRow('Mpesa Receipt No.', widget.mpesaReceiptNo),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
+                        _messageRow('Date',
+                            '${widget.transactionDate.substring(0, 4)}-${widget.transactionDate.substring(4, 6)}-${widget.transactionDate.substring(6, 8)}'),
+                        // All this is done to be able get the exact UI we want.
+                        _messageRow('Time',
+                            '${widget.arrivalTime.minute > 9 ? ' ' + '${widget.arrivalTime.hour.toString()}:${widget.arrivalTime.minute.toString()}' : ' ' + '${widget.arrivalTime.hour.toString()}:0${widget.arrivalTime.minute.toString()}'} - ${widget.leavingTime.minute > 9 ? ' ' + '${widget.leavingTime.hour.toString()}:${widget.leavingTime.minute.toString()}' : ' ' + '${widget.leavingTime.hour.toString()}:0${widget.leavingTime.minute.toString()}'}'),
                       ],
                     ),
                   ),
-                  flex: 4,
+                  flex: 8,
                 ),
               ],
             ),
@@ -173,7 +183,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                   ),
                   Expanded(
                     child: SecondaryText(
-                      content: 'Scan Barcode Here',
+                      content: 'Scan QrCode Here',
                     ),
                     flex: 1,
                   ),
@@ -197,17 +207,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Expanded(
-                                child:
-                                    PrimaryText(content: widget.destination)),
-                            Expanded(
-                              child: Text(
-                                widget.address,
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                                child: PrimaryText(content: widget.destination))
                           ],
                         ),
                       ),
@@ -218,12 +218,12 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
                       child: Center(
-                          child: CircleWithIcon(
-                            icon: Icons.close,
-                            bgColor: Colors.white,
-                            iconColor: globals.textColor,
-                            sizeFactor: 2,
-                          ),
+                        child: CircleWithIcon(
+                          icon: Icons.close,
+                          bgColor: Colors.white,
+                          iconColor: globals.textColor,
+                          sizeFactor: 2,
+                        ),
                       ),
                     ),
                     flex: 1,
@@ -259,15 +259,15 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _icons(){
+  Widget _icons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         CircleWithIcon(
-            icon: Icons.near_me,
-            bgColor: globals.primaryColor,
-            iconColor: globals.textColor,
-            sizeFactor: 2,
+          icon: Icons.near_me,
+          bgColor: globals.primaryColor,
+          iconColor: globals.textColor,
+          sizeFactor: 2,
         ),
         CircleWithIcon(
           icon: Icons.error_outline,
