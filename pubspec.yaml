@@ -42,7 +42,7 @@ dependencies:
   image_picker: ^0.6.7+22
   cloudinary_public: ^0.7.0
   overlay_support: ^1.0.5
-
+  provider: ^4.3.3
   
 dev_dependencies:
   flutter_test:
