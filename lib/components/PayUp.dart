@@ -5,8 +5,10 @@ import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 import 'load_location.dart';
 
@@ -40,22 +42,37 @@ class PayUp extends StatefulWidget {
 class _PayUpState extends State<PayUp> {
   final storage = new FlutterSecureStorage();
 
-  callPaymentMethod() async {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  callPaymentMethod(transactionDetails) async {
     widget.showHideLoader(true);
     String access = await storage.read(key: 'accessToken');
+
     if (access != null) {
-      pay(phoneNumber: 254796867328, amount: widget.total, token: access)
+      pay(
+              phoneNumber: 254796867328,
+              amount: widget.total,
+              token: access,
+              fetch: transactionDetails.fetch)
           .then((value) {
-        // If resultCode is equal to 0 then the transcation other than that.
-        // then it failed.
-        if (value.resultCode == 0) {
-          buildNotification('Payment Successful', 'success');
-          widget.showHideLoader(false);
-          // Move the payment successful page.
-          widget.receiptGenerator(
-              value.mpesaReceiptNumber, value.transactionDate);
-        } else {
-          buildNotification(value.resultDesc, 'error');
+        if (transactionDetails.loader == false &&
+            transactionDetails.transaction != null) {
+          // If resultCode is equal to 0 then the transcation other than that.
+          // then it failed.
+          if (transactionDetails.transaction.resultCode == 0) {
+            buildNotification('Payment Successful', 'success');
+            widget.showHideLoader(false);
+            // Move the payment successful page.
+            widget.receiptGenerator(
+                transactionDetails.transaction.mpesaReceiptNumber,
+                transactionDetails.transaction.transactionDate);
+          } else {
+            widget.showHideLoader(false);
+            buildNotification(value.resultDesc, 'error');
+          }
         }
       }).catchError((err) {
         widget.showHideLoader(false);
@@ -70,6 +87,7 @@ class _PayUpState extends State<PayUp> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final transactionDetails = Provider.of<TransactionModel>(context);
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(
@@ -130,7 +148,8 @@ class _PayUpState extends State<PayUp> {
                 ),
                 Expanded(
                   child: GoButton(
-                      onTap: () => callPaymentMethod(), title: 'Pay Up'),
+                      onTap: () => callPaymentMethod(transactionDetails),
+                      title: 'Pay Up'),
                   flex: 2,
                 ),
               ],

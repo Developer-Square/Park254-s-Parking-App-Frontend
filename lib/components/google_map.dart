@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/cupertino.dart';
@@ -112,7 +113,8 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    if (position != null) {
+    if (position != null && widget.mapController != null) {
+      log("Inside get current location");
       cameraAnimate(
           widget.mapController, position.latitude, position.longitude);
     }

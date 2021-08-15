@@ -1,23 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
 import 'package:park254_s_parking_app/models/transaction.model.dart';
 
 class TransactionModel with ChangeNotifier {
+  TransactionModel();
+
   Transaction _transaction = new Transaction(
-    id: null,
-    merchantRequestID: null,
-    checkoutRequestID: null,
-    resultCode: null,
-    resultDesc: null,
-  );
+      id: null,
+      merchantRequestID: null,
+      checkoutRequestID: null,
+      resultCode: null,
+      resultDesc: null,
+      mpesaReceiptNumber: null,
+      transactionDate: null);
   bool loading = false;
 
-  Transaction get transaction => _transaction;
+  Transaction get transaction {
+    return _transaction;
+  }
 
-  set transaction(Transaction transaction) {
-    _transaction = transaction;
-    notifyListeners();
+  bool get loader {
+    return loading;
   }
 
   void fetch({
@@ -39,11 +45,12 @@ class TransactionModel with ChangeNotifier {
 
   void remove() {
     _transaction = new Transaction(
-      id: null,
-      merchantRequestID: null,
-      checkoutRequestID: null,
-      resultCode: null,
-      resultDesc: null,
-    );
+        id: null,
+        merchantRequestID: null,
+        checkoutRequestID: null,
+        resultCode: null,
+        resultDesc: null,
+        mpesaReceiptNumber: null,
+        transactionDate: null);
   }
 }

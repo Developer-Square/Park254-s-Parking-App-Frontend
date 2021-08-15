@@ -29,8 +29,6 @@ Future<Transaction> fetchTransaction({
   };
   final url = Uri.https(globals.apiKey, '/v1/mpesaWebHook', queryParameters);
   final response = await http.get(url, headers: headers);
-  log('In fetch transaction');
-  log(response.body.toString());
   if (response.statusCode == 200) {
     final transaction = Transaction.fromJson(jsonDecode(response.body));
     return transaction;

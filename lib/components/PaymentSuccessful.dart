@@ -5,6 +5,8 @@ import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:provider/provider.dart';
 
 import 'CircleWithIcon.dart';
 import 'DottedHorizontalLine.dart';
@@ -50,6 +52,10 @@ class PaymentSuccessful extends StatefulWidget {
 }
 
 class _PaymentSuccessfulState extends State<PaymentSuccessful> {
+  String transactionYear;
+  String transactionMonth;
+  String transactionDay;
+
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
     return Row(
@@ -74,10 +80,10 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _greenCircle() {
+  Widget _greenCircle(transactionDetails) {
     return Stack(
       children: <Widget>[
-        _message(),
+        _message(transactionDetails),
         Align(
           child: Container(
             decoration: BoxDecoration(
@@ -105,7 +111,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _message() {
+  Widget _message(transactionDetails) {
     final double width = MediaQuery.of(context).size.width;
 
     return Column(
@@ -137,10 +143,13 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _messageRow('Mpesa Receipt No.', widget.mpesaReceiptNo),
+                        _messageRow(
+                            'Mpesa Receipt No.',
+                            transactionDetails.transaction.mpesaReceiptNumber
+                                .toString()),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
                         _messageRow('Date',
-                            '${widget.transactionDate.substring(0, 4)}-${widget.transactionDate.substring(4, 6)}-${widget.transactionDate.substring(6, 8)}'),
+                            '$transactionYear-$transactionMonth-$transactionDay'),
                         // All this is done to be able get the exact UI we want.
                         _messageRow('Time',
                             '${widget.arrivalTime.minute > 9 ? ' ' + '${widget.arrivalTime.hour.toString()}:${widget.arrivalTime.minute.toString()}' : ' ' + '${widget.arrivalTime.hour.toString()}:0${widget.arrivalTime.minute.toString()}'} - ${widget.leavingTime.minute > 9 ? ' ' + '${widget.leavingTime.hour.toString()}:${widget.leavingTime.minute.toString()}' : ' ' + '${widget.leavingTime.hour.toString()}:0${widget.leavingTime.minute.toString()}'}'),
@@ -288,6 +297,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    final transactionDetails = Provider.of<TransactionModel>(context);
+    transactionYear = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(0, 4);
+    transactionMonth = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(4, 6);
+    transactionDay = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(6, 8);
 
     return SafeArea(
       child: Scaffold(
@@ -299,7 +318,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  child: _greenCircle(),
+                  child: _greenCircle(transactionDetails),
                   flex: 10,
                 ),
                 Expanded(
