@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
@@ -31,10 +33,8 @@ class PaymentSuccessful extends StatefulWidget {
   final int price;
   final String destination;
   final String address;
-  final String mpesaReceiptNo;
   final TimeOfDay arrivalTime;
   final TimeOfDay leavingTime;
-  final String transactionDate;
   static const routeName = '/receipt';
 
   PaymentSuccessful(
@@ -42,10 +42,8 @@ class PaymentSuccessful extends StatefulWidget {
       @required this.price,
       @required this.destination,
       @required this.address,
-      @required this.mpesaReceiptNo,
       @required this.arrivalTime,
-      @required this.leavingTime,
-      @required this.transactionDate});
+      @required this.leavingTime});
 
   @override
   _PaymentSuccessfulState createState() => _PaymentSuccessfulState();
@@ -55,6 +53,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String transactionYear;
   String transactionMonth;
   String transactionDay;
+  String mpesaReceiptNumber;
 
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
@@ -143,13 +142,11 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _messageRow(
-                            'Mpesa Receipt No.',
-                            transactionDetails.transaction.mpesaReceiptNumber
-                                .toString()),
+                        _messageRow('Mpesa Receipt No.',
+                            mpesaReceiptNumber.toString() ?? ''),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
                         _messageRow('Date',
-                            '$transactionYear-$transactionMonth-$transactionDay'),
+                            '${transactionYear ?? ''}-${transactionMonth ?? ''}-${transactionDay ?? ''}'),
                         // All this is done to be able get the exact UI we want.
                         _messageRow('Time',
                             '${widget.arrivalTime.minute > 9 ? ' ' + '${widget.arrivalTime.hour.toString()}:${widget.arrivalTime.minute.toString()}' : ' ' + '${widget.arrivalTime.hour.toString()}:0${widget.arrivalTime.minute.toString()}'} - ${widget.leavingTime.minute > 9 ? ' ' + '${widget.leavingTime.hour.toString()}:${widget.leavingTime.minute.toString()}' : ' ' + '${widget.leavingTime.hour.toString()}:0${widget.leavingTime.minute.toString()}'}'),
@@ -298,6 +295,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final transactionDetails = Provider.of<TransactionModel>(context);
+    mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
     transactionYear = transactionDetails.transaction.transactionDate
         .toString()
         .substring(0, 4);
@@ -307,6 +305,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     transactionDay = transactionDetails.transaction.transactionDate
         .toString()
         .substring(6, 8);
+    log(mpesaReceiptNumber);
 
     return SafeArea(
       child: Scaffold(

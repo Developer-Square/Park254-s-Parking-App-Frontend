@@ -8,6 +8,7 @@ import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:park254_s_parking_app/models/transaction.model.dart';
 import 'package:provider/provider.dart';
 
 import 'load_location.dart';
@@ -41,6 +42,7 @@ class PayUp extends StatefulWidget {
 
 class _PayUpState extends State<PayUp> {
   final storage = new FlutterSecureStorage();
+  TransactionModel transactionDetails;
 
   @override
   void initState() {
@@ -59,19 +61,20 @@ class _PayUpState extends State<PayUp> {
               fetch: transactionDetails.fetch)
           .then((value) {
         if (transactionDetails.loader == false &&
-            transactionDetails.transaction != null) {
+            transactionDetails.transaction.resultCode != null) {
+          var resultCode = transactionDetails.transaction.resultCode;
+          var resultDesc = transactionDetails.transaction.resultDesc;
+
           // If resultCode is equal to 0 then the transcation other than that.
           // then it failed.
-          if (transactionDetails.transaction.resultCode == 0) {
+          if (resultCode == 0) {
             buildNotification('Payment Successful', 'success');
             widget.showHideLoader(false);
             // Move the payment successful page.
-            widget.receiptGenerator(
-                transactionDetails.transaction.mpesaReceiptNumber,
-                transactionDetails.transaction.transactionDate);
-          } else {
+            widget.receiptGenerator();
+          } else if (resultCode == 1) {
             widget.showHideLoader(false);
-            buildNotification(value.resultDesc, 'error');
+            buildNotification(resultDesc ?? '', 'error');
           }
         }
       }).catchError((err) {
@@ -87,7 +90,7 @@ class _PayUpState extends State<PayUp> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final transactionDetails = Provider.of<TransactionModel>(context);
+    transactionDetails = Provider.of<TransactionModel>(context);
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

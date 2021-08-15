@@ -18,6 +18,7 @@ Future<Transaction> fetchTransaction({
   @required String token,
   @required String createdAt,
 }) async {
+  const timeout = 7000;
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
     HttpHeaders.contentTypeHeader: "application/json",

@@ -204,15 +204,13 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt(mpesaReceipt, transactionDate) {
+  void _generateReceipt() {
     Navigator.pushNamed(context, PaymentSuccessful.routeName,
         arguments: ReceiptArguments(
           parkingSpace: widget.parkingLotNumber,
           price: amount,
           destination: widget.destination,
           address: widget.address,
-          mpesaReceiptNo: mpesaReceipt,
-          transactionDate: transactionDate.toString(),
           arrivalTime: arrivalTime,
           leavingTime: leavingTime,
         ));
@@ -513,8 +511,7 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: (mpesaReceipt, transactionDate) =>
-                          _generateReceipt(mpesaReceipt, transactionDate),
+                      receiptGenerator: () => _generateReceipt(),
                       showHideLoader: showHideLoader)
                   : Container(),
               isLoading ? Loader() : Container()

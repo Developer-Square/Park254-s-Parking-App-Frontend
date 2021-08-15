@@ -179,25 +179,9 @@ class MyApp extends StatelessWidget {
                   return MaterialPageRoute(builder: (context) {
                     return PaymentSuccessful(
                       parkingSpaces: args.parkingSpace,
-                      mpesaReceiptNo: args.mpesaReceiptNo,
-                      transactionDate: args.transactionDate,
                       price: args.price,
                       destination: args.destination,
                       address: args.address,
-                      arrivalTime: args.arrivalTime,
-                      leavingTime: args.leavingTime,
-                    );
-                  });
-                } else if (settings.name == PaymentSuccessful.routeName) {
-                  final ReceiptArguments args = settings.arguments;
-                  return MaterialPageRoute(builder: (context) {
-                    return PaymentSuccessful(
-                      parkingSpaces: args.parkingSpace,
-                      price: args.price,
-                      destination: args.destination,
-                      address: args.address,
-                      mpesaReceiptNo: args.mpesaReceiptNo,
-                      transactionDate: args.transactionDate,
                       arrivalTime: args.arrivalTime,
                       leavingTime: args.leavingTime,
                     );
