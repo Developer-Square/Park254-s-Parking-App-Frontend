@@ -7,7 +7,8 @@ class User {
   final String email;
   final String name;
   final String role;
-  final int phone;
+  final num phone;
+  final List<Vehicle> vehicles;
 
   User({
     @required this.id,
@@ -15,14 +16,19 @@ class User {
     @required this.name,
     @required this.role,
     @required this.phone,
+    this.vehicles,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        id: json['id'],
-        email: json['email'],
-        name: json['name'],
-        role: json['role'],
-        phone: json['phone']);
+      id: json['id'],
+      email: json['email'],
+      name: json['name'],
+      role: json['role'],
+      phone: json['phone'],
+      vehicles: (json['vehicles'] as List)
+          .map((vehicle) => Vehicle.fromJson(vehicle))
+          .toList(),
+    );
   }
 }
