@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
@@ -100,15 +101,28 @@ class _BookingTabState extends State<BookingTab> {
   Widget _buildButtons(String text, Color _color) {
     return InkWell(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => Booking(
-                  address:
-                      '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
-                  bookingNumber: 'haaga5441',
-                  destination: 'Nairobi',
-                  parkingLotNumber: 'pajh5114',
-                  price: 11,
-                  imagePath: 'assets/images/Park254_logo.png')));
+          text.contains('Book')
+              ? Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Booking(
+                      address:
+                          '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya',
+                      bookingNumber: 'haaga5441',
+                      destination: 'Nairobi',
+                      parkingLotNumber: 'pajh5114',
+                      price: 11,
+                      imagePath: 'assets/images/Park254_logo.png')))
+              : Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => MoreInfo(
+                      destination: 'Nairobi Industrial Area, Kenya',
+                      address: '232 3rd Street',
+                      distance: 200,
+                      rating: 3.5,
+                      availableSpaces: 25,
+                      availableLots: [],
+                      city: 'Nairobi',
+                      price: 11,
+                      imageOne: 'assets/images/parking_photos/parking_1.jpg',
+                      imageTwo: 'assets/images/parking_photos/parking_2.jpg')));
         },
         child: Container(
           decoration: BoxDecoration(

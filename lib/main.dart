@@ -256,43 +256,10 @@ class _MyAppState extends State<MyApp> {
                 final TopPageStylingArguements args2 = settings.arguments;
                 final GoogleMapWidgetArguements args3 = settings.arguments;
                 final HomePageArguements args4 = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Column(
-                    children: [
-                      NearByParking(
-                        showNearByParkingFn: args1.showNearByParkingFn,
-                        hideDetails: args1.hideDetails,
-                        mapController: args1.mapController,
-                        customInfoWindowController:
-                            args3.customInfoWindowController,
-                      ),
-                      RatingTab(
-                          // hideRatingTabFn: args2.hideRatingTabFn,
-                          // parkingPlaceName: args2.parkingPlaceName,
-                          ),
-                      SearchBar(
-                          // offsetY: args4.offsetY,
-                          // blurRadius: args4.blurRadius,
-                          // opacity: args4.opacity,
-                          // controller: args4.controller,
-                          // searchBarTapped: args4.searchBarTapped
-                          ),
-                      RecentSearches(
-                          // setShowRecentSearches: args5.setShowRecentSearches,
-                          // town: args5.town,
-                          // specificLocation: args5.specificLocation,
-                          ),
-                      BookingTab(
-                          searchBarController: args6.searchBarControllerText)
-                    ],
-                  );
-                });
-              } else if (settings.name == HomeScreen.routeName) {
-                final NearByParkingListArguments args = settings.arguments;
-                final NearByParkingArguements args1 = settings.arguments;
-                final TopPageStylingArguements args2 = settings.arguments;
-                final GoogleMapWidgetArguements args3 = settings.arguments;
-                final HomePageArguements args4 = settings.arguments;
+                final RatingTabArguements args5 = settings.arguments;
+                final SearchBarArguements args6 = settings.arguments;
+                final RecentSearchesArguements args7 = settings.arguments;
+                final BookingTabArguements args8 = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return Column(
                     children: [
@@ -321,7 +288,24 @@ class _MyAppState extends State<MyApp> {
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
-                      )
+                      ),
+                      RatingTab(
+                        hideRatingTabFn: args5.hideRatingTabFn,
+                        parkingPlaceName: args5.parkingPlaceName,
+                      ),
+                      SearchBar(
+                          offsetY: args6.offsetY,
+                          blurRadius: args6.blurRadius,
+                          opacity: args6.opacity,
+                          controller: args6.controller,
+                          searchBarTapped: args6.searchBarTapped),
+                      RecentSearches(
+                        setShowRecentSearches: args7.setShowRecentSearches,
+                        town: args7.town,
+                        specificLocation: args7.specificLocation,
+                      ),
+                      BookingTab(
+                          searchBarController: args8.searchBarControllerText)
                     ],
                   );
                 });
@@ -348,9 +332,7 @@ class _MyAppState extends State<MyApp> {
                       parkingSpace: args.parkingSpace,
                       price: args.price,
                       destination: args.destination,
-                      address: args.address,
-                      imageOne: args.imageOne,
-                      imageTwo: args.imageTwo);
+                      address: args.address);
                 });
               } else if (settings.name == PaymentSuccessful.routeName) {
                 final ReceiptArguments args = settings.arguments;
