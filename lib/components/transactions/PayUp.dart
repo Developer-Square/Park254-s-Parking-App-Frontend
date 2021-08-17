@@ -42,6 +42,8 @@ class PayUp extends StatefulWidget {
 class _PayUpState extends State<PayUp> {
   final storage = new FlutterSecureStorage();
   TransactionModel transactionDetails;
+  int resultCode;
+  String resultDesc;
 
   @override
   void initState() {
@@ -52,40 +54,30 @@ class _PayUpState extends State<PayUp> {
     String access = await storage.read(key: 'accessToken');
 
     if (access != null) {
+      transactionDetails.setLoading(true);
       pay(
               phoneNumber: 254796867328,
               amount: widget.total,
               token: access,
-              fetch: transactionDetails.fetch,
-              setCreatedAt: transactionDetails.setCreatedAt)
+              setCreatedAt: transactionDetails.setCreatedAt,
+              setTransaction: transactionDetails.setTransaction,
+              setLoading: transactionDetails.setLoading)
           .then((value) {
-        if (transactionDetails.loader == false &&
-            transactionDetails.transaction.resultCode != null) {
-          var resultCode = transactionDetails.transaction.resultCode;
-          var resultDesc = transactionDetails.transaction.resultDesc;
-          var _numberofRetries = transactionDetails.numberofRetries;
-          var increaseRetries = transactionDetails.increaseRetries;
-          var createdAt = transactionDetails.createdAt;
+        log('Inside callPayment function');
+        log(value.resultCode.toString());
+        // If resultCode is equal to 0 then the transcation other than that.
+        // then it failed.
+        if (value.resultCode == 0) {
+          buildNotification('Payment Successful', 'success');
+          // Move the payment successful page.
+          widget.receiptGenerator();
+        }
+        // If the transaction failed and the user has not retried it then show retry modal.
+        else if (value.resultCode == 503) {
+          buildNotification(resultDesc ?? '', 'error');
 
-          // If resultCode is equal to 0 then the transcation other than that.
-          // then it failed.
-          if (resultCode == 0) {
-            buildNotification('Payment Successful', 'success');
-            // Move the payment successful page.
-            widget.receiptGenerator();
-          }
-          // If the transaction failed and the user has not retried it then show retry modal.
-          else if (resultCode == 1 && _numberofRetries == 0) {
-            buildNotification(resultDesc ?? '', 'error');
-
-            increaseRetries();
-            retryModal(
-                context, transactionDetails, widget.total, access, createdAt);
-          }
-          // If the user has alredy retried, then just display the error.
-          else if (resultCode == 1 && _numberofRetries > 0) {
-            buildNotification(resultDesc ?? '', 'error');
-          }
+          retryModal(context, transactionDetails, widget.total, access,
+              widget.receiptGenerator);
         }
       }).catchError((err) {
         log("In PayUp.dart");
@@ -100,6 +92,10 @@ class _PayUpState extends State<PayUp> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     transactionDetails = Provider.of<TransactionModel>(context);
+    resultCode = transactionDetails.transaction.resultCode;
+    resultDesc = transactionDetails.transaction.resultDesc;
+    log('In payUp.dart');
+    log(resultCode.toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

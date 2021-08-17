@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
-import 'package:park254_s_parking_app/functions/transactions/pay.dart';
-import 'package:park254_s_parking_app/models/transaction.model.dart';
+import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
 
-void retryFunction(transactionDetails, total, token, createdAt, context) {
-  transactionDetails.fetch(
-      phoneNumber: 254796867328,
-      amount: total,
-      token: token,
-      createdAt: createdAt);
+void retryFunction(
+    transactionDetails, total, token, context, receiptGenerator) {
+  transactionDetails.setLoading(true);
+  fetchTransaction(
+          phoneNumber: 254796867328,
+          amount: total,
+          token: token,
+          setTransaction: transactionDetails.setTransaction,
+          setLoading: transactionDetails.setLoading,
+          createdAt: transactionDetails.createdAt)
+      .then((value) {
+    if (value.resultCode == 0) {
+      buildNotification('Payment Succesful', 'success');
+      // Move the payment successful page.
+      receiptGenerator();
+    } else if (value.resultCode == 503) {
+      buildNotification(value.resultDesc, 'error');
+    }
+  });
+
   Navigator.pop(context);
 }
 
@@ -16,7 +30,7 @@ void retryFunction(transactionDetails, total, token, createdAt, context) {
 /// view and comment on pictures.
 /// Requires [context].
 void retryModal(BuildContext parentContext, transactionDetails, int total,
-    String token, String createdAt) {
+    String token, Function receiptGenerator) {
   showDialog(
       context: parentContext,
       builder: (BuildContext context) {
@@ -63,7 +77,7 @@ void retryModal(BuildContext parentContext, transactionDetails, int total,
                         children: <Widget>[
                           FlatButton(
                             onPressed: () => retryFunction(transactionDetails,
-                                total, token, createdAt, context),
+                                total, token, context, receiptGenerator),
                             color: globals.primaryColor,
                             textColor: Colors.white,
                             minWidth: 30.0,

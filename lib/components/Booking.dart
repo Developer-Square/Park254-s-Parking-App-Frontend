@@ -426,7 +426,6 @@ class _BookingState extends State<Booking> {
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
     isLoading = transactionDetails.loader;
-    log(isLoading.toString());
 
     return SafeArea(
       child: Scaffold(
