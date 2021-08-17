@@ -3,7 +3,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
-import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';

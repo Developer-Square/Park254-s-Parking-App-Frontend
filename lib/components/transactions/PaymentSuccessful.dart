@@ -10,8 +10,8 @@ import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:provider/provider.dart';
 
-import 'CircleWithIcon.dart';
-import 'DottedHorizontalLine.dart';
+import '../CircleWithIcon.dart';
+import '../DottedHorizontalLine.dart';
 
 /// Creates a receipt
 ///
