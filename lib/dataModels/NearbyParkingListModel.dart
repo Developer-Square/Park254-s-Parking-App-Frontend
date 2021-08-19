@@ -21,7 +21,7 @@ class NearbyParkingListModel with ChangeNotifier {
     @required String token,
     @required num longitude,
     @required num latitude,
-    num maxDistance = 5,
+    num maxDistance = 500,
   }) async {
     loading = true;
     _nearbyParking = await getNearbyParkingLots(

@@ -43,11 +43,11 @@ class MyParkingState extends State<MyParkingScreen> {
   void initState() {
     super.initState();
     showLoader = false;
-    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
-    userRole = storeDetails.user.user.role;
-    accessToken = storeDetails.user.accessToken.token;
-    userId = storeDetails.user.user.id;
     if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      userRole = storeDetails.user.user.role;
+      accessToken = storeDetails.user.accessToken.token;
+      userId = storeDetails.user.user.id;
       getParkingDetails();
     }
   }

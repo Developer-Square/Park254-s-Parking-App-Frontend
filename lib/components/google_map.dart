@@ -53,7 +53,9 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   initState() {
     super.initState();
     maxRetries = 0;
-    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    }
     setMarkers = false;
 
     if (mounted) {
@@ -98,9 +100,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           );
         });
       }).catchError((err) {
-        if (err.code == 401) {
-          buildNotification(err.message, 'error');
-        }
+        log(err.toString());
       });
     }
   }

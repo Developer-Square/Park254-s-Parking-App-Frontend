@@ -5,12 +5,10 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
-import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
@@ -81,7 +79,7 @@ class _NearByParkingState extends State<NearByParking>
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     // Set the current position to state.
-    if (position != null) {
+    if (position != null && nearbyParkingDetails.nearbyParking.lots == null) {
       getNearestParkingPlaces(position);
       // TODO: Remove if its never used.
       nearbyParkingDetails.setCurrentPositon(position);
