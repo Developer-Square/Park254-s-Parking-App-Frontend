@@ -1,22 +1,16 @@
-import 'dart:async';
-
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
-import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
-import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -204,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       searchBarController: searchBarController,
                       hideMapButtons: hideMapButtonsFn,
                       showToolTipFn: showToolTipFn,
-                      selectedParkingLot: selectedParkingLot)
+                    )
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
               // on the parking widget.

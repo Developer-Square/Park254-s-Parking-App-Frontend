@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/profile/helpers.dart';
@@ -12,6 +11,7 @@ import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 
 /// Creates a profile screen.
 ///
@@ -44,6 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String balance = 'Ksh 2005';
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  // Pakring details from the store.
+  NearbyParkingListModel nearbyParkingDetails;
 
   @override
   void initState() {
@@ -74,8 +76,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           showLoader = false;
         });
-        // Clear all the user's details.
+        // Clear all the details in the store.
         storeDetails.clear();
+        nearbyParkingDetails.clear();
+
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }

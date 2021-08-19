@@ -10,12 +10,11 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/globals.dart' as globals;
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../helper_functions.dart';
+import 'package:park254_s_parking_app/models/queryParkingLots.models.dart';
 
 /// Creates a my parking screen that shows you a history of places you've parked.
 ///
@@ -29,10 +28,12 @@ class MyParkingState extends State<MyParkingScreen> {
   var userRole;
   var accessToken;
   var userId;
-  var parkingLotsResults;
+  List parkingLotsResults;
   bool showLoader;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  // Parking lots from the store.
+  ParkingLotListModel parkingLotList;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -45,10 +46,13 @@ class MyParkingState extends State<MyParkingScreen> {
     showLoader = false;
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      parkingLotList = Provider.of<ParkingLotListModel>(context, listen: false);
       userRole = storeDetails.user.user.role;
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;
-      getParkingDetails();
+      if (parkingLotList.parkingLotList.parkingLots == null) {
+        getParkingDetails();
+      }
     }
   }
 
@@ -79,14 +83,7 @@ class MyParkingState extends State<MyParkingScreen> {
   // Get all the parking lots owned by the current user.
   getParkingDetails() async {
     if (accessToken != null && userId != null) {
-      getParkingLots(token: accessToken, owner: userId).then((value) {
-        setState(() {
-          parkingLotsResults = value.parkingLots;
-        });
-      }).catchError((err) {
-        log("In getParkingDetails, myparking_screen");
-        log(err.message);
-      });
+      parkingLotList.fetch(token: accessToken, owner: userId);
     }
   }
 
@@ -126,6 +123,11 @@ class MyParkingState extends State<MyParkingScreen> {
   }
 
   Widget build(BuildContext context) {
+    parkingLotList = Provider.of<ParkingLotListModel>(context);
+    if (parkingLotList.parkingLotList.parkingLots != null) {
+      var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
+      parkingLotsResults = availableParkingLots;
+    }
     return SafeArea(
       child: Scaffold(
         body: Stack(children: [

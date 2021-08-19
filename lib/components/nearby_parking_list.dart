@@ -48,7 +48,6 @@ class NearByParkingList extends StatefulWidget {
   final Function selectCard;
   final TextEditingController searchBarController;
   final Function hideMapButtons;
-  NearbyParkingLot selectedParkingLot;
 
   NearByParkingList(
       {@required this.imgPath,
@@ -68,8 +67,7 @@ class NearByParkingList extends StatefulWidget {
       this.selectedCard,
       this.selectCard,
       this.searchBarController,
-      this.hideMapButtons,
-      this.selectedParkingLot});
+      this.hideMapButtons});
   @override
   _NearByParkingList createState() => _NearByParkingList();
 }

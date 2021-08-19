@@ -17,6 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import '../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/components/loader.dart';
+import 'dart:developer';
 
 /// Creates a search page with recent searches of the user.
 ///
@@ -36,8 +38,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  Completer<GoogleMapController> mapController = Completer();
-
+  GoogleMapController mapController;
   bool showRecentSearches;
   bool showBookNowTab;
   bool showRatingTab;
@@ -55,6 +56,7 @@ class _SearchPageState extends State<SearchPage> {
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
   bool addedSearch;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -72,6 +74,9 @@ class _SearchPageState extends State<SearchPage> {
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
+    if (mounted) {
+      getSavedRecentSearches();
+    }
   }
 
 // Hides the recent searches when one of them is clicked and.
@@ -97,7 +102,10 @@ class _SearchPageState extends State<SearchPage> {
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
-    mapController.complete(controller);
+    setState(() {
+      isLoading = false;
+    });
+    mapController = controller;
     _customInfoWindowController.googleMapController = controller;
   }
 
@@ -131,6 +139,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getSuggestion(String input) async {
+    // TODO: Store the api key or make it more secure.
     String kPLACES_API_KEY = 'AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0';
     String country = 'country:ke';
     String baseURL =
@@ -140,6 +149,7 @@ class _SearchPageState extends State<SearchPage> {
 
     var response = await http.get(request);
     if (response.statusCode == 200) {
+      log(response.body.toString());
       setState(() {
         // If successfull store all the suggestions in a list to display below the search bar.
         _placeList = json.decode(response.body)['predictions'];
@@ -243,7 +253,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget build(BuildContext context) {
-    getSavedRecentSearches();
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab
@@ -271,6 +280,9 @@ class _SearchPageState extends State<SearchPage> {
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),
             // The rating pop up shown at the end of the parking session.
+            // Show Loader to prevent the black/error screen that appears before.
+            // the map is displayed.
+            isLoading ? Loader() : Container(),
             showRatingTab
                 ? RatingTab(
                     hideRatingTabFn: hideRatingTabFn,
