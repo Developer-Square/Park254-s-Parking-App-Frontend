@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as dartIO;
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
@@ -30,8 +30,8 @@ Future<ParkingLot> createParkingLot({
   bool valetParking = false,
 }) async {
   Map<String, String> headers = {
-    HttpHeaders.authorizationHeader: "Bearer $token",
-    HttpHeaders.contentTypeHeader: "application/json",
+    dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
+    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   final url = Uri.https('${globals.apiKey}', '/v1/parkingLots');
   final Map<String, dynamic> features = new Features(

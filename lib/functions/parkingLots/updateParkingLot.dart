@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
@@ -26,8 +26,8 @@ Future<ParkingLot> updateParkingLot({
   String city = '',
 }) async {
   Map<String, String> headers = {
-    HttpHeaders.authorizationHeader: "Bearer $token",
-    HttpHeaders.contentTypeHeader: "application/json",
+    dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
+    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
     "name": name,

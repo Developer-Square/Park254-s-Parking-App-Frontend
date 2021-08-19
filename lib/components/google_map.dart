@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,10 +24,12 @@ class GoogleMapWidget extends StatefulWidget {
   final TextEditingController searchBarController;
   final Function showToolTipFn;
   final Function hideToolTip;
+  GoogleMapController mapController;
 
   GoogleMapWidget(
       {@required this.mapCreated,
       @required this.customInfoWindowController,
+      this.mapController,
       this.searchBarController,
       this.showBookNowTab,
       this.showToolTipFn,
@@ -42,18 +47,27 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   int maxRetries;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  bool setMarkers;
 
+  @override
   initState() {
     super.initState();
     maxRetries = 0;
     storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    setMarkers = false;
+
+    if (mounted) {
+      getCurrentLocation();
+      loadDescriptors();
+      getAllParkingLocations();
+    }
   }
 
   // Make an api request to get all the parking locations and add markers.
   // to each of them.
   getAllParkingLocations() async {
     if (storeDetails != null) {
-      var accessToken = storeDetails.user.accessToken.token.toString();
+      var accessToken = storeDetails.user.accessToken.token;
       getParkingLots(token: accessToken).then((value) {
         // Add the parking lots to a local list so that we can use.
         // the forEach method.
@@ -62,6 +76,11 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         locations = value.parkingLots;
         // Add the marker coordinates to be displayed on the map.
         locations.forEach((value) {
+          // Updating the state so that the page can reload and the new set markers.
+          // can be displayed.
+          setState(() {
+            setMarkers = true;
+          });
           allMarkers.add(
             Marker(
                 markerId: MarkerId(value.name),
@@ -69,7 +88,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
                     value.location.coordinates[0]),
                 icon: bitmapDescriptor,
                 onTap: () {
-                  widget.showBookNowTab('googleMapMarker');
+                  widget.showBookNowTab('googleMapMarker', null);
                   widget.searchBarController.text = value.name;
                   widget.customInfoWindowController.addInfoWindow(
                       InfoWindowWidget(value: value),
@@ -79,7 +98,6 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           );
         });
       }).catchError((err) {
-        // Retry the request after getting status code of 401.
         if (err.code == 401) {
           buildNotification(err.message, 'error');
         }
@@ -95,26 +113,20 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      currentPosition = position;
-    });
+    if (position != null && widget.mapController != null) {
+      log("Inside get current location");
+      cameraAnimate(
+          widget.mapController, position.latitude, position.longitude);
+    }
   }
 
   // Load the svg icon.
-  loadDescriptors(context) async {
+  loadDescriptors() async {
     bitmapDescriptor = await bitmapDescriptorFromSvgAsset(
-        context, 'assets/images/pin_icons/car-parking-icon-2.svg');
+        context, 'assets/images/pin_icons/parking-icon-3.svg');
   }
 
   Widget build(BuildContext context) {
-    // These two fuctions are placed here so that they can be called again.
-    // when the state changes.
-    getCurrentLocation();
-    loadDescriptors(context);
-    if (maxRetries < 3) {
-      getAllParkingLocations();
-    }
-
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -122,11 +134,8 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         mapType: MapType.normal,
         zoomGesturesEnabled: true,
         zoomControlsEnabled: true,
-        initialCameraPosition: CameraPosition(
-            target: currentPosition != null
-                ? LatLng(currentPosition.latitude, currentPosition.longitude)
-                : LatLng(-1.2834, 36.8235),
-            zoom: 14.0),
+        initialCameraPosition:
+            CameraPosition(target: LatLng(-1.2834, 36.8235), zoom: 14.0),
         markers: Set.from(allMarkers),
         onMapCreated: widget.mapCreated,
         padding:

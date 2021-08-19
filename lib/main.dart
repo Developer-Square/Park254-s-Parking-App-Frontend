@@ -29,6 +29,7 @@ import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
+import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
@@ -169,6 +170,8 @@ class _MyAppState extends State<MyApp> {
             create: (context) => UsersListModel()),
         ChangeNotifierProvider<RatingListModel>(
             create: (context) => RatingListModel()),
+        ChangeNotifierProvider<TransactionModel>(
+            create: (context) => TransactionModel()),
       ],
       child: OverlaySupport(
         child: MaterialApp(
@@ -326,21 +329,24 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
-                      bookingNumber: args.bookingNumber,
-                      parkingSpace: args.parkingSpace,
-                      price: args.price,
-                      destination: args.destination,
-                      address: args.address);
+                    parkingSpaces: args.parkingSpace,
+                    price: args.price,
+                    destination: args.destination,
+                    address: args.address,
+                    arrivalTime: args.arrivalTime,
+                    leavingTime: args.leavingTime,
+                  );
                 });
               } else if (settings.name == PaymentSuccessful.routeName) {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
-                    bookingNumber: args.bookingNumber,
-                    parkingSpace: args.parkingSpace,
+                    parkingSpaces: args.parkingSpace,
                     price: args.price,
                     destination: args.destination,
                     address: args.address,
+                    arrivalTime: args.arrivalTime,
+                    leavingTime: args.leavingTime,
                   );
                 });
               } else if (settings.name == ParkingInfo.routeName) {
