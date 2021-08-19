@@ -9,12 +9,14 @@ import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/cloudinary/upload_images.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
+import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import 'widgets/helpers.dart';
 
@@ -26,7 +28,6 @@ class CreateUpdateParkingLot extends StatefulWidget {
   TextEditingController prices;
   TextEditingController address;
   TextEditingController city;
-  final FlutterSecureStorage loginDetails;
   final currentScreen;
   final parkingData;
   Function getParkingDetails;
@@ -37,7 +38,6 @@ class CreateUpdateParkingLot extends StatefulWidget {
       @required this.prices,
       @required this.address,
       @required this.city,
-      @required this.loginDetails,
       @required this.getParkingDetails,
       this.currentScreen,
       this.parkingData});
@@ -63,10 +63,14 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   bool showLoader;
   final picker = ImagePicker();
   var fields;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   initState() {
     super.initState();
     showLoader = false;
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+
     if (widget.currentScreen == 'update') {
       // Add all the links to the cloudinary images so that we can display them.
       widget.parkingData.images.forEach((image) {
@@ -150,8 +154,8 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   createUpdateParkingLots([links = linksParam]) async {
     // Combine the newly added images with the old ones.
     var updatedImages = links + _backendImages;
-    var accessToken = await widget.loginDetails.read(key: 'accessToken');
-    var userId = await widget.loginDetails.read(key: 'userId');
+    var accessToken = storeDetails.user.accessToken.token;
+    var userId = storeDetails.user.user.id;
     // Get the coordinates of the address the user entered.
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(

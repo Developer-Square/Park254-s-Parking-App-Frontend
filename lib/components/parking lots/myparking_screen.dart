@@ -7,8 +7,10 @@ import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,9 +21,6 @@ import '../helper_functions.dart';
 ///
 ///
 class MyParkingScreen extends StatefulWidget {
-  final FlutterSecureStorage loginDetails;
-
-  MyParkingScreen({@required this.loginDetails});
   @override
   MyParkingState createState() => MyParkingState();
 }
@@ -32,6 +31,8 @@ class MyParkingState extends State<MyParkingScreen> {
   var userId;
   var parkingLotsResults;
   bool showLoader;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -42,7 +43,10 @@ class MyParkingState extends State<MyParkingScreen> {
   void initState() {
     super.initState();
     showLoader = false;
-    getUserDetails();
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    userRole = storeDetails.user.user.role;
+    accessToken = storeDetails.user.accessToken.token;
+    userId = storeDetails.user.user.id;
     getParkingDetails();
   }
 
@@ -56,21 +60,9 @@ class MyParkingState extends State<MyParkingScreen> {
     cityController.dispose();
   }
 
-  // For the functions that need to access the loginDetails when the page,
-  // loads, use sharedPrefs.
-  getUserDetails() async {
-    await SharedPreferences.getInstance().then((value) {
-      var role = value.getString('role');
-      setState(() {
-        userRole = role;
-      });
-    });
-  }
-
   redirectToCreateorUpdatePage(text, [parkingData]) {
     return Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => CreateUpdateParkingLot(
-              loginDetails: widget.loginDetails,
               currentScreen: text,
               name: fullNameController,
               spaces: spacesController,
@@ -84,27 +76,14 @@ class MyParkingState extends State<MyParkingScreen> {
 
   // Get all the parking lots owned by the current user.
   getParkingDetails() async {
-    await SharedPreferences.getInstance().then((value) {
-      var encryptedToken = value.getString('accessToken');
-      var storedId = value.getString('userId');
-      var token =
-          encryptDecryptData('userAccessTokens', encryptedToken, 'decrypt');
-
-      setState(() {
-        accessToken = token;
-        userId = storedId;
-      });
-    });
-
     if (accessToken != null && userId != null) {
       getParkingLots(token: accessToken, owner: userId).then((value) {
         setState(() {
           parkingLotsResults = value.parkingLots;
-          log(value.parkingLots[0].name.toString());
         });
       }).catchError((err) {
-        print("In getParkingDetails, myparking_screen");
-        print(err.message);
+        log("In getParkingDetails, myparking_screen");
+        log(err.message);
       });
     }
   }
@@ -125,7 +104,7 @@ class MyParkingState extends State<MyParkingScreen> {
     setState(() {
       showLoader = true;
     });
-    var token = await widget.loginDetails.read(key: 'accessToken');
+    var token = storeDetails.user.accessToken.token;
     deleteParkingLot(token: token, parkingLotId: parkingLotId).then((value) {
       if (value == 'success') {
         buildNotification('Deleted parking lot successfully', 'success');
@@ -158,7 +137,6 @@ class MyParkingState extends State<MyParkingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TopPageStyling(
-                          userRole: userRole,
                           currentPage: 'myparking',
                           widget: userRole == 'vendor'
                               ? Container()
@@ -184,7 +162,6 @@ class MyParkingState extends State<MyParkingScreen> {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         CreateUpdateParkingLot(
-                                            loginDetails: widget.loginDetails,
                                             currentScreen: 'create',
                                             name: fullNameController,
                                             spaces: spacesController,

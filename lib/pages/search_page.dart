@@ -165,10 +165,8 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       showRatingTab = false;
     });
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => HomePage(
-              loginDetails: widget.loginDetails,
-            )));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => HomePage()));
   }
 
 // When user clicks on a recent search and the booking tab shows up.
@@ -268,7 +266,6 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
-                tokens: widget.loginDetails,
                 showBookNowTab: showBookNowTabFn,
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,

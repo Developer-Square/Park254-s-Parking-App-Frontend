@@ -31,7 +31,7 @@ class ParkingLot {
     @required this.address,
     @required this.city,
     @required this.price,
-    @required this.features,
+    this.features,
   });
 
   factory ParkingLot.fromJson(Map<String, dynamic> json) {

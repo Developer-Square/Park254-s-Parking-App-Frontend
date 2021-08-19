@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:provider/provider.dart';
 
 import 'info_window.dart';
 import 'helper_functions.dart';
@@ -17,20 +19,14 @@ class GoogleMapWidget extends StatefulWidget {
   final Function showBookNowTab;
   final CustomInfoWindowController customInfoWindowController;
   final TextEditingController searchBarController;
-  final FlutterSecureStorage tokens;
-  final Function storeLoginDetails;
-  final Function clearStorage;
   final Function showToolTipFn;
   final Function hideToolTip;
 
   GoogleMapWidget(
       {@required this.mapCreated,
       @required this.customInfoWindowController,
-      @required this.tokens,
       this.searchBarController,
       this.showBookNowTab,
-      this.storeLoginDetails,
-      this.clearStorage,
       this.showToolTipFn,
       this.hideToolTip});
   @override
@@ -44,54 +40,51 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   List<Marker> allMarkers = [];
   var locations = [];
   int maxRetries;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   initState() {
     super.initState();
     maxRetries = 0;
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
   }
 
   // Make an api request to get all the parking locations and add markers.
   // to each of them.
   getAllParkingLocations() async {
-    var accessToken = await widget.tokens.read(key: 'accessToken');
-    getParkingLots(token: accessToken).then((value) {
-      // Add the parking lots to a local list so that we can use.
-      // the forEach method.
-      // Tip: forEach does not work directly on the results from the api.
-      // and the map method gives some errors.
-      locations = value.parkingLots;
-      // Add the marker coordinates to be displayed on the map.
-      locations.forEach((value) {
-        allMarkers.add(
-          Marker(
-              markerId: MarkerId(value.name),
-              position: LatLng(
-                  value.location.coordinates[1], value.location.coordinates[0]),
-              icon: bitmapDescriptor,
-              onTap: () {
-                widget.showBookNowTab('googleMapMarker');
-                widget.searchBarController.text = value.name;
-                widget.customInfoWindowController.addInfoWindow(
-                    InfoWindowWidget(value: value),
-                    LatLng(value.location.coordinates[1],
-                        value.location.coordinates[0]));
-              }),
-        );
-      });
-    }).catchError((err) {
-      // Retry the request after getting status code of 401.
-      if (err.code == 401) {
-        // Keep track and add to the number of retries made.
-        // Make only 3 retries
-        if (maxRetries < 3) {
-          maxRetries += 1;
-          retryFuture(getAllParkingLocations, widget.tokens,
-              widget.storeLoginDetails, widget.clearStorage);
-        } else {
-          widget.showToolTipFn(err.message);
+    if (storeDetails != null) {
+      var accessToken = storeDetails.user.accessToken.token.toString();
+      getParkingLots(token: accessToken).then((value) {
+        // Add the parking lots to a local list so that we can use.
+        // the forEach method.
+        // Tip: forEach does not work directly on the results from the api.
+        // and the map method gives some errors.
+        locations = value.parkingLots;
+        // Add the marker coordinates to be displayed on the map.
+        locations.forEach((value) {
+          allMarkers.add(
+            Marker(
+                markerId: MarkerId(value.name),
+                position: LatLng(value.location.coordinates[1],
+                    value.location.coordinates[0]),
+                icon: bitmapDescriptor,
+                onTap: () {
+                  widget.showBookNowTab('googleMapMarker');
+                  widget.searchBarController.text = value.name;
+                  widget.customInfoWindowController.addInfoWindow(
+                      InfoWindowWidget(value: value),
+                      LatLng(value.location.coordinates[1],
+                          value.location.coordinates[0]));
+                }),
+          );
+        });
+      }).catchError((err) {
+        // Retry the request after getting status code of 401.
+        if (err.code == 401) {
+          buildNotification(err.message, 'error');
         }
-      }
-    });
+      });
+    }
   }
 
   // Get a user's current location to redirect the map to that location.
@@ -121,6 +114,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     if (maxRetries < 3) {
       getAllParkingLocations();
     }
+
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,

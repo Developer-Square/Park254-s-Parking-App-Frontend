@@ -40,23 +40,12 @@ storeDetailsInMemory(String key, value) async {
 storeLoginDetails(details, user) async {
   final accessToken = details.accessToken.token;
   final refreshToken = details.refreshToken.token;
-  final userId = details.user.id;
   // First encrypt both tokens.
   var access = encryptDecryptData('userAccessTokens', accessToken, 'encrypt');
   var refresh = encryptDecryptData('userRefreshToken', refreshToken, 'encrypt');
   // Then store them in memory.
   storeDetailsInMemory('accessToken', access.base64);
   storeDetailsInMemory('refreshToken', refresh.base64);
-  storeDetailsInMemory('userId', userId);
-  storeDetailsInMemory('role', details.user.role);
-
-  await user.write(key: 'accessToken', value: accessToken);
-  await user.write(key: 'refreshToken', value: refreshToken);
-  await user.write(key: 'role', value: details.user.role);
-  await user.write(key: 'name', value: details.user.name);
-  await user.write(key: 'email', value: details.user.email);
-  await user.write(key: 'phone', value: details.user.phone.toString());
-  await user.write(key: 'userId', value: userId);
 }
 
 // Clears the details when a user logouts.

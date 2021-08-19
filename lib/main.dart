@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -15,7 +16,6 @@ import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/parkingInfoArguments.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
@@ -28,6 +28,7 @@ import 'package:park254_s_parking_app/dataModels/RatingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
+import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
@@ -38,6 +39,8 @@ import 'components/booking_tab.dart';
 import 'components/top_page_styling.dart';
 import 'config/home_page_arguments.dart';
 import 'config/search_page_arguments.dart';
+import 'models/token.model.dart';
+import 'models/user.model.dart';
 import 'pages/login_screen.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
@@ -53,13 +56,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Color primaryColor = Color(0xff14eeb5);
-  final userDetails = new FlutterSecureStorage();
-
   // Encrypted token.
   var data;
   // User's Id from memory.
   var userId;
   var role;
+  Token accessToken;
+  Token refreshToken;
+  User userDetails;
 
   Future onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
@@ -94,14 +98,12 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString(key, value);
     }).catchError((err) {
-      print("In storeDetailsMemory, main.dart");
-      print(err);
+      log("In storeDetailsMemory, main.dart");
+      log(err);
     });
   }
 
   checkForCredentials() {
-    print("data");
-    print(data);
     if (data != null) {
       var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
       if (token != null && userId != null) {
@@ -110,21 +112,22 @@ class _MyAppState extends State<MyApp> {
               .then((details) async {
             // Set the user's role to be used later for redirection.
             setState(() {
+              userDetails = details;
+              accessToken = Token(
+                  token: value.accessToken.token,
+                  expires: value.accessToken.expires);
+              refreshToken = Token(
+                  token: value.refreshToken.token,
+                  expires: value.refreshToken.expires);
               role = details.role;
             });
-            await userDetails.write(
-                key: 'accessToken', value: value.accessToken.token);
-            await userDetails.write(
-                key: 'refreshToken', value: value.refreshToken.token);
-            await userDetails.write(key: 'role', value: details.role);
-            await userDetails.write(key: 'name', value: details.name);
-            await userDetails.write(key: 'email', value: details.email);
-            await userDetails.write(
-                key: 'phone', value: details.phone.toString());
-            await userDetails.write(key: 'userId', value: userId);
           }).catchError((err) {
-            print("In checkCredentials, main.dart");
-            print(err);
+            log("In checkCredentials, main.dart");
+            log(err.toString());
+            setState(() {
+              data = null;
+              role = null;
+            });
           });
           var access = encryptDecryptData(
               'userAccessTokens', value.accessToken.token, 'encrypt');
@@ -138,10 +141,12 @@ class _MyAppState extends State<MyApp> {
           setState(() {
             data = null;
             userId = null;
+            userDetails = null;
+            accessToken = null;
+            refreshToken = null;
           });
-          clearStorage(userDetails);
-          print(err.message);
-          print("In main.dart");
+          log(err.message);
+          log("In main.dart");
         });
       }
     }
@@ -175,15 +180,13 @@ class _MyAppState extends State<MyApp> {
                 ? role != null
                     ? role == 'user'
                         ? HomePage(
-                            loginDetails: userDetails,
-                            storeLoginDetails: storeLoginDetails,
-                            clearStorage: clearStorage,
-                          )
+                            userDetails: userDetails,
+                            accessToken: accessToken,
+                            refreshToken: refreshToken)
                         : VendorPage(
-                            loginDetails: userDetails,
-                            storeLoginDetails: storeLoginDetails,
-                            clearStorage: clearStorage,
-                          )
+                            userDetails: userDetails,
+                            accessToken: accessToken,
+                            refreshToken: refreshToken)
                     : Loader()
                 : OnBoardingPage(),
             routes: {
@@ -203,11 +206,8 @@ class _MyAppState extends State<MyApp> {
                   );
                 });
               } else if (settings.name == HomePage.routeName) {
-                final HomePageArguements args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
-                  return HomePage(
-                    loginDetails: args.loginDetails,
-                  );
+                  return HomePage();
                 });
               } else if (settings.name == SearchPage.routeName) {
                 final SearchPageArguments args = settings.arguments;
@@ -225,7 +225,6 @@ class _MyAppState extends State<MyApp> {
                         setShowRecentSearches: args.setShowRecentSearches,
                       ),
                       GoogleMapWidget(
-                        tokens: args.loginDetails,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
@@ -284,7 +283,6 @@ class _MyAppState extends State<MyApp> {
                           currentPage: args2.currentPage,
                           widget: args2.widget),
                       GoogleMapWidget(
-                        tokens: args4.loginDetails,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
@@ -343,15 +341,6 @@ class _MyAppState extends State<MyApp> {
                     price: args.price,
                     destination: args.destination,
                     address: args.address,
-                  );
-                });
-              } else if (settings.name == LoginPage.routeName) {
-                final LoginRegistrationArguements args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return ToolTip(
-                    showToolTip: args.showToolTip,
-                    text: args.text,
-                    hideToolTip: args.hideToolTip,
                   );
                 });
               } else if (settings.name == ParkingInfo.routeName) {

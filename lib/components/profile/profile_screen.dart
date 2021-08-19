@@ -6,8 +6,10 @@ import 'package:park254_s_parking_app/components/profile/edit_screen.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/profile/helpers.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
+import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
 
@@ -19,14 +21,12 @@ class ProfileScreen extends StatefulWidget {
   final profileImgPath;
   final logo1Path;
   final logo2Path;
-  FlutterSecureStorage loginDetails;
   Function clearStorage;
 
   ProfileScreen(
       {@required this.profileImgPath,
       @required this.logo1Path,
       @required this.logo2Path,
-      @required this.loginDetails,
       this.clearStorage});
 
   @override
@@ -39,37 +39,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool showLoader;
-  String errMsg;
   String userRole;
-  String fullName;
   String carPlate = 'KCB 8793K';
-  // String carModel = 'BMW';
   String balance = 'Ksh 2005';
-  // String email = 'rhondarousey@gmail.com';
-  // String phone = '78656789';
-  // String password = 'password1';
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   @override
   void initState() {
     super.initState();
     showLoader = false;
-    errMsg = '';
-    fullName = '';
-    // Add user's details to the inputs fields.
-    updateFields('profile');
-  }
-
-  void updateFields(String currentPage) async {
-    if (currentPage == 'profile') {
-      userRole = await widget.loginDetails.read(key: 'role');
-      var name = await widget.loginDetails.read(key: 'name');
-      fullNameController.text = name;
-      emailController.text = await widget.loginDetails.read(key: 'email');
-      phoneController.text = await widget.loginDetails.read(key: 'phone');
-      setState(() {
-        fullName = name;
-      });
-    }
   }
 
   @override
@@ -88,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       showLoader = true;
     });
-    var token = await widget.loginDetails.read(key: 'refreshToken');
+    var token = storeDetails.user.refreshToken.token;
     logout(refreshToken: token).then((value) {
       if (value == 'success') {
         buildNotification('Logged out successfully', 'success');
@@ -96,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           showLoader = false;
         });
         // Clear all the user's details.
-        clearStorage(widget.loginDetails);
+        storeDetails.clear();
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
@@ -110,14 +89,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  hideToolTip() {
-    setState(() {
-      errMsg = '';
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    storeDetails = Provider.of<UserWithTokenModel>(context);
+    if (storeDetails.user.user != null) {
+      fullNameController.text = storeDetails.user.user.name;
+      emailController.text = storeDetails.user.user.email;
+      phoneController.text = storeDetails.user.user.phone.toString();
+      userRole = storeDetails.user.user.role;
+    }
+
     return Scaffold(
       body: Stack(children: <Widget>[
         SingleChildScrollView(
@@ -130,7 +111,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => EditScreen(
-                                  loginDetails: widget.loginDetails,
                                   profileImgPath: widget.profileImgPath,
                                   fullName: fullNameController,
                                   email: emailController,
@@ -173,7 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    updateFields('vehicles');
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
                                             builder: (context) => EditScreen(

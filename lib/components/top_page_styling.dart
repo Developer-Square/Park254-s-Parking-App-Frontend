@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/search_bar.dart';
 
@@ -15,19 +17,21 @@ class TopPageStyling extends StatelessWidget {
   final searchBarController;
   final currentPage;
   final widget;
-  final FlutterSecureStorage loginDetails;
-  final userRole;
 
   TopPageStyling(
-      {this.searchBarController,
-      @required this.currentPage,
-      @required this.widget,
-      this.loginDetails,
-      this.userRole});
+      {this.searchBarController, @required this.currentPage, this.widget});
+
   Widget build(BuildContext context) {
+    // User's details from the store.
+    UserWithTokenModel storeDetails =
+        Provider.of<UserWithTokenModel>(context, listen: false);
+    String role;
+    if (storeDetails.user.user != null) {
+      role = storeDetails.user.user.role;
+    }
     return Container(
       height: currentPage == 'myparking'
-          ? userRole == 'vendor'
+          ? role == 'vendor'
               ? 200.0
               : 260.0
           : 210.0,
@@ -36,7 +40,7 @@ class TopPageStyling extends StatelessWidget {
           color: globals.backgroundColor,
           borderRadius: BorderRadius.only(
               bottomRight: currentPage == 'myparking'
-                  ? userRole == 'vendor'
+                  ? role == 'vendor'
                       ? Radius.elliptical(450, 270)
                       : Radius.elliptical(400, 270)
                   : Radius.elliptical(500, 240))),
@@ -69,7 +73,6 @@ class TopPageStyling extends StatelessWidget {
                       : 24.0),
               currentPage == 'home'
                   ? SearchBar(
-                      loginDetails: loginDetails,
                       offsetY: 4.0,
                       blurRadius: 6.0,
                       opacity: 0.9,

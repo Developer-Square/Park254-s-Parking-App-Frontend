@@ -12,21 +12,13 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
   final Function showBottomNavigation;
-  FlutterSecureStorage loginDetails;
-  final Function storeLoginDetails;
-  final Function clearStorage;
 
-  HomeScreen(
-      {@required this.showBottomNavigation,
-      @required this.loginDetails,
-      this.storeLoginDetails,
-      this.clearStorage});
+  HomeScreen({@required this.showBottomNavigation});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -91,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // widget tree.
     searchBarController.dispose();
     _customInfoWindowController.dispose();
-    mapController.complete(null);
+    mapController.complete();
     super.dispose();
   }
 
@@ -182,9 +174,6 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
-                  clearStorage: widget.clearStorage,
-                  storeLoginDetails: widget.storeLoginDetails,
-                  tokens: widget.loginDetails,
                   showBookNowTab: hideMapButtonsFn,
                   mapCreated: mapCreated,
                   customInfoWindowController: _customInfoWindowController,
@@ -212,9 +201,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       searchBarController: searchBarController,
                       hideMapButtons: hideMapButtonsFn,
                       currentPosition: currentPosition,
-                      loginDetails: widget.loginDetails,
-                      storeLoginDetails: widget.storeLoginDetails,
-                      clearStorage: widget.clearStorage,
                       showToolTipFn: showToolTipFn,
                     )
                   : Container(),
@@ -234,10 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   : Container(),
               showTopPageStyling
                   ? TopPageStyling(
-                      loginDetails: widget.loginDetails,
                       searchBarController: searchBarController,
                       currentPage: 'home',
-                      widget: null,
                     )
                   : Container(),
               showMap && !hideMapButtons
@@ -271,10 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : Container(),
-              ToolTip(
-                  showToolTip: showToolTip,
-                  text: text,
-                  hideToolTip: hideToolTip),
               // Add CustomInfoWindow as next child to float this on top GoogleMap.
               CustomInfoWindow(
                   controller: _customInfoWindowController,

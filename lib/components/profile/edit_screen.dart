@@ -1,11 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
+import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 
 /// Creates a dynamic edit screen page for user profiles and adding vehicles.
@@ -18,16 +21,15 @@ class EditScreen extends StatefulWidget {
   final phone;
   final password;
   final currentScreen;
-  final FlutterSecureStorage loginDetails;
 
-  EditScreen(
-      {this.profileImgPath,
-      this.fullName,
-      this.email,
-      this.phone,
-      this.password,
-      @required this.currentScreen,
-      this.loginDetails});
+  EditScreen({
+    this.profileImgPath,
+    this.fullName,
+    this.email,
+    this.phone,
+    this.password,
+    @required this.currentScreen,
+  });
 
   @override
   _EditScreenState createState() => _EditScreenState();
@@ -40,11 +42,17 @@ class _EditScreenState extends State<EditScreen> {
   bool showLoader;
   bool showToolTip;
   String text;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   initState() {
     super.initState();
     showLoader = false;
-    showToolTip = false;
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    if (widget.currentScreen == 'vehicles') {
+      vehicleTypeController.text = storeDetails.user.user.vehicles[0].model;
+      vehiclePlateController.text = storeDetails.user.user.vehicles[0].plate;
+    }
   }
 
   hideToolTip() {
@@ -55,8 +63,8 @@ class _EditScreenState extends State<EditScreen> {
     setState(() {
       showLoader = true;
     });
-    var accessToken = await widget.loginDetails.read(key: 'accessToken');
-    var userId = await widget.loginDetails.read(key: 'userId');
+    var accessToken = storeDetails.user.accessToken.token;
+    var userId = storeDetails.user.user.id;
     updateUser(
             token: accessToken,
             userId: userId,
@@ -64,22 +72,21 @@ class _EditScreenState extends State<EditScreen> {
             email: widget.email.text,
             phone: int.parse(widget.phone.text))
         .then((value) async {
-      // Add the new values to the store.
-      await userDetails.write(key: 'name', value: widget.fullName.text);
-      await userDetails.write(key: 'email', value: widget.email.text);
-      await userDetails.write(key: 'phone', value: widget.phone.text);
+      storeDetails.updateUser(widget.fullName.text, widget.email.text,
+          int.parse(widget.phone.text));
       setState(() {
         showLoader = false;
       });
 
       buildNotification('Profile updated successfully.', 'success');
       Navigator.pop(context);
-      //ToDo: Update the fields on the page
     }).catchError((err) {
       setState(() {
         showLoader = false;
-        buildNotification(err.message, 'error');
       });
+      log('In editScreen.dart');
+      log(err.toString());
+      buildNotification(err.message, 'error');
     });
   }
 
@@ -101,8 +108,6 @@ class _EditScreenState extends State<EditScreen> {
       ),
       body: Stack(
         children: [
-          ToolTip(
-              showToolTip: showToolTip, text: text, hideToolTip: hideToolTip),
           SingleChildScrollView(
             child: Center(
               child: widget.currentScreen == 'profile'

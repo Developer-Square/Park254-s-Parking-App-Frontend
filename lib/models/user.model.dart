@@ -4,10 +4,10 @@ import 'package:park254_s_parking_app/models/vehicle.model.dart';
 /// Creates a user object from Json
 class User {
   final String id;
-  final String email;
-  final String name;
+  String email;
+  String name;
   final String role;
-  final num phone;
+  num phone;
   final List<Vehicle> vehicles;
 
   User({

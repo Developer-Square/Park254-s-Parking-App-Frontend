@@ -3,16 +3,23 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/profile/profile_screen.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/models/token.model.dart';
+import 'package:park254_s_parking_app/models/user.model.dart';
+import 'package:park254_s_parking_app/models/userWithToken.model.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 
 class VendorPage extends StatefulWidget {
   static const routeName = '/vendorpage';
-  FlutterSecureStorage loginDetails;
-  Function storeLoginDetails;
-  Function clearStorage;
+  User userDetails;
+  Token accessToken;
+  Token refreshToken;
 
   VendorPage(
-      {@required this.loginDetails, this.storeLoginDetails, this.clearStorage});
+      {@required this.userDetails,
+      @required this.accessToken,
+      @required this.refreshToken});
   @override
   _VendorPageState createState() => _VendorPageState();
 }
@@ -33,6 +40,17 @@ class _VendorPageState extends State<VendorPage> {
     super.initState();
     //Pass initial values
     showBottomNavigation = true;
+    final storeDetails =
+        Provider.of<UserWithTokenModel>(context, listen: false);
+
+    if (storeDetails != null) {
+      // Store the user, access and refresh token in state.
+      var userWithTokenDetails = UserWithToken(
+          user: widget.userDetails,
+          accessToken: widget.accessToken,
+          refreshToken: widget.refreshToken);
+      storeDetails.setUser(userWithTokenDetails);
+    }
   }
 
   /// Hide navigation icons when showing full nearby parking widget and vice versa.
@@ -48,13 +66,9 @@ class _VendorPageState extends State<VendorPage> {
   /// The parameters include [title], [info] and [step].
   changeScreens(hideNavigationIcons) {
     if (_activeTab == 'myparking') {
-      return MyParkingScreen(
-        loginDetails: widget.loginDetails,
-      );
+      return MyParkingScreen();
     } else if (_activeTab == 'profile') {
       return ProfileScreen(
-        loginDetails: widget.loginDetails,
-        clearStorage: widget.clearStorage,
         profileImgPath: 'assets/images/profile/profile-1.jpg',
         logo1Path: 'assets/images/profile/visa_2.svg',
         logo2Path: 'assets/images/profile/mpesa.svg',

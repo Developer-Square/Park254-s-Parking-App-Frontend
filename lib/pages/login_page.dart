@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    email.text = 'ryanvendor2@gmail.com';
+    email.text = 'ryanvendor8@gmail.com';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
@@ -102,16 +102,16 @@ class _LoginPageState extends State<LoginPage> {
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => HomePage(
-                          loginDetails: userDetails,
-                          storeLoginDetails: storeLoginDetails,
-                          clearStorage: clearStorage,
+                          userDetails: value.user,
+                          accessToken: value.accessToken,
+                          refreshToken: value.refreshToken,
                         )));
               } else if (value.user.role == 'vendor') {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => VendorPage(
-                          loginDetails: userDetails,
-                          storeLoginDetails: storeLoginDetails,
-                          clearStorage: clearStorage,
+                          userDetails: value.user,
+                          accessToken: value.accessToken,
+                          refreshToken: value.refreshToken,
                         )));
               }
             }

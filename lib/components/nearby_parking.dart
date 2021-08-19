@@ -1,15 +1,17 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
-import 'package:park254_s_parking_app/components/parking_model.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
-import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -26,9 +28,6 @@ class NearByParking extends StatefulWidget {
   final TextEditingController searchBarController;
   final Function hideMapButtons;
   final Position currentPosition;
-  final FlutterSecureStorage loginDetails;
-  final Function storeLoginDetails;
-  final Function clearStorage;
   final Function showToolTipFn;
   final Function hideToolTip;
 
@@ -41,9 +40,6 @@ class NearByParking extends StatefulWidget {
       this.searchBarController,
       this.hideMapButtons,
       this.currentPosition,
-      this.loginDetails,
-      this.storeLoginDetails,
-      this.clearStorage,
       this.showToolTipFn,
       this.hideToolTip});
 
@@ -56,8 +52,10 @@ class _NearByParkingState extends State<NearByParking>
   double _size;
   bool _large;
   String selectedCard = 'Nearby Parking';
-  var parkingLots;
+  NearbyParkingLots parkingLots;
   int maxRetries;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   @override
   void initState() {
@@ -65,36 +63,31 @@ class _NearByParkingState extends State<NearByParking>
     _size = 278.52;
     _large = false;
     maxRetries = 0;
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
   }
 
   // Make the api call to get the nearest parking lots
   getNearestParkingPlaces(coords) async {
-    var accessToken = await widget.loginDetails.read(key: 'accessToken');
-    if (coords != null) {
+    if (coords != null && storeDetails != null) {
       getNearbyParkingLots(
-              token: accessToken,
+              token: storeDetails.user.accessToken.token.toString(),
               longitude: coords.longitude,
               latitude: coords.latitude,
               maxDistance: 500)
           .then((value) {
+        log(value.toString());
+
         // Add all the nearby parking lots in the area so that.
         // we can map over them later.
-        setState(() {
-          parkingLots = value;
-        });
-      }).catchError((err) {
-        // Retry the request after getting status code of 401.
-        if (err.code == 401) {
-          // Keep track and add to the number of retries made.
-          // Make only 3 retries
-          if (maxRetries < 3) {
-            maxRetries += 1;
-            retryFuture(getNearestParkingPlaces, widget.loginDetails,
-                widget.storeLoginDetails, widget.clearStorage, coords);
-          } else {
-            widget.showToolTipFn(err.message);
-          }
+        if (mounted) {
+          setState(() {
+            parkingLots = value;
+          });
         }
+      }).catchError((err) {
+        log('In getNearestParkingplaces');
+        log(err.toString());
+        buildNotification(err.message, 'error');
       });
     }
   }
@@ -138,9 +131,9 @@ class _NearByParkingState extends State<NearByParking>
   }
 
   Widget build(BuildContext context) {
-    if (maxRetries < 3) {
-      getNearestParkingPlaces(widget.currentPosition);
-    }
+    getNearestParkingPlaces(widget.currentPosition);
+    log(parkingLots.toString());
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
@@ -293,7 +286,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(height: 19.0),
                 SizedBox(
                     height: _large ? 420.0 : 205.0,
-                    child: parkingLots != null
+                    child: parkingLots != null && parkingLots.lots != null
                         ? buildParkingPlacesList(title)
                         : Loader()),
               ],
