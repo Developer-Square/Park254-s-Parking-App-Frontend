@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
@@ -28,7 +29,6 @@ class NearByParking extends StatefulWidget {
   final Function showFullBackground;
   final TextEditingController searchBarController;
   final Function hideMapButtons;
-  final Position currentPosition;
   final Function showToolTipFn;
   final Function hideToolTip;
   NearbyParkingLot selectedParkingLot;
@@ -41,7 +41,6 @@ class NearByParking extends StatefulWidget {
       @required this.showFullBackground,
       this.searchBarController,
       this.hideMapButtons,
-      this.currentPosition,
       this.showToolTipFn,
       this.hideToolTip,
       this.selectedParkingLot});
@@ -59,6 +58,8 @@ class _NearByParkingState extends State<NearByParking>
   int maxRetries;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  // Pakring details from the store.
+  NearbyParkingListModel nearbyParkingDetails;
 
   @override
   void initState() {
@@ -67,31 +68,35 @@ class _NearByParkingState extends State<NearByParking>
     _large = false;
     maxRetries = 0;
     storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    nearbyParkingDetails =
+        Provider.of<NearbyParkingListModel>(context, listen: false);
+
+    if (mounted) {
+      getCurrentLocation();
+    }
+  }
+
+  // Get a user's current location.
+  getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    // Set the current position to state.
+    if (position != null) {
+      getNearestParkingPlaces(position);
+      // TODO: Remove if its never used.
+      nearbyParkingDetails.setCurrentPositon(position);
+    }
   }
 
   // Make the api call to get the nearest parking lots
   getNearestParkingPlaces(coords) async {
-    if (coords != null && storeDetails != null) {
-      getNearbyParkingLots(
-              token: storeDetails.user.accessToken.token.toString(),
-              longitude: coords.longitude,
-              latitude: coords.latitude,
-              maxDistance: 500)
-          .then((value) {
-        log(value.toString());
-
-        // Add all the nearby parking lots in the area so that.
-        // we can map over them later.
-        if (mounted) {
-          setState(() {
-            parkingLots = value;
-          });
-        }
-      }).catchError((err) {
-        log('In getNearestParkingplaces');
-        log(err.toString());
-        buildNotification(err.message, 'error');
-      });
+    if (coords != null &&
+        storeDetails != null &&
+        nearbyParkingDetails != null) {
+      nearbyParkingDetails.fetch(
+          token: storeDetails.user.accessToken.token.toString(),
+          longitude: coords.longitude,
+          latitude: coords.latitude);
     }
   }
 
@@ -142,9 +147,12 @@ class _NearByParkingState extends State<NearByParking>
   }
 
   Widget build(BuildContext context) {
-    getNearestParkingPlaces(widget.currentPosition);
-    log(parkingLots.toString());
-
+    nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
+    if (nearbyParkingDetails.nearbyParking != null) {
+      setState(() {
+        parkingLots = nearbyParkingDetails.nearbyParking;
+      });
+    }
     return Align(
       alignment: Alignment.bottomCenter,
       child: Material(
@@ -202,7 +210,6 @@ class _NearByParkingState extends State<NearByParking>
     return ListView.builder(
         itemCount: parkingLots.lots.length,
         itemBuilder: (context, index) {
-          int picIndex = index + 1;
           return Column(
             children: [
               NearByParkingList(

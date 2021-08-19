@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -145,6 +147,7 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
     _clearPlaceList(address);
   } catch (e) {
-    print(e);
+    log('In get location in helper_function.dart');
+    log(e.toString());
   }
 }

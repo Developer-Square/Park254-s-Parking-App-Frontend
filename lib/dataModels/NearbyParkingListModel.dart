@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
@@ -7,8 +8,14 @@ import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 class NearbyParkingListModel with ChangeNotifier {
   NearbyParkingLots _nearbyParking = new NearbyParkingLots(lots: null);
   bool loading = false;
+  Position _currentPosition;
 
   NearbyParkingLots get nearbyParking => _nearbyParking;
+  Position get currentPosition => _currentPosition;
+
+  void setCurrentPositon(Position value) {
+    _currentPosition = value;
+  }
 
   void fetch({
     @required String token,

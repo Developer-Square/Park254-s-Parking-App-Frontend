@@ -10,11 +10,14 @@ import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking.dart';
+import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homescreen';
@@ -36,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var _activeTab = 'home';
   String _searchText;
   TextEditingController searchBarController = new TextEditingController();
-  // Completer<GoogleMapController> mapController = Completer();
   GoogleMapController mapController;
-  Position currentPosition;
   bool showNearByParking;
   bool showTopPageStyling;
   bool showMap;
@@ -52,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int index;
   bool isLoading = true;
   NearbyParkingLot selectedParkingLot;
-  GoogleMapController homeScreenController;
+  // Pakring details from the store.
+  NearbyParkingListModel nearbyParkingDetails;
 
   @override
   void initState() {
@@ -67,9 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
     hideMapButtons = false;
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
-    getCurrentLocation();
     showToolTip = false;
     index = 1;
+    nearbyParkingDetails =
+        Provider.of<NearbyParkingListModel>(context, listen: false);
   }
 
   /// A function that receives the GoogleMapController when the map is rendered on the page.
@@ -87,9 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
-    mapController.dispose();
     _customInfoWindowController.dispose();
-    mapController.complete();
     super.dispose();
   }
 
@@ -154,15 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Get a user's current location.
-  getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      currentPosition = position;
-    });
-  }
-
   hideToolTip() {
     setState(() {
       showToolTip = false;
@@ -211,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       showFullBackground: showFullBackground,
                       searchBarController: searchBarController,
                       hideMapButtons: hideMapButtonsFn,
-                      currentPosition: currentPosition,
                       showToolTipFn: showToolTipFn,
                       selectedParkingLot: selectedParkingLot)
                   : Container(),

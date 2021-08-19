@@ -3,15 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
-import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:park254_s_parking_app/models/transaction.model.dart';
 import 'package:provider/provider.dart';
-
-import 'load_location.dart';
 
 /// Creates a Pay Up pop up that prompts user to pay
 ///

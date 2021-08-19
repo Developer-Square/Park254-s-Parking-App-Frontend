@@ -47,7 +47,9 @@ class MyParkingState extends State<MyParkingScreen> {
     userRole = storeDetails.user.user.role;
     accessToken = storeDetails.user.accessToken.token;
     userId = storeDetails.user.user.id;
-    getParkingDetails();
+    if (mounted) {
+      getParkingDetails();
+    }
   }
 
   @override
