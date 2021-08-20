@@ -7,8 +7,8 @@ import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 
 /// Creates a Pay Up pop up that prompts user to pay
 ///
@@ -38,17 +38,22 @@ class PayUp extends StatefulWidget {
 }
 
 class _PayUpState extends State<PayUp> {
-  final storage = new FlutterSecureStorage();
+  // Transaction details from the store.
   TransactionModel transactionDetails;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    }
   }
 
   callPaymentMethod(transactionDetails) async {
     widget.showHideLoader(true);
-    String access = await storage.read(key: 'accessToken');
+    String access = storeDetails.user.accessToken.token;
 
     if (access != null) {
       pay(

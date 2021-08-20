@@ -76,19 +76,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           showLoader = false;
         });
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
         // Clear all the details in the store.
         storeDetails.clear();
         nearbyParkingDetails.clear();
-
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
     }).catchError((err) {
       setState(() {
         showLoader = false;
-        buildNotification(err.message, 'error');
         print("In profile_screen");
         print(err);
+        buildNotification(err.message, 'error');
       });
     });
   }
