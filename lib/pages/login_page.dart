@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
+import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import '../config/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -30,14 +31,14 @@ class _LoginPageState extends State<LoginPage> {
   bool keyboardVisible;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
-  final tokens = new FlutterSecureStorage();
+  var userDetails = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
 
   @override
   void initState() {
     super.initState();
-    email.text = 'ryantest3@gmail.com';
+    email.text = 'ryantest4@gmail.com';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
@@ -51,13 +52,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  storeLoginDetails(details) async {
-    await tokens.write(key: 'accessToken', value: details.accessToken.token);
-    await tokens.write(key: 'refreshToken', value: details.refreshToken.token);
-  }
-
   clearStorage() async {
-    await tokens.deleteAll();
+    await userDetails.deleteAll();
   }
 
   /// Determine the current position of the device.
@@ -92,28 +88,42 @@ class _LoginPageState extends State<LoginPage> {
       login(email: email.text, password: password.text).then((value) {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => HomePage(
-                    loginDetails: tokens,
-                    storeLoginDetails: storeLoginDetails,
-                    clearStorage: clearStorage,
-                  )));
           if (value.user.id != null) {
+            buildNotification('Logged in successfully', 'success');
             setState(() {
               showLoader = false;
               loginDetails = value;
             });
+
             if (loginDetails != null) {
-              // Store the refresh and access tokens.
-              storeLoginDetails(loginDetails);
+              // Store the refresh and access userDetails.
+              storeLoginDetails(loginDetails, userDetails);
+              // Choose how to redirect the user based on the role.
+              if (value.user.role == 'user') {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => HomePage(
+                          userDetails: value.user,
+                          accessToken: value.accessToken,
+                          refreshToken: value.refreshToken,
+                        )));
+              } else if (value.user.role == 'vendor') {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => VendorPage(
+                          userDetails: value.user,
+                          accessToken: value.accessToken,
+                          refreshToken: value.refreshToken,
+                        )));
+              }
             }
           }
         });
       }).catchError((err) {
+        buildNotification(err.message, 'error');
+        print("In login_page");
+        print(err);
         setState(() {
           showLoader = false;
         });
-        buildNotification(err.message, 'error');
       });
     }
   }

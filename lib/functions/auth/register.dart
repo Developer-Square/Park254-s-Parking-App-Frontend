@@ -14,13 +14,14 @@ import '../../models/userWithToken.model.dart';
 /// Returns a user with their access and refresh tokens [UserWithToken]
 /// Parameters: [email], [name], [role], [password], [phone], and [vehicles]
 /// [role] is not required and defaults to 'user
-Future<UserWithToken> register(
-    {@required String email,
-    @required String name,
-    String role = 'user',
-    @required String password,
-    @required String phone,
-    @required List<Vehicle> vehicles = const []}) async {
+Future<UserWithToken> register({
+  @required String email,
+  @required String name,
+  String role = 'user',
+  @required String password,
+  @required String phone,
+  List<Vehicle> vehicles = const [],
+}) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };

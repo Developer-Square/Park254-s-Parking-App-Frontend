@@ -44,6 +44,37 @@ class TransactionModel with ChangeNotifier {
     _transaction = transactionDetails;
   }
 
+  void fetch({
+    @required num phoneNumber,
+    @required num amount,
+    @required String token,
+    @required String createdAt,
+  }) async {
+    loading = true;
+    _transaction = await fetchTransaction(
+            phoneNumber: phoneNumber,
+            amount: amount,
+            token: token,
+            createdAt: createdAt,
+            setLoading: setLoading,
+            setTransaction: setTransaction)
+        .timeout(Duration(seconds: 12), onTimeout: () {
+      // If the request times out then set the state to an empty object
+      // with the resultCode of 1.
+      _transaction = Transaction(
+          id: null,
+          merchantRequestID: null,
+          checkoutRequestID: null,
+          resultCode: 1,
+          resultDesc: "Transaction failed, kindly try again",
+          mpesaReceiptNumber: null,
+          transactionDate: null);
+      return transaction;
+    });
+    loading = false;
+    notifyListeners();
+  }
+
   void remove() {
     _transaction = new Transaction(
         id: null,

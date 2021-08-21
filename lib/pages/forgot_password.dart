@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/SimpleTextField.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/tooltip.dart';
 import 'package:park254_s_parking_app/functions/auth/forgotPassword.dart';
 import '../config/globals.dart' as globals;
 
@@ -71,11 +70,6 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
             elevation: 0.0,
             leading: BackArrow()),
         body: Stack(children: <Widget>[
-          Expanded(
-            child: ToolTip(
-                showToolTip: showToolTip, text: text, hideToolTip: hideToolTip),
-            flex: 1,
-          ),
           Column(
             children: <Widget>[
               Spacer(),

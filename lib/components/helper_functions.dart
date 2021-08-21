@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -6,8 +8,55 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
+import 'package:encrypt/encrypt.dart' as encryptionPackage;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:overlay_support/overlay_support.dart';
 import '../config/globals.dart' as globals;
+
+/// Encrypts and Decrypts all the login the login details
+encryptDecryptData(String encryptionKey, data, String option) {
+  final key = encryptionPackage.Key.fromUtf8(encryptionKey);
+  final iv = encryptionPackage.IV.fromLength(16);
+
+  final encrypter = encryptionPackage.Encrypter(encryptionPackage.AES(key));
+
+  if (option == 'encrypt') {
+    final encrypted = encrypter.encrypt(data, iv: iv);
+    return encrypted;
+  } else {
+    final decrypted = encrypter.decrypt64(data, iv: iv);
+    return decrypted;
+  }
+}
+
+storeDetailsInMemory(String key, value) async {
+  SharedPreferences.getInstance().then((prefs) {
+    prefs.setString(key, value);
+  }).catchError((err) {
+    print("In helper_functions");
+    print(err);
+  });
+}
+
+/// Stores all the login details
+storeLoginDetails(details, user) async {
+  final accessToken = details.accessToken.token;
+  final refreshToken = details.refreshToken.token;
+  // First encrypt both tokens.
+  var access = encryptDecryptData('userAccessTokens', accessToken, 'encrypt');
+  var refresh = encryptDecryptData('userRefreshToken', refreshToken, 'encrypt');
+  // Then store them in memory.
+  storeDetailsInMemory('accessToken', access.base64);
+  storeDetailsInMemory('refreshToken', refresh.base64);
+}
+
+// Clears the details when a user logouts.
+clearStorage(user) async {
+  await user.deleteAll();
+  await SharedPreferences.getInstance().then((prefs) {
+    prefs.clear();
+  });
+}
 
 /// Builds a notification widget that appears at the top of the page.
 ///
@@ -26,8 +75,8 @@ buildNotification(textMsg, msgType) {
 
 BitmapDescriptor bitmapDescriptor;
 
-// Gets the svg image, converts it to a png image then returns it.
-// as BitmapDescriptor to be displayed as an icon on the map.
+/// Gets the svg image, converts it to a png image then returns it.
+/// as BitmapDescriptor to be displayed as an icon on the map.
 Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
     BuildContext context, String assetName) async {
   // Read SVG file as String
@@ -97,8 +146,8 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
     _clearPlaceList(address);
-    print('here');
   } catch (e) {
-    print(e);
+    log('In get location in helper_function.dart');
+    log(e.toString());
   }
 }

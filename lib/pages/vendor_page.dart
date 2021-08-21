@@ -10,16 +10,18 @@ import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 
-class HomePage extends StatefulWidget {
-  static const routeName = '/homepage';
+class VendorPage extends StatefulWidget {
+  static const routeName = '/vendorpage';
   User userDetails;
   Token accessToken;
   Token refreshToken;
 
-  HomePage({this.userDetails, this.accessToken, this.refreshToken});
-
+  VendorPage(
+      {@required this.userDetails,
+      @required this.accessToken,
+      @required this.refreshToken});
   @override
-  _HomePageState createState() => _HomePageState();
+  _VendorPageState createState() => _VendorPageState();
 }
 
 /// Creates a page depending on which tab icon is active.
@@ -29,8 +31,8 @@ class HomePage extends StatefulWidget {
 /// [MyParkingScreen] which contains the history of places the user has parked before.
 /// [ProfileScreen] which contains all the profile details of the user.
 /// When a user clicks on one of the icons at the bottom he/she is directed to a different page.
-class _HomePageState extends State<HomePage> {
-  var _activeTab = 'home';
+class _VendorPageState extends State<VendorPage> {
+  var _activeTab = 'myparking';
   bool showBottomNavigation;
 
   @override
@@ -63,18 +65,14 @@ class _HomePageState extends State<HomePage> {
   /// Passes in the info to build out the different steps as parameters.
   /// The parameters include [title], [info] and [step].
   changeScreens(hideNavigationIcons) {
-    if (_activeTab == 'home') {
-      return HomeScreen(
-        showBottomNavigation: hideNavigationIcons,
-      );
+    if (_activeTab == 'myparking') {
+      return MyParkingScreen();
     } else if (_activeTab == 'profile') {
       return ProfileScreen(
         profileImgPath: 'assets/images/profile/profile-1.jpg',
         logo1Path: 'assets/images/profile/visa_2.svg',
         logo2Path: 'assets/images/profile/mpesa.svg',
       );
-    } else {
-      return MyParkingScreen();
     }
   }
 
@@ -101,8 +99,7 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          _buildNavigatorIcons('home', 'Home'),
-                          _buildNavigatorIcons('parking', 'My Parking'),
+                          _buildNavigatorIcons('myparking', 'My Parking Lots'),
                           _buildNavigatorIcons('profile', 'Profile')
                         ],
                       )))
@@ -125,7 +122,7 @@ class _HomePageState extends State<HomePage> {
           Icon(
             icon == 'home'
                 ? Icons.home_filled
-                : icon == 'parking'
+                : icon == 'myparking'
                     ? Icons.local_parking
                     : Icons.person_outline,
             color: _activeTab == icon

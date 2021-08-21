@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 
 /// Builds out every the input fields on registration screens.
@@ -46,6 +48,15 @@ class BuildFormField extends StatefulWidget {
 }
 
 class BuildFormFieldState extends State<BuildFormField> {
+  UserModel userModel;
+  @override
+  initState() {
+    super.initState();
+    if (mounted) {
+      userModel = Provider.of<UserModel>(context, listen: false);
+    }
+  }
+
   Widget build(BuildContext context) {
     return Form(
       key: widget.formKey,
@@ -71,8 +82,10 @@ class BuildFormFieldState extends State<BuildFormField> {
                       // Create radio buttons for role selection.
                       : widget.text == 'Role'
                           ? buildRoleRadioButtons()
-                          // Create the input fields in the Profile page and Add vehicle page.
-                          : widget.text == 'Profile' || widget.text == 'vehicle'
+                          // Create the input fields in the Profile page, Add Parking Lot page and Add vehicle page.
+                          : widget.text == 'Profile' ||
+                                  widget.text == 'vehicle' ||
+                                  widget.text == 'Parking Lot'
                               ? buildSingleTextField(
                                   widget.label,
                                   widget.placeholder,
@@ -189,6 +202,12 @@ class BuildFormFieldState extends State<BuildFormField> {
   /// Requires [label or context], [placeholder], [text] and [controller].
   Widget buildSingleTextField(label, placeholder, text, _controller) {
     return TextFormField(
+      // When a vendor is updating a parking lot, disable the parking lot name field.
+      enabled: userModel != null
+          ? userModel.currentScreen == 'update' && label == 'Parking Lot Name'
+              ? false
+              : true
+          : true,
       validator: (value) {
         if (value == '' || value.isEmpty) {
           return 'Please enter ${placeholder == 'Email' ? 'your email' : 'some text'}';
@@ -197,8 +216,17 @@ class BuildFormFieldState extends State<BuildFormField> {
       controller: _controller,
       obscureText: placeholder == 'Password' ? true : false,
       decoration: InputDecoration(
-          labelText: label != '' ? label : null,
-          labelStyle: text == 'Profile'
+          // When a vendor is updating a parking lot, add the message that the parking lot name.
+          // can't be edited.
+          labelText: label != ''
+              ? userModel != null
+                  ? userModel.currentScreen == 'update' &&
+                          label == 'Parking Lot Name'
+                      ? '$label(Can\'t be edited)'
+                      : label
+                  : label
+              : null,
+          labelStyle: text == 'Profile' || text == 'Parking Lot'
               ? TextStyle(
                   color: Colors.grey.withOpacity(0.7),
                   fontWeight: FontWeight.bold,

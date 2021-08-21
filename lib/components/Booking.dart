@@ -80,6 +80,18 @@ class _BookingState extends State<Booking> {
   final List<String> driverList = <String>['Linus', 'Ryan'];
   TransactionModel transactionDetails;
 
+  @override
+  void initState() {
+    super.initState();
+    isLoading = false;
+  }
+
+  void showHideLoader(value) {
+    setState(() {
+      isLoading = value;
+    });
+  }
+
   ///shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -187,7 +199,7 @@ class _BookingState extends State<Booking> {
                 : '${hours}h ${minutes}m';
   }
 
-  /// Toggles the display of [PayUp] widget
+  /// Toggles the display of [PayUp widget]
   void _togglePayUp() {
     setState(() {
       showPayUp = !showPayUp;

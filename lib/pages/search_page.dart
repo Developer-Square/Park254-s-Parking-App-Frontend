@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
@@ -5,16 +6,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import '../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/components/loader.dart';
+import 'dart:developer';
 
 /// Creates a search page with recent searches of the user.
 ///
@@ -45,10 +49,14 @@ class _SearchPageState extends State<SearchPage> {
   var uuid = new Uuid();
   String _sessionToken = new Uuid().toString();
   List<dynamic> _placeList = [];
+  List<dynamic> _recentSearchesList = [];
+  String recentSearchesKey = 'recentSearchesKey';
   bool showSuggestion;
   BitmapDescriptor customIcon;
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+  bool addedSearch;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -62,9 +70,13 @@ class _SearchPageState extends State<SearchPage> {
     showRatingTab = false;
     showSuggestion = true;
     searchBarController.text = _searchText;
+    addedSearch = false;
 
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
+    if (mounted) {
+      getSavedRecentSearches();
+    }
   }
 
 // Hides the recent searches when one of them is clicked and.
@@ -90,6 +102,9 @@ class _SearchPageState extends State<SearchPage> {
   /// A function that receives the GoogleMapController when the map is rendered on the page.
   /// and adds google markers dynamically.
   void mapCreated(GoogleMapController controller) {
+    setState(() {
+      isLoading = false;
+    });
     mapController = controller;
     _customInfoWindowController.googleMapController = controller;
   }
@@ -99,7 +114,6 @@ class _SearchPageState extends State<SearchPage> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
-    mapController.dispose();
     _customInfoWindowController.dispose();
     super.dispose();
   }
@@ -125,6 +139,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getSuggestion(String input) async {
+    // TODO: Store the api key or make it more secure.
     String kPLACES_API_KEY = 'AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0';
     String country = 'country:ke';
     String baseURL =
@@ -134,6 +149,7 @@ class _SearchPageState extends State<SearchPage> {
 
     var response = await http.get(request);
     if (response.statusCode == 200) {
+      log(response.body.toString());
       setState(() {
         // If successfull store all the suggestions in a list to display below the search bar.
         _placeList = json.decode(response.body)['predictions'];
@@ -159,10 +175,8 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       showRatingTab = false;
     });
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => HomePage(
-              loginDetails: widget.loginDetails,
-            )));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => HomePage()));
   }
 
 // When user clicks on a recent search and the booking tab shows up.
@@ -190,6 +204,54 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  addSearchToList(value, town) {
+    // Add the destination that the user was searching for to the search bar.
+    var location = [];
+    location.add(value);
+    location.add(town);
+    setState(() {
+      showSuggestion = false;
+      showRecentSearches = false;
+      searchBarController.text = '$value, $town';
+    });
+
+    // If the location is already in the list then don't add it.
+    // ToDo: Add a better way of testing this.
+    if (!_recentSearchesList.contains(value)) {
+      // If the list has five items remove the first one since it's.
+      // the oldest and add the latest one.
+      if (_recentSearchesList.length == 5) {
+        // Adding a setState here so as the changes on the recent searches.
+        // can be seen.
+        setState(() {
+          addedSearch = true;
+        });
+
+        _recentSearchesList.removeAt(0);
+        _recentSearchesList.add(location);
+      } else {
+        _recentSearchesList.add(location);
+      }
+    }
+    saveRecentSearches();
+  }
+
+  // Save five of the user's recent searches in a list.
+  saveRecentSearches() async {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString(recentSearchesKey, json.encode(_recentSearchesList));
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+// Retrieve the saved recent searches to display them.
+  getSavedRecentSearches() async {
+    await SharedPreferences.getInstance().then((prefs) {
+      _recentSearchesList = json.decode(prefs.getString(recentSearchesKey));
+    });
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -203,6 +265,7 @@ class _SearchPageState extends State<SearchPage> {
                       color: globals.textColor,
                       onPressed: () {
                         Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
                       }),
                   title: Text('Search',
                       style: globals.buildTextStyle(
@@ -212,12 +275,14 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
-                tokens: widget.loginDetails,
                 showBookNowTab: showBookNowTabFn,
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),
             // The rating pop up shown at the end of the parking session.
+            // Show Loader to prevent the black/error screen that appears before.
+            // the map is displayed.
+            isLoading ? Loader() : Container(),
             showRatingTab
                 ? RatingTab(
                     hideRatingTabFn: hideRatingTabFn,
@@ -275,29 +340,41 @@ class _SearchPageState extends State<SearchPage> {
                                           SizedBox(
                                               height: 170.0,
                                               child: ListView.builder(
-                                                  itemCount:
-                                                      parkingPlaces.length,
+                                                  itemCount: _recentSearchesList
+                                                      .length,
                                                   itemBuilder:
                                                       (context, index) {
                                                     return Column(
                                                       children: [
                                                         RecentSearches(
+                                                            controller:
+                                                                mapController,
+                                                            loginDetails: widget
+                                                                .loginDetails,
+                                                            recentSearchesListFn:
+                                                                addSearchToList,
                                                             customInfoWindowController:
                                                                 _customInfoWindowController,
-                                                            parkingData:
-                                                                parkingPlaces[
-                                                                    index],
+                                                            // Reverve the list to get the most recent search first.
+                                                            parkingData: _recentSearchesList[
+                                                                _recentSearchesList
+                                                                        .length -
+                                                                    (index +
+                                                                        1)][0],
                                                             specificLocation:
-                                                                parkingPlaces[
-                                                                        index]
-                                                                    .parkingPlaceName,
-                                                            town: 'Nairobi',
+                                                                _recentSearchesList[_recentSearchesList.length - (index + 1)]
+                                                                    [0],
+                                                            town: _recentSearchesList[
+                                                                _recentSearchesList
+                                                                        .length -
+                                                                    (index +
+                                                                        1)][1],
                                                             setShowRecentSearches:
                                                                 _setShowRecentSearches),
                                                         SizedBox(height: 20.0),
                                                       ],
                                                     );
-                                                  })),
+                                                  }))
                                         ],
                                       ),
                                     )
@@ -421,6 +498,8 @@ class _SearchPageState extends State<SearchPage> {
 
     // Re-using Recent searches widget to display user's suggestions
     return RecentSearches(
+        loginDetails: widget.loginDetails,
+        recentSearchesListFn: addSearchToList,
         specificLocation: values[0],
         town: values[1] == null ? 'None' : values[1],
         setShowRecentSearches: () {},
