@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/models/user.model.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 
 /// User model object with setters and getters
