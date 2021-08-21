@@ -9,8 +9,8 @@ import 'package:park254_s_parking_app/components/nearby_parking.dart';
 import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
-import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int index;
   bool isLoading = true;
   NearbyParkingLot selectedParkingLot;
-  // Pakring details from the store.
+  // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
 
   @override
@@ -84,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     searchBarController.dispose();
+    mapController.dispose();
     _customInfoWindowController.dispose();
     super.dispose();
   }

@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
-import 'package:park254_s_parking_app/components/PayUp.dart';
-import 'package:park254_s_parking_app/components/PaymentSuccessful.dart';
+import 'package:park254_s_parking_app/components/transactions/PayUp.dart';
+import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
 import './BorderContainer.dart';
@@ -76,6 +78,7 @@ class _BookingState extends State<Booking> {
     'KDA 345Y'
   ];
   final List<String> driverList = <String>['Linus', 'Ryan'];
+  TransactionModel transactionDetails;
 
   @override
   void initState() {
@@ -196,7 +199,7 @@ class _BookingState extends State<Booking> {
                 : '${hours}h ${minutes}m';
   }
 
-  /// Toggles the display of [PayUp] widget
+  /// Toggles the display of [PayUp widget]
   void _togglePayUp() {
     setState(() {
       showPayUp = !showPayUp;
@@ -263,7 +266,6 @@ class _BookingState extends State<Booking> {
           child: Container(
             padding: EdgeInsets.only(left: width / 20, right: width / 20),
             child: Row(
-              //crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Flexible(
@@ -434,6 +436,8 @@ class _BookingState extends State<Booking> {
     final height = MediaQuery.of(context).size.height;
     final double finalHeight =
         height - padding.top - padding.bottom - kToolbarHeight;
+    transactionDetails = Provider.of<TransactionModel>(context);
+    isLoading = transactionDetails.loader;
 
     return SafeArea(
       child: Scaffold(
@@ -512,7 +516,7 @@ class _BookingState extends State<Booking> {
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
                       receiptGenerator: () => _generateReceipt(),
-                      showHideLoader: showHideLoader)
+                    )
                   : Container(),
               isLoading ? Loader() : Container()
             ],

@@ -3,12 +3,17 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
-import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
-import 'package:park254_s_parking_app/functions/transactions/pay.dart';
-import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/transactions/pay.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:park254_s_parking_app/models/transaction.model.dart';
+import 'package:provider/provider.dart';
+
+import '../helper_functions.dart';
 
 /// Creates a Pay Up pop up that prompts user to pay
 ///
@@ -25,19 +30,19 @@ class PayUp extends StatefulWidget {
   final Widget timeDatePicker;
   final Function toggleDisplay;
   final Function receiptGenerator;
-  Function showHideLoader;
 
   PayUp(
       {@required this.total,
       @required this.timeDatePicker,
       @required this.toggleDisplay,
-      @required this.receiptGenerator,
-      @required this.showHideLoader});
+      @required this.receiptGenerator});
   @override
   _PayUpState createState() => _PayUpState();
 }
 
 class _PayUpState extends State<PayUp> {
+  int resultCode;
+  String resultDesc;
   // Transaction details from the store.
   TransactionModel transactionDetails;
   // User's details from the store.
@@ -52,35 +57,34 @@ class _PayUpState extends State<PayUp> {
   }
 
   callPaymentMethod(transactionDetails) async {
-    widget.showHideLoader(true);
     String access = storeDetails.user.accessToken.token;
-
     if (access != null) {
+      transactionDetails.setLoading(true);
       pay(
               phoneNumber: 254796867328,
               amount: widget.total,
               token: access,
-              fetch: transactionDetails.fetch)
+              setCreatedAt: transactionDetails.setCreatedAt,
+              setTransaction: transactionDetails.setTransaction,
+              setLoading: transactionDetails.setLoading)
           .then((value) {
-        if (transactionDetails.loader == false &&
-            transactionDetails.transaction.resultCode != null) {
-          var resultCode = transactionDetails.transaction.resultCode;
-          var resultDesc = transactionDetails.transaction.resultDesc;
+        log('Inside callPayment function');
+        log(value.resultCode.toString());
+        // If resultCode is equal to 0 then the transcation other than that.
+        // then it failed.
+        if (value.resultCode == 0) {
+          buildNotification('Payment Successful', 'success');
+          // Move the payment successful page.
+          widget.receiptGenerator();
+        }
+        // If the transaction failed and the user has not retried it then show retry modal.
+        else if (value.resultCode == 503) {
+          buildNotification(resultDesc ?? 'Transaction failed', 'error');
 
-          // If resultCode is equal to 0 then the transcation other than that.
-          // then it failed.
-          if (resultCode == 0) {
-            buildNotification('Payment Successful', 'success');
-            widget.showHideLoader(false);
-            // Move the payment successful page.
-            widget.receiptGenerator();
-          } else if (resultCode == 1) {
-            widget.showHideLoader(false);
-            buildNotification(resultDesc ?? '', 'error');
-          }
+          retryModal(context, transactionDetails, widget.total, access,
+              widget.receiptGenerator);
         }
       }).catchError((err) {
-        widget.showHideLoader(false);
         log("In PayUp.dart");
         log(err.toString());
         buildNotification(err.message.toString(), 'error');
@@ -93,6 +97,10 @@ class _PayUpState extends State<PayUp> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     transactionDetails = Provider.of<TransactionModel>(context);
+    resultCode = transactionDetails.transaction.resultCode;
+    resultDesc = transactionDetails.transaction.resultDesc;
+    log('In payUp.dart');
+    log(resultCode.toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

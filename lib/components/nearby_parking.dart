@@ -29,6 +29,7 @@ class NearByParking extends StatefulWidget {
   final Function hideMapButtons;
   final Function showToolTipFn;
   final Function hideToolTip;
+  NearbyParkingLot selectedParkingLot;
 
   NearByParking({
     @required this.showNearByParkingFn,

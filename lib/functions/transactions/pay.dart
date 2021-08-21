@@ -17,8 +17,11 @@ Future<Transaction> pay(
     {@required num phoneNumber,
     @required num amount,
     @required String token,
-    @required Function fetch}) async {
+    @required Function setCreatedAt,
+    @required Function setLoading,
+    @required Function setTransaction}) async {
   String createdAt = DateTime.now().toUtc().toIso8601String();
+  setCreatedAt(createdAt);
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
     HttpHeaders.contentTypeHeader: "application/json",
@@ -34,12 +37,13 @@ Future<Transaction> pay(
     body: body,
   );
   if (response.statusCode == 200) {
-    return await fetch(
-      phoneNumber: phoneNumber,
-      amount: amount,
-      token: token,
-      createdAt: createdAt,
-    );
+    return await fetchTransaction(
+        phoneNumber: phoneNumber,
+        amount: amount,
+        token: token,
+        createdAt: createdAt,
+        setLoading: setLoading,
+        setTransaction: setTransaction);
   } else {
     handleError(response.body);
   }
