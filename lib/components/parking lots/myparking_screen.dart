@@ -7,6 +7,7 @@ import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
@@ -34,6 +35,7 @@ class MyParkingState extends State<MyParkingScreen> {
   UserWithTokenModel storeDetails;
   // Parking lots from the store.
   ParkingLotListModel parkingLotList;
+  UserModel userModel;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -47,6 +49,7 @@ class MyParkingState extends State<MyParkingScreen> {
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
       parkingLotList = Provider.of<ParkingLotListModel>(context, listen: false);
+      userModel = Provider.of<UserModel>(context, listen: false);
       userRole = storeDetails.user.user.role;
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;
@@ -96,18 +99,24 @@ class MyParkingState extends State<MyParkingScreen> {
       addressController.text = parkingLotData.address;
       cityController.text = parkingLotData.city;
     });
+    if (userModel != null) {
+      userModel.setCurrentScreen('update');
+    }
     redirectToCreateorUpdatePage('update', parkingLotData);
   }
 
-  _deleteParkingLot(parkingLotId) async {
+  _deleteParkingLot(parkingLot) async {
     setState(() {
       showLoader = true;
     });
     var token = storeDetails.user.accessToken.token;
-    deleteParkingLot(token: token, parkingLotId: parkingLotId).then((value) {
+    deleteParkingLot(token: token, parkingLotId: parkingLot.id).then((value) {
       if (value == 'success') {
         buildNotification('Deleted parking lot successfully', 'success');
-        getParkingDetails();
+        if (parkingLotList != null) {
+          parkingLotList.remove(parkingLot: parkingLot);
+        }
+        // getParkingDetails();
         setState(() {
           showLoader = false;
         });
@@ -394,7 +403,7 @@ class MyParkingState extends State<MyParkingScreen> {
         userRole == 'vendor'
             ? value == 1
                 ? _updateParking(parkingLotData)
-                : _deleteParkingLot(parkingLotData.id)
+                : _deleteParkingLot(parkingLotData)
             : () {}
       },
       icon: Icon(

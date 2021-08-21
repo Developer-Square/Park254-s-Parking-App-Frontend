@@ -7,12 +7,21 @@ class UserModel with ChangeNotifier {
   User _user =
       new User(id: null, email: null, name: null, role: null, phone: null);
   bool loading = false;
+  // To allow tracking of whether a user is updating or creating a new parking.
+  // lot.
+  String _currentScreen;
 
   User get user => _user;
+
+  String get currentScreen => _currentScreen;
 
   set user(User value) {
     _user = value;
     notifyListeners();
+  }
+
+  void setCurrentScreen(String value) {
+    _currentScreen = value;
   }
 
   void fetch({

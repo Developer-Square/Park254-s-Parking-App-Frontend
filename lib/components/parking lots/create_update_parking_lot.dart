@@ -9,11 +9,11 @@ import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/cloudinary/upload_images.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:provider/provider.dart';
@@ -65,11 +65,16 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   var fields;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  // Parking lot details from the store.
+  ParkingLotListModel parkingLotList;
 
   initState() {
     super.initState();
     showLoader = false;
-    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      parkingLotList = Provider.of<ParkingLotListModel>(context, listen: false);
+    }
 
     if (widget.currentScreen == 'update') {
       // Add all the links to the cloudinary images so that we can display them.
@@ -178,8 +183,11 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
               longitude: locations[0].longitude)
           .then((value) {
         buildNotification('Parking lot created successfully', 'success');
-        // Retrieve the new details from the backend.
-        widget.getParkingDetails();
+        if (parkingLotList != null) {
+          parkingLotList.add(parkingLot: value);
+        }
+        // // Retrieve the new details from the backend.
+        // widget.getParkingDetails();
         setState(() {
           showLoader = false;
         });
@@ -201,7 +209,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
       updateParkingLot(
               token: accessToken,
               parkingLotId: widget.parkingData.id,
-              name: widget.name.text,
               spaces: int.parse(widget.spaces.text),
               price: int.parse(widget.prices.text),
               address: widget.address.text,
@@ -214,17 +221,20 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         setState(() {
           showLoader = false;
         });
-        // Retrieve the new details from the backend.
-        widget.getParkingDetails();
+        if (parkingLotList != null) {
+          parkingLotList.updateParkingLot(value);
+        }
+        // // Retrieve the new details from the backend.
+        // widget.getParkingDetails();
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
         setState(() {
           showLoader = false;
         });
+        log("In create_update_parking_lot");
+        log(err.message.toString());
         buildNotification(err.toString(), 'error');
-        print("In create_update_parking_lot");
-        log(json.encode(err));
       });
     }
   }
