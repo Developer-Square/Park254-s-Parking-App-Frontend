@@ -38,7 +38,6 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   TextEditingController vehicleTypeController = new TextEditingController();
   TextEditingController vehiclePlateController = new TextEditingController();
-  FlutterSecureStorage userDetails = new FlutterSecureStorage();
   bool showLoader;
   bool showToolTip;
   String text;
@@ -66,12 +65,12 @@ class _EditScreenState extends State<EditScreen> {
     var accessToken = storeDetails.user.accessToken.token;
     var userId = storeDetails.user.user.id;
     updateUser(
-            token: accessToken,
-            userId: userId,
-            name: widget.fullName.text,
-            email: widget.email.text,
-            phone: int.parse(widget.phone.text))
-        .then((value) async {
+      token: accessToken,
+      userId: userId,
+      name: widget.fullName.text,
+      email: widget.email.text,
+      phone: int.parse(widget.phone.text),
+    ).then((value) async {
       storeDetails.updateUser(widget.fullName.text, widget.email.text,
           int.parse(widget.phone.text));
       setState(() {
@@ -111,7 +110,7 @@ class _EditScreenState extends State<EditScreen> {
           SingleChildScrollView(
             child: Center(
               child: widget.currentScreen == 'profile'
-                  ? buildEditProfile(updateProfile)
+                  ? buildEditProfile()
                   : Column(
                       children: [
                         SizedBox(
@@ -138,7 +137,7 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   /// Builds out an edit profile screen
-  Widget buildEditProfile(Function updateProfile) {
+  Widget buildEditProfile() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[

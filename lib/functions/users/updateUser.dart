@@ -25,21 +25,21 @@ Future<User> updateUser({
   Map<String, String> headers = {
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
   };
+
+  // Removed role as it was bringing back an error.
   Map<String, dynamic> body = {
     "name": name,
     "email": email,
-    "role": role,
-    "phone": phone,
+    "phone": phone.toString(),
     "vehicles": vehicles,
   };
   body.removeWhere((key, value) => value == '' || value == 0);
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
-  log(jsonEncode(body));
+
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
-  final response =
-      await http.patch(url, headers: headers, body: jsonEncode(body));
+  final response = await http.patch(url, headers: headers, body: body);
 
   if (response.statusCode == 200) {
     final user = User.fromJson(jsonDecode(response.body));

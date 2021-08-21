@@ -23,11 +23,12 @@ class ProfileScreen extends StatefulWidget {
   final logo2Path;
   Function clearStorage;
 
-  ProfileScreen(
-      {@required this.profileImgPath,
-      @required this.logo1Path,
-      @required this.logo2Path,
-      this.clearStorage});
+  ProfileScreen({
+    @required this.profileImgPath,
+    @required this.logo1Path,
+    @required this.logo2Path,
+    this.clearStorage,
+  });
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
