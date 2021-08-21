@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import 'package:park254_s_parking_app/components/parking_model.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import '../config/globals.dart' as globals;
-import './load_location.dart';
+import 'helper_functions.dart';
 
 /// Creates the single components present in nearby parking.
 ///
@@ -37,7 +38,7 @@ class NearByParkingList extends StatefulWidget {
   final int parkingSlots;
   bool activeCard;
   final NearbyParkingLot parkingData;
-  final Completer<GoogleMapController> mapController;
+  final GoogleMapController mapController;
   final Function showNearbyParking;
   final CustomInfoWindowController customInfoWindowController;
   final Function hideAllDetails;
@@ -48,26 +49,25 @@ class NearByParkingList extends StatefulWidget {
   final TextEditingController searchBarController;
   final Function hideMapButtons;
 
-  NearByParkingList({
-    @required this.imgPath,
-    @required this.parkingPrice,
-    @required this.parkingPlaceName,
-    @required this.rating,
-    @required this.distance,
-    @required this.parkingSlots,
-    @required this.activeCard,
-    this.parkingData,
-    this.mapController,
-    this.showNearbyParking,
-    this.customInfoWindowController,
-    this.hideAllDetails,
-    this.large,
-    this.title,
-    this.selectedCard,
-    this.selectCard,
-    this.searchBarController,
-    this.hideMapButtons,
-  });
+  NearByParkingList(
+      {@required this.imgPath,
+      @required this.parkingPrice,
+      @required this.parkingPlaceName,
+      @required this.rating,
+      @required this.distance,
+      @required this.parkingSlots,
+      @required this.activeCard,
+      this.parkingData,
+      this.mapController,
+      this.showNearbyParking,
+      this.customInfoWindowController,
+      this.hideAllDetails,
+      this.large,
+      this.title,
+      this.selectedCard,
+      this.selectCard,
+      this.searchBarController,
+      this.hideMapButtons});
   @override
   _NearByParkingList createState() => _NearByParkingList();
 }
@@ -92,7 +92,7 @@ class _NearByParkingList extends State<NearByParkingList> {
         LatLng(widget.parkingData.location.coordinates[1],
             widget.parkingData.location.coordinates[0]));
     widget.searchBarController.text = widget.parkingPlaceName;
-    widget.hideMapButtons('nearByParkingList');
+    widget.hideMapButtons('nearByParkingList', widget.parkingData);
   }
 
   @override
@@ -120,12 +120,20 @@ class _NearByParkingList extends State<NearByParkingList> {
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    child: Image(
-                      height: 75.0,
-                      width: 75.0,
-                      fit: BoxFit.cover,
-                      image: AssetImage(widget.imgPath),
-                    ),
+                    child: widget.imgPath.contains('https')
+                        ? Image.network(
+                            widget.imgPath,
+                            height: 75.0,
+                            width: 75.0,
+                            fit: BoxFit.cover,
+                          )
+                        : Image(
+                            height: 75.0,
+                            width: 75.0,
+                            fit: BoxFit.cover,
+                            image: AssetImage(
+                                'assets/images/parking_photos/parking_1.jpg'),
+                          ),
                   ),
                   Positioned(
                     bottom: 0,

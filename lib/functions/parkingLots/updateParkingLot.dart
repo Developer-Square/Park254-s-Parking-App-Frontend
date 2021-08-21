@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:developer';
+import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
@@ -20,14 +21,14 @@ Future<ParkingLot> updateParkingLot({
   int spaces = 0,
   num longitude = 0,
   num latitude = 0,
-  List<String> images = const [],
+  List<dynamic> images = const [],
   int price = 0,
   String address = '',
   String city = '',
 }) async {
   Map<String, String> headers = {
-    HttpHeaders.authorizationHeader: "Bearer $token",
-    HttpHeaders.contentTypeHeader: "application/json",
+    dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
+    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
     "name": name,
@@ -49,6 +50,7 @@ Future<ParkingLot> updateParkingLot({
   if (images.length == 0) {
     body.remove('images');
   }
+
   final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.patch(
     url,

@@ -56,7 +56,7 @@ class ParkingLotListModel with ChangeNotifier {
     return _parkingLotList.parkingLots.firstWhere((p) => p.id == id);
   }
 
-  set updateParkingLot(ParkingLot parkingLot) {
+  void updateParkingLot(ParkingLot parkingLot) {
     num index =
         _parkingLotList.parkingLots.indexWhere((p) => p.id == parkingLot.id);
     _parkingLotList.parkingLots[index] = parkingLot;

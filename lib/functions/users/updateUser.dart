@@ -23,6 +23,7 @@ Future<User> updateUser({
 }) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
+    HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
     "name": name,
@@ -35,6 +36,9 @@ Future<User> updateUser({
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
+  print(userId);
+  print(jsonEncode(body));
+  // print(jsonEncode(body));
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response =
       await http.patch(url, headers: headers, body: jsonEncode(body));

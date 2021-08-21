@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
@@ -5,6 +7,8 @@ import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:provider/provider.dart';
 
 import 'CircleWithIcon.dart';
 import 'DottedHorizontalLine.dart';
@@ -25,25 +29,32 @@ import 'DottedHorizontalLine.dart';
 ///   )
 ///);
 class PaymentSuccessful extends StatefulWidget {
-  final String bookingNumber;
-  final String parkingSpace;
+  final String parkingSpaces;
   final int price;
   final String destination;
   final String address;
+  final TimeOfDay arrivalTime;
+  final TimeOfDay leavingTime;
   static const routeName = '/receipt';
 
   PaymentSuccessful(
-      {@required this.bookingNumber,
-      @required this.parkingSpace,
+      {@required this.parkingSpaces,
       @required this.price,
       @required this.destination,
-      @required this.address});
+      @required this.address,
+      @required this.arrivalTime,
+      @required this.leavingTime});
 
   @override
   _PaymentSuccessfulState createState() => _PaymentSuccessfulState();
 }
 
 class _PaymentSuccessfulState extends State<PaymentSuccessful> {
+  String transactionYear;
+  String transactionMonth;
+  String transactionDay;
+  String mpesaReceiptNumber;
+
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
     return Row(
@@ -68,10 +79,10 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _greenCircle() {
+  Widget _greenCircle(transactionDetails) {
     return Stack(
       children: <Widget>[
-        _message(),
+        _message(transactionDetails),
         Align(
           child: Container(
             decoration: BoxDecoration(
@@ -99,7 +110,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _message() {
+  Widget _message(transactionDetails) {
     final double width = MediaQuery.of(context).size.width;
 
     return Column(
@@ -119,7 +130,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         PrimaryText(content: 'Payment Successful'),
-                        SecondaryText(content: widget.bookingNumber),
                       ],
                     ),
                   ),
@@ -132,12 +142,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _messageRow('Space', widget.parkingSpace),
+                        _messageRow('Mpesa Receipt No.',
+                            mpesaReceiptNumber.toString() ?? ''),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
+                        _messageRow('Date',
+                            '${transactionYear ?? ''}-${transactionMonth ?? ''}-${transactionDay ?? ''}'),
+                        // All this is done to be able get the exact UI we want.
+                        _messageRow('Time',
+                            '${widget.arrivalTime.minute > 9 ? ' ' + '${widget.arrivalTime.hour.toString()}:${widget.arrivalTime.minute.toString()}' : ' ' + '${widget.arrivalTime.hour.toString()}:0${widget.arrivalTime.minute.toString()}'} - ${widget.leavingTime.minute > 9 ? ' ' + '${widget.leavingTime.hour.toString()}:${widget.leavingTime.minute.toString()}' : ' ' + '${widget.leavingTime.hour.toString()}:0${widget.leavingTime.minute.toString()}'}'),
                       ],
                     ),
                   ),
-                  flex: 4,
+                  flex: 8,
                 ),
               ],
             ),
@@ -173,7 +189,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                   ),
                   Expanded(
                     child: SecondaryText(
-                      content: 'Scan Barcode Here',
+                      content: 'Scan QrCode Here',
                     ),
                     flex: 1,
                   ),
@@ -197,17 +213,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Expanded(
-                                child:
-                                    PrimaryText(content: widget.destination)),
-                            Expanded(
-                              child: Text(
-                                widget.address,
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                                child: PrimaryText(content: widget.destination))
                           ],
                         ),
                       ),
@@ -218,12 +224,12 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
                       child: Center(
-                          child: CircleWithIcon(
-                            icon: Icons.close,
-                            bgColor: Colors.white,
-                            iconColor: globals.textColor,
-                            sizeFactor: 2,
-                          ),
+                        child: CircleWithIcon(
+                          icon: Icons.close,
+                          bgColor: Colors.white,
+                          iconColor: globals.textColor,
+                          sizeFactor: 2,
+                        ),
                       ),
                     ),
                     flex: 1,
@@ -259,15 +265,15 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     );
   }
 
-  Widget _icons(){
+  Widget _icons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         CircleWithIcon(
-            icon: Icons.near_me,
-            bgColor: globals.primaryColor,
-            iconColor: globals.textColor,
-            sizeFactor: 2,
+          icon: Icons.near_me,
+          bgColor: globals.primaryColor,
+          iconColor: globals.textColor,
+          sizeFactor: 2,
         ),
         CircleWithIcon(
           icon: Icons.error_outline,
@@ -288,6 +294,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    final transactionDetails = Provider.of<TransactionModel>(context);
+    mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
+    transactionYear = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(0, 4);
+    transactionMonth = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(4, 6);
+    transactionDay = transactionDetails.transaction.transactionDate
+        .toString()
+        .substring(6, 8);
+    log(mpesaReceiptNumber);
 
     return SafeArea(
       child: Scaffold(
@@ -299,7 +317,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  child: _greenCircle(),
+                  child: _greenCircle(transactionDetails),
                   flex: 10,
                 ),
                 Expanded(

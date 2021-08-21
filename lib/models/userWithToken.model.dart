@@ -5,7 +5,7 @@ import './token.model.dart';
 
 /// Creates a user object with their access and refresh tokens objects from Json
 class UserWithToken {
-  final User user;
+  User user;
   final Token accessToken;
   final Token refreshToken;
 

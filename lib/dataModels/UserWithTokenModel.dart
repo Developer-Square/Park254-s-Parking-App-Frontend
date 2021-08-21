@@ -9,9 +9,15 @@ class UserWithTokenModel with ChangeNotifier {
 
   UserWithToken get user => _user;
 
-  set user(UserWithToken value) {
+  void setUser(UserWithToken value) {
     _user = value;
     notifyListeners();
+  }
+
+  void updateUser(String name, String email, num phone) {
+    _user.user.name = name;
+    _user.user.email = email;
+    _user.user.phone = phone;
   }
 
   void clear() {

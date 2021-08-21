@@ -34,7 +34,7 @@ class NearByParkingArguements {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
-  final Completer<GoogleMapController> mapController;
+  final GoogleMapController mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
 

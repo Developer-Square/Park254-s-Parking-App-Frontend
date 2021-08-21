@@ -1,15 +1,17 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/nearby_parking_list.dart';
-import 'package:park254_s_parking_app/components/parking_model.dart';
-import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
-import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
+import 'package:provider/provider.dart';
+import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import '../config/globals.dart' as globals;
 
 /// Creates a widget on the homepage that shows all the nearyby parking places.
@@ -20,32 +22,25 @@ class NearByParking extends StatefulWidget {
   static const routeName = '/search_page';
   final Function showNearByParkingFn;
   final Function hideDetails;
-  final Completer<GoogleMapController> mapController;
+  final GoogleMapController mapController;
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
   final TextEditingController searchBarController;
   final Function hideMapButtons;
-  final Position currentPosition;
-  final FlutterSecureStorage loginDetails;
-  final Function storeLoginDetails;
-  final Function clearStorage;
   final Function showToolTipFn;
   final Function hideToolTip;
 
-  NearByParking(
-      {@required this.showNearByParkingFn,
-      @required this.hideDetails,
-      @required this.mapController,
-      @required this.customInfoWindowController,
-      @required this.showFullBackground,
-      this.searchBarController,
-      this.hideMapButtons,
-      this.currentPosition,
-      this.loginDetails,
-      this.storeLoginDetails,
-      this.clearStorage,
-      this.showToolTipFn,
-      this.hideToolTip});
+  NearByParking({
+    @required this.showNearByParkingFn,
+    @required this.hideDetails,
+    @required this.mapController,
+    @required this.customInfoWindowController,
+    @required this.showFullBackground,
+    this.searchBarController,
+    this.hideMapButtons,
+    this.showToolTipFn,
+    this.hideToolTip,
+  });
 
   @override
   _NearByParkingState createState() => _NearByParkingState();
@@ -56,8 +51,12 @@ class _NearByParkingState extends State<NearByParking>
   double _size;
   bool _large;
   String selectedCard = 'Nearby Parking';
-  var parkingLots;
+  NearbyParkingLots parkingLots;
   int maxRetries;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
+  // Pakring details from the store.
+  NearbyParkingListModel nearbyParkingDetails;
 
   @override
   void initState() {
@@ -65,66 +64,71 @@ class _NearByParkingState extends State<NearByParking>
     _size = 278.52;
     _large = false;
     maxRetries = 0;
+    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    nearbyParkingDetails =
+        Provider.of<NearbyParkingListModel>(context, listen: false);
+
+    if (mounted) {
+      getCurrentLocation();
+    }
   }
 
-  // Make the api call to get the neares parking lots
+  // Get a user's current location.
+  getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    // Set the current position to state.
+    if (position != null && nearbyParkingDetails.nearbyParking.lots == null) {
+      getNearestParkingPlaces(position);
+      // TODO: Remove if its never used.
+      nearbyParkingDetails.setCurrentPositon(position);
+    }
+  }
+
+  // Make the api call to get the nearest parking lots
   getNearestParkingPlaces(coords) async {
-    var accessToken = await widget.loginDetails.read(key: 'accessToken');
-    if (coords != null) {
-      getNearbyParkingLots(
-              token: accessToken,
-              longitude: coords.longitude,
-              latitude: coords.latitude,
-              maxDistance: 500)
-          .then((value) {
-        // Add all the nearby parking lots in the area so that.
-        // we can map over them later.
-        setState(() {
-          parkingLots = value;
-        });
-      }).catchError((err) {
-        // Retry the request after getting status code of 401.
-        if (err.code == 401) {
-          // Keep track and add to the number of retries made.
-          // Make only 3 retries
-          if (maxRetries < 3) {
-            maxRetries += 1;
-            retryFuture(getNearestParkingPlaces, widget.loginDetails,
-                widget.storeLoginDetails, widget.clearStorage, coords);
-          } else {
-            widget.showToolTipFn(err.message);
-          }
-        }
-      });
+    if (coords != null &&
+        storeDetails != null &&
+        nearbyParkingDetails != null) {
+      nearbyParkingDetails.fetch(
+          token: storeDetails.user.accessToken.token.toString(),
+          longitude: coords.longitude,
+          latitude: coords.latitude);
     }
   }
 
   /// Increases the size of the nearby and recommended widget.
   void _updateSize() {
-    setState(() {
-      widget.hideDetails();
-      _large = true;
-      _size = _large ? 502.0 : _size;
-      widget.showFullBackground();
-    });
+    if (mounted) {
+      setState(() {
+        widget.hideDetails();
+        _large = true;
+        _size = _large ? 502.0 : _size;
+        widget.showFullBackground();
+      });
+    }
   }
 
   /// Closes the full sized nearyby parking widget and returns everything back to normal.
   void _closeFullSizeWidget() {
-    setState(() {
-      _large = false;
-      _size = 278.52;
-      widget.hideDetails();
-      widget.showFullBackground();
-    });
+    if (mounted) {
+      setState(() {
+        _large = false;
+        _size = 278.52;
+        widget.hideDetails();
+        widget.showFullBackground();
+      });
+    }
   }
 
   /// Closes the full sized nearyby parking widget and redirects user to the chosen location.
   _closeFullSizeWidgetRedirection() {
-    setState(() {
-      _large = false;
-      widget.hideDetails();
-    });
+    if (mounted) {
+      setState(() {
+        _large = false;
+        widget.hideDetails();
+      });
+    }
   }
 
   /// Adds opacity to make the selected widget more visible.
@@ -132,14 +136,19 @@ class _NearByParkingState extends State<NearByParking>
     if (!_large) {
       _updateSize();
     }
-    setState(() {
-      selectedCard = cardTitle;
-    });
+    if (mounted) {
+      setState(() {
+        selectedCard = cardTitle;
+      });
+    }
   }
 
   Widget build(BuildContext context) {
-    if (maxRetries < 3) {
-      getNearestParkingPlaces(widget.currentPosition);
+    nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
+    if (nearbyParkingDetails.nearbyParking != null) {
+      setState(() {
+        parkingLots = nearbyParkingDetails.nearbyParking;
+      });
     }
     return Align(
       alignment: Alignment.bottomCenter,
@@ -198,12 +207,11 @@ class _NearByParkingState extends State<NearByParking>
     return ListView.builder(
         itemCount: parkingLots.lots.length,
         itemBuilder: (context, index) {
-          int picIndex = index + 1;
           return Column(
             children: [
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
-                imgPath: 'assets/images/parking_photos/parking_$picIndex.jpg',
+                imgPath: parkingLots.lots[index].images[0],
                 parkingPrice: parkingLots.lots[index].price,
                 parkingPlaceName: parkingLots.lots[index].name,
                 rating: parkingLots.lots[index].rating,
@@ -293,7 +301,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(height: 19.0),
                 SizedBox(
                     height: _large ? 420.0 : 205.0,
-                    child: parkingLots != null
+                    child: parkingLots != null && parkingLots.lots != null
                         ? buildParkingPlacesList(title)
                         : Loader()),
               ],
