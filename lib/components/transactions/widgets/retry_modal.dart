@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/components/load_location.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
+
+import '../../helper_functions.dart';
 
 void retryFunction(
     transactionDetails, total, token, context, receiptGenerator) {

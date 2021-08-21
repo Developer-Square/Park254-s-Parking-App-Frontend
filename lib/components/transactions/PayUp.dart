@@ -7,12 +7,13 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/models/transaction.model.dart';
 import 'package:provider/provider.dart';
 
-import '../load_location.dart';
+import '../helper_functions.dart';
 
 /// Creates a Pay Up pop up that prompts user to pay
 ///
@@ -40,19 +41,23 @@ class PayUp extends StatefulWidget {
 }
 
 class _PayUpState extends State<PayUp> {
-  final storage = new FlutterSecureStorage();
-  TransactionModel transactionDetails;
   int resultCode;
   String resultDesc;
+  // Transaction details from the store.
+  TransactionModel transactionDetails;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+    }
   }
 
   callPaymentMethod(transactionDetails) async {
-    String access = await storage.read(key: 'accessToken');
-
+    String access = storeDetails.user.accessToken.token;
     if (access != null) {
       transactionDetails.setLoading(true);
       pay(
@@ -74,7 +79,7 @@ class _PayUpState extends State<PayUp> {
         }
         // If the transaction failed and the user has not retried it then show retry modal.
         else if (value.resultCode == 503) {
-          buildNotification(resultDesc ?? '', 'error');
+          buildNotification(resultDesc ?? 'Transaction failed', 'error');
 
           retryModal(context, transactionDetails, widget.total, access,
               widget.receiptGenerator);

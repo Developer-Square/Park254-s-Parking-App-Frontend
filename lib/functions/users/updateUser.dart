@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,12 +23,7 @@ Future<User> updateUser({
   List<Vehicle> vehicles = const [],
 }) async {
   Map<String, String> headers = {
-<<<<<<< HEAD
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
-=======
-    HttpHeaders.authorizationHeader: "Bearer $token",
-    HttpHeaders.contentTypeHeader: "application/json",
->>>>>>> e607705df04c5281478766749ad4e6822495cbfe
   };
   Map<String, dynamic> body = {
     "name": name,
@@ -40,9 +36,7 @@ Future<User> updateUser({
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
-  print(userId);
-  print(jsonEncode(body));
-  // print(jsonEncode(body));
+  log(jsonEncode(body));
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response =
       await http.patch(url, headers: headers, body: jsonEncode(body));

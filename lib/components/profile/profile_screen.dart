@@ -78,9 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-        // Clear all the details in the store.
-        storeDetails.clear();
-        nearbyParkingDetails.clear();
+        if (storeDetails != null && nearbyParkingDetails != null) {
+          // Clear all the details in the store.
+          storeDetails.clear();
+          nearbyParkingDetails.clear();
+        }
       }
     }).catchError((err) {
       setState(() {
