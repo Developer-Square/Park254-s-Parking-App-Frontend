@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
@@ -31,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
   bool keyboardVisible;
   int maxRetries;
   final formKey = GlobalKey<FormState>();
-  var userDetails = new FlutterSecureStorage();
   var loginDetails;
   bool locationEnabled;
 
@@ -50,10 +48,6 @@ class _LoginPageState extends State<LoginPage> {
         buildNotification(widget.message, 'success');
       }
     }
-  }
-
-  clearStorage() async {
-    await userDetails.deleteAll();
   }
 
   /// Determine the current position of the device.
@@ -97,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              storeLoginDetails(loginDetails, userDetails);
+              storeLoginDetails(loginDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(

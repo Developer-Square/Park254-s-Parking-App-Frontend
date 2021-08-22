@@ -8,7 +8,9 @@ import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:park254_s_parking_app/pages/search page/search_page.dart';
 
 import '../CircleWithIcon.dart';
 import '../DottedHorizontalLine.dart';
@@ -54,6 +56,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String transactionMonth;
   String transactionDay;
   String mpesaReceiptNumber;
+  NavigationProvider navigationDetails;
+
+  @override
+  initState() {
+    super.initState();
+    if (mounted) {
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+    }
+  }
 
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
@@ -269,11 +281,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        CircleWithIcon(
-          icon: Icons.near_me,
-          bgColor: globals.primaryColor,
-          iconColor: globals.textColor,
-          sizeFactor: 2,
+        InkWell(
+          onTap: () {
+            navigationDetails.setNavigation();
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => SearchPage()));
+          },
+          child: CircleWithIcon(
+            icon: Icons.near_me,
+            bgColor: globals.primaryColor,
+            iconColor: globals.textColor,
+            sizeFactor: 2,
+          ),
         ),
         CircleWithIcon(
           icon: Icons.error_outline,
@@ -305,7 +324,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     transactionDay = transactionDetails.transaction.transactionDate
         .toString()
         .substring(6, 8);
-    log(mpesaReceiptNumber);
 
     return SafeArea(
       child: Scaffold(

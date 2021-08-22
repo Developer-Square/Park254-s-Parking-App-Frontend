@@ -25,6 +25,7 @@ import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
 import 'package:park254_s_parking_app/dataModels/RatingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
@@ -32,7 +33,7 @@ import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
-import 'package:park254_s_parking_app/pages/search_page.dart';
+import 'package:park254_s_parking_app/pages/search%20page/search_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/booking_tab.dart';
@@ -172,9 +173,12 @@ class _MyAppState extends State<MyApp> {
             create: (context) => RatingListModel()),
         ChangeNotifierProvider<TransactionModel>(
             create: (context) => TransactionModel()),
+        ChangeNotifierProvider<NavigationProvider>(
+            create: (context) => NavigationProvider()),
       ],
       child: OverlaySupport(
         child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Park254 Parking App',
             theme: ThemeData(
               primaryColor: primaryColor,

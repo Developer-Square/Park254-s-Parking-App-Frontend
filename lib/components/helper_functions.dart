@@ -12,6 +12,7 @@ import 'package:encrypt/encrypt.dart' as encryptionPackage;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:overlay_support/overlay_support.dart';
 import '../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 
 /// Encrypts and Decrypts all the login the login details
 encryptDecryptData(String encryptionKey, data, String option) {
@@ -39,7 +40,7 @@ storeDetailsInMemory(String key, value) async {
 }
 
 /// Stores all the login details
-storeLoginDetails(details, user) async {
+storeLoginDetails(details) async {
   final accessToken = details.accessToken.token;
   final refreshToken = details.refreshToken.token;
   // First encrypt both tokens.
@@ -51,8 +52,7 @@ storeLoginDetails(details, user) async {
 }
 
 // Clears the details when a user logouts.
-clearStorage(user) async {
-  await user.deleteAll();
+clearStorage() async {
   await SharedPreferences.getInstance().then((prefs) {
     prefs.clear();
   });
@@ -123,11 +123,17 @@ void cameraAnimate(_controller, latitude, longitude) async {
 ///
 /// Requires [_controller], the Google Controller from the parent component.
 /// [currentPosition] and [load].
-void loadLocation(_controller, closeNearByParking) async {
+void loadLocation(
+    {GoogleMapController controller,
+    Function closeNearByParking,
+    NavigationProvider navigationDetails}) async {
   closeNearByParking();
-  final c = await _controller;
+  final c = await controller;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
+  if (navigationDetails != null) {
+    navigationDetails.setCurrentLocation(position);
+  }
   LatLng latLngPosition = LatLng(position.latitude, position.longitude);
   CameraPosition cameraPosition =
       new CameraPosition(target: latLngPosition, zoom: 14.0);

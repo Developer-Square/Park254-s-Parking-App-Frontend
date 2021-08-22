@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
-import 'package:park254_s_parking_app/pages/search_page.dart';
+import 'package:park254_s_parking_app/pages/search%20page/search_page.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 

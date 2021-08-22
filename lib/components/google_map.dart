@@ -114,7 +114,6 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     if (position != null && widget.mapController != null) {
-      log("Inside get current location");
       cameraAnimate(
           widget.mapController, position.latitude, position.longitude);
     }
@@ -133,7 +132,8 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       child: GoogleMap(
         mapType: MapType.normal,
         zoomGesturesEnabled: true,
-        zoomControlsEnabled: true,
+        zoomControlsEnabled: false,
+        myLocationButtonEnabled: false,
         initialCameraPosition:
             CameraPosition(target: LatLng(-1.2834, 36.8235), zoom: 14.0),
         markers: Set.from(allMarkers),

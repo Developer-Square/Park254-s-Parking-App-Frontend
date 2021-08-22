@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import '../config/globals.dart' as globals;
 
@@ -29,7 +30,8 @@ class RecentSearches extends StatelessWidget {
   final parkingData;
   final context;
   final Function recentSearchesListFn;
-  final FlutterSecureStorage loginDetails;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
 
   RecentSearches(
       {@required this.specificLocation,
@@ -42,19 +44,21 @@ class RecentSearches extends StatelessWidget {
       this.context,
       this.customInfoWindowController,
       this.recentSearchesListFn,
-      this.loginDetails});
+      this.storeDetails});
 
   var parkingLotNames = [];
 
   getAllParkingLots() async {
-    var accessToken = await loginDetails.read(key: 'accessToken');
-    getParkingLots(token: accessToken).then((value) {
-      value.parkingLots.forEach((element) {
-        parkingLotNames.add(element.name);
+    if (storeDetails != null) {
+      var accessToken = storeDetails.user.accessToken.token;
+      getParkingLots(token: accessToken).then((value) {
+        value.parkingLots.forEach((element) {
+          parkingLotNames.add(element.name);
+        });
+      }).catchError((err) {
+        print(err);
       });
-    }).catchError((err) {
-      print(err);
-    });
+    }
   }
 
   runGetFunction() {

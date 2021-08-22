@@ -12,13 +12,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
-import '../config/globals.dart' as globals;
+import '../../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'dart:developer';
+import '../../.env.dart';
+import './helpers.dart';
 
 /// Creates a search page with recent searches of the user.
 ///
@@ -31,8 +36,6 @@ import 'dart:developer';
 class SearchPage extends StatefulWidget {
   static const routeName = '/search_page';
 
-  final FlutterSecureStorage loginDetails;
-  SearchPage({this.loginDetails});
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -57,11 +60,14 @@ class _SearchPageState extends State<SearchPage> {
       CustomInfoWindowController();
   bool addedSearch;
   bool isLoading = true;
+  // User's details from the store.
+  UserWithTokenModel storeDetails;
+  // Navigation details from the store.
+  NavigationProvider navigationDetails;
 
   @override
   void initState() {
     super.initState();
-
     // Pass Initial values.
     ratingCount = 0;
     clickedStars = [];
@@ -75,6 +81,15 @@ class _SearchPageState extends State<SearchPage> {
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
     if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+      if (navigationDetails != null) {
+        if (navigationDetails.isNavigating) {
+          // Add current location details to the map markers
+          // Add the get distance and time function.
+        }
+      }
       getSavedRecentSearches();
     }
   }
@@ -139,18 +154,16 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getSuggestion(String input) async {
-    // TODO: Store the api key or make it more secure.
-    String kPLACES_API_KEY = 'AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0';
     String country = 'country:ke';
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request =
-        '$baseURL?input=$input&components=$country&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+        '$baseURL?input=$input&components=$country&key=$kGOOGLE_API_KEY&sessiontoken=$_sessionToken';
 
     var response = await http.get(request);
     if (response.statusCode == 200) {
-      log(response.body.toString());
       setState(() {
+        // TODO: Create a model for predictions data.
         // If successfull store all the suggestions in a list to display below the search bar.
         _placeList = json.decode(response.body)['predictions'];
         // Hide the recent searches when the user starts typing on the search bar input.
@@ -205,7 +218,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   addSearchToList(value, town) {
-    // Add the destination that the user was searching for to the search bar.
+    // Add the destination that the user was searching for, to the search bar.
     var location = [];
     location.add(value);
     location.add(town);
@@ -288,8 +301,8 @@ class _SearchPageState extends State<SearchPage> {
                     hideRatingTabFn: hideRatingTabFn,
                     parkingPlaceName: searchBarController.text)
                 : Container(),
-            // Hide the search bar when showing the ratings tab
-            !showRatingTab
+            // Hide the search bar when showing the ratings tab.
+            !showRatingTab && !navigationDetails?.isNavigating
                 ? SingleChildScrollView(
                     child: Container(
                       // Hides all the recent searches if one of them are clicked.
@@ -322,96 +335,21 @@ class _SearchPageState extends State<SearchPage> {
                               padding:
                                   const EdgeInsets.only(left: 35.0, top: 25.0),
                               child: showRecentSearches
-                                  ? SingleChildScrollView(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 40.0),
-                                          Text(
-                                            'RECENT SEARCH',
-                                            style: TextStyle(
-                                                color: Colors.grey
-                                                    .withOpacity(0.8),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15.0),
-                                          ),
-                                          SizedBox(height: 15.0),
-                                          SizedBox(
-                                              height: 170.0,
-                                              child: ListView.builder(
-                                                  itemCount: _recentSearchesList
-                                                      .length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return Column(
-                                                      children: [
-                                                        RecentSearches(
-                                                            controller:
-                                                                mapController,
-                                                            loginDetails: widget
-                                                                .loginDetails,
-                                                            recentSearchesListFn:
-                                                                addSearchToList,
-                                                            customInfoWindowController:
-                                                                _customInfoWindowController,
-                                                            // Reverve the list to get the most recent search first.
-                                                            parkingData: _recentSearchesList[
-                                                                _recentSearchesList
-                                                                        .length -
-                                                                    (index +
-                                                                        1)][0],
-                                                            specificLocation:
-                                                                _recentSearchesList[_recentSearchesList.length - (index + 1)]
-                                                                    [0],
-                                                            town: _recentSearchesList[
-                                                                _recentSearchesList
-                                                                        .length -
-                                                                    (index +
-                                                                        1)][1],
-                                                            setShowRecentSearches:
-                                                                _setShowRecentSearches),
-                                                        SizedBox(height: 20.0),
-                                                      ],
-                                                    );
-                                                  }))
-                                        ],
-                                      ),
+                                  ? showRecentSearchesWidget(
+                                      addSearchToList: addSearchToList,
+                                      recentSearchesList: _recentSearchesList,
+                                      setShowRecentSearches:
+                                          _setShowRecentSearches,
+                                      mapController: mapController,
+                                      customInfoWindowController:
+                                          _customInfoWindowController,
+                                      storeDetails: storeDetails,
                                     )
                                   // Display suggestions available.
                                   : _placeList.length > 0
-                                      ? SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              SizedBox(height: 40.0),
-                                              SizedBox(
-                                                height: 230.0,
-                                                child: ListView.builder(
-                                                    shrinkWrap: true,
-                                                    itemCount:
-                                                        _placeList.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return Column(
-                                                        children: [
-                                                          ListTile(
-                                                              title: Row(
-                                                            children: [
-                                                              // If the location has more than 25 letters, slice the word and add '...'
-                                                              _buildSinglePlace(
-                                                                  index),
-                                                            ],
-                                                          )),
-                                                          SizedBox(
-                                                            height: 7.0,
-                                                          )
-                                                        ],
-                                                      );
-                                                    }),
-                                              ),
-                                            ],
-                                          ),
-                                        )
+                                      ? showSuggestions(
+                                          placeList: _placeList,
+                                          buildSinglePlace: _buildSinglePlace)
                                       : Padding(
                                           padding:
                                               EdgeInsets.only(bottom: 20.0),
@@ -423,7 +361,8 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Helper: To inform the user that they can scroll down to see more.
             // suggestions.
-            showRecentSearches || _placeList.length > 0
+            showRecentSearches ||
+                    _placeList.length > 0 && !navigationDetails?.isNavigating
                 ? Positioned(
                     top: showRecentSearches
                         ? MediaQuery.of(context).size.height / 9
@@ -498,7 +437,7 @@ class _SearchPageState extends State<SearchPage> {
 
     // Re-using Recent searches widget to display user's suggestions
     return RecentSearches(
-        loginDetails: widget.loginDetails,
+        storeDetails: storeDetails,
         recentSearchesListFn: addSearchToList,
         specificLocation: values[0],
         town: values[1] == null ? 'None' : values[1],

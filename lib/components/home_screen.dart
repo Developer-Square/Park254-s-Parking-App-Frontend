@@ -11,6 +11,7 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
   NearbyParkingLot selectedParkingLot;
   // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
+  // Navigation details from the store.
+  NavigationProvider navigationDetails;
 
   @override
   void initState() {
@@ -65,8 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
     searchBarController.addListener(changeSearchText);
     showToolTip = false;
     index = 1;
-    nearbyParkingDetails =
-        Provider.of<NearbyParkingListModel>(context, listen: false);
+    if (mounted) {
+      nearbyParkingDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+    }
   }
 
   /// A function that receives the GoogleMapController when the map is rendered on the page.
@@ -230,7 +237,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           FloatingActionButton.extended(
                             onPressed: () {
-                              loadLocation(mapController, closeNearByParking);
+                              loadLocation(
+                                  controller: mapController,
+                                  closeNearByParking: closeNearByParking,
+                                  navigationDetails: navigationDetails);
                             },
                             icon: Icon(Icons.location_searching),
                             label: Text(
