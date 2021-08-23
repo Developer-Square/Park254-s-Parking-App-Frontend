@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
@@ -282,8 +283,11 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         InkWell(
-          onTap: () {
+          onTap: () async {
+            Position position = await Geolocator.getCurrentPosition(
+                desiredAccuracy: LocationAccuracy.high);
             navigationDetails.setNavigation();
+            navigationDetails.setCurrentLocation(position);
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => SearchPage()));
           },

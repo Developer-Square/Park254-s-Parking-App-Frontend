@@ -16,6 +16,7 @@ class NavigationProvider with ChangeNotifier {
 
   void setCurrentLocation(Position value) {
     _currentPosition = value;
+    notifyListeners();
   }
 
   void clear() {

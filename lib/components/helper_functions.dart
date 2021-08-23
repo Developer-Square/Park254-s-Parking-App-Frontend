@@ -108,26 +108,35 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
 /// and [parkingData].
 /// animates the Camera twice:
 /// First to a place near the marker, then to the marker.
-void cameraAnimate(_controller, latitude, longitude) async {
-  final GoogleMapController mapController = await _controller;
-  await mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: LatLng(latitude - 0.0001, latitude), zoom: 14.0)));
+void cameraAnimate({
+  @required GoogleMapController controller,
+  @required double latitude,
+  @required double longitude,
+  double zoom,
+}) async {
+  await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(latitude - 0.0001, latitude), zoom: zoom ?? 14.0)));
 
-  await mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+  await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       // The subtraction is done to ensure the booking tab does not block the marker.
       target: LatLng(latitude - 0.0015, longitude),
-      zoom: 14.0)));
+      zoom: zoom ?? 14.0)));
 }
 
 /// Takes a user to their current location.
 ///
 /// Requires [_controller], the Google Controller from the parent component.
 /// [currentPosition] and [load].
-void loadLocation(
-    {GoogleMapController controller,
-    Function closeNearByParking,
-    NavigationProvider navigationDetails}) async {
-  closeNearByParking();
+void loadLocation({
+  GoogleMapController controller,
+  Function closeNearByParking,
+  NavigationProvider navigationDetails,
+  double zoom,
+}) async {
+  if (closeNearByParking != null) {
+    closeNearByParking();
+  }
+
   final c = await controller;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
@@ -136,7 +145,7 @@ void loadLocation(
   }
   LatLng latLngPosition = LatLng(position.latitude, position.longitude);
   CameraPosition cameraPosition =
-      new CameraPosition(target: latLngPosition, zoom: 14.0);
+      new CameraPosition(target: latLngPosition, zoom: zoom ?? 14.0);
   c.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 }
 
@@ -150,7 +159,10 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     List<dynamic> locations = await locationFromAddress(address);
 
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
+    cameraAnimate(
+        controller: _controller,
+        latitude: locations[0].latitude,
+        longitude: locations[0].longitude);
     _clearPlaceList(address);
   } catch (e) {
     log('In get location in helper_function.dart');

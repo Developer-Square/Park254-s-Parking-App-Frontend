@@ -64,6 +64,8 @@ class _SearchPageState extends State<SearchPage> {
   UserWithTokenModel storeDetails;
   // Navigation details from the store.
   NavigationProvider navigationDetails;
+  double latitude;
+  double longitude;
 
   @override
   void initState() {
@@ -85,9 +87,12 @@ class _SearchPageState extends State<SearchPage> {
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
       if (navigationDetails != null) {
-        if (navigationDetails.isNavigating) {
-          // Add current location details to the map markers
-          // Add the get distance and time function.
+        if (navigationDetails.isNavigating &&
+            navigationDetails.currentPosition != null) {
+          setState(() {
+            latitude = navigationDetails.currentPosition.latitude;
+            longitude = navigationDetails.currentPosition.longitude;
+          });
         }
       }
       getSavedRecentSearches();
@@ -121,6 +126,12 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = false;
     });
     mapController = controller;
+    // Navigate user to their current location after parking payment was successful.
+    cameraAnimate(
+        controller: mapController,
+        latitude: latitude,
+        longitude: longitude,
+        zoom: 11.5);
     _customInfoWindowController.googleMapController = controller;
   }
 

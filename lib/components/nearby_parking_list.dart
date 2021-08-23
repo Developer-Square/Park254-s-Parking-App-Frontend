@@ -82,7 +82,10 @@ class _NearByParkingList extends State<NearByParkingList> {
     }
     final latitude = widget.parkingData.location.coordinates[1];
     final longitude = widget.parkingData.location.coordinates[0];
-    cameraAnimate(widget.mapController, latitude, longitude);
+    cameraAnimate(
+        controller: widget.mapController,
+        latitude: latitude,
+        longitude: longitude);
     widget.showNearbyParking();
     widget.customInfoWindowController.addInfoWindow(
         InfoWindowWidget(value: widget.parkingData),

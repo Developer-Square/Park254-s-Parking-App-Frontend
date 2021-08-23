@@ -68,8 +68,6 @@ class _PayUpState extends State<PayUp> {
               setTransaction: transactionDetails.setTransaction,
               setLoading: transactionDetails.setLoading)
           .then((value) {
-        log('Inside callPayment function');
-        log(value.resultCode.toString());
         // If resultCode is equal to 0 then the transcation other than that.
         // then it failed.
         if (value.resultCode == 0) {
@@ -99,8 +97,6 @@ class _PayUpState extends State<PayUp> {
     transactionDetails = Provider.of<TransactionModel>(context);
     resultCode = transactionDetails.transaction.resultCode;
     resultDesc = transactionDetails.transaction.resultDesc;
-    log('In payUp.dart');
-    log(resultCode.toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(
