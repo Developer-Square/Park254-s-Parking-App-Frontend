@@ -26,7 +26,6 @@ class NearByParking extends StatefulWidget {
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
   final TextEditingController searchBarController;
-  final Function hideMapButtons;
   final Function showToolTipFn;
   final Function hideToolTip;
   NearbyParkingLot selectedParkingLot;
@@ -38,7 +37,6 @@ class NearByParking extends StatefulWidget {
     @required this.customInfoWindowController,
     @required this.showFullBackground,
     this.searchBarController,
-    this.hideMapButtons,
     this.showToolTipFn,
     this.hideToolTip,
   });
@@ -81,8 +79,6 @@ class _NearByParkingState extends State<NearByParking>
     // Set the current position to state.
     if (position != null && nearbyParkingDetails.nearbyParking.lots == null) {
       getNearestParkingPlaces(position);
-      // TODO: Remove if its never used.
-      nearbyParkingDetails.setCurrentPositon(position);
     }
   }
 
@@ -228,7 +224,6 @@ class _NearByParkingState extends State<NearByParking>
                 selectedCard: selectedCard,
                 selectCard: selectCard,
                 searchBarController: widget.searchBarController,
-                hideMapButtons: widget.hideMapButtons,
               ),
               SizedBox(height: 20.0)
             ],

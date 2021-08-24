@@ -4,7 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:provider/provider.dart';
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
 
@@ -20,22 +23,30 @@ class BookingTab extends StatefulWidget {
   TextEditingController searchBarController;
   bool homeScreen;
   final Function showNearbyParking;
-  final Function hideMapButtons;
   final int index;
-  NearbyParkingLot selectedParkingLot;
 
-  BookingTab(
-      {@required this.searchBarController,
-      this.homeScreen,
-      this.showNearbyParking,
-      this.hideMapButtons,
-      this.index,
-      this.selectedParkingLot});
+  BookingTab({
+    @required this.searchBarController,
+    this.homeScreen,
+    this.showNearbyParking,
+    this.index,
+  });
   @override
   _BookingTabState createState() => _BookingTabState();
 }
 
 class _BookingTabState extends State<BookingTab> {
+  NearbyParkingListModel nearbyParkingListDetails;
+
+  @override
+  initState() {
+    super.initState();
+    if (mounted) {
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+    }
+  }
+
   getRandomNumber() {
     Random rng = new Random();
     List<String> randomList =
@@ -77,7 +88,11 @@ class _BookingTabState extends State<BookingTab> {
                           onTap: widget.homeScreen
                               ? () {
                                   widget.showNearbyParking();
-                                  widget.hideMapButtons('bookingTab', null);
+                                  if (nearbyParkingListDetails != null) {
+                                    nearbyParkingListDetails
+                                        .setNearByParkingLots('bookingTab');
+                                  }
+
                                   widget.searchBarController.text = '';
                                 }
                               : () {},
@@ -85,14 +100,18 @@ class _BookingTabState extends State<BookingTab> {
                   : Container(),
               NearByParkingList(
                   activeCard: false,
-                  imgPath: widget.selectedParkingLot.images[0],
-                  parkingPrice: widget.selectedParkingLot.price,
-                  parkingPlaceName: widget.selectedParkingLot.name.length > 20
-                      ? widget.selectedParkingLot.name.substring(0, 20) + '...'
-                      : widget.selectedParkingLot.name,
-                  rating: widget.selectedParkingLot.rating,
-                  distance: widget.selectedParkingLot.distance,
-                  parkingSlots: widget.selectedParkingLot.spaces),
+                  imgPath: nearbyParkingListDetails.nearbyParkingLot.images[0],
+                  parkingPrice: nearbyParkingListDetails.nearbyParkingLot.price,
+                  parkingPlaceName:
+                      nearbyParkingListDetails.nearbyParkingLot.name.length > 20
+                          ? nearbyParkingListDetails.nearbyParkingLot.name
+                                  .substring(0, 20) +
+                              '...'
+                          : nearbyParkingListDetails.nearbyParkingLot.name,
+                  rating: nearbyParkingListDetails.nearbyParkingLot.rating,
+                  distance: nearbyParkingListDetails.nearbyParkingLot.distance,
+                  parkingSlots:
+                      nearbyParkingListDetails.nearbyParkingLot.spaces),
               SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -115,12 +134,15 @@ class _BookingTabState extends State<BookingTab> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => Booking(
-                  address: widget.selectedParkingLot.location.toString(),
+                  address: nearbyParkingListDetails.nearbyParkingLot.location
+                      .toString(),
                   bookingNumber: getRandomNumber(),
-                  destination: widget.selectedParkingLot.name,
+                  destination: nearbyParkingListDetails.nearbyParkingLot.name,
                   parkingLotNumber: getRandomNumber(),
+                  // TODO: Change that number when in production.
                   price: 1,
-                  imagePath: widget.selectedParkingLot.images[0])));
+                  imagePath:
+                      nearbyParkingListDetails.nearbyParkingLot.images[0])));
         },
         child: Container(
           decoration: BoxDecoration(

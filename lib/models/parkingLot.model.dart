@@ -16,6 +16,7 @@ class ParkingLot {
   final int price;
   final String address;
   final String city;
+  final num distance;
   final Features features;
 
   ParkingLot({
@@ -31,6 +32,7 @@ class ParkingLot {
     @required this.address,
     @required this.city,
     @required this.price,
+    @required this.distance,
     this.features,
   });
 
@@ -49,6 +51,7 @@ class ParkingLot {
           : json['ratingValue'] / json['ratingCount'],
       price: json['price'],
       address: json['address'],
+      distance: json['address']['distance'],
       city: json['city'],
       features: Features.fromJson(json['features']),
     );

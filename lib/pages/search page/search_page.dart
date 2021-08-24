@@ -12,8 +12,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/rating_tab.dart';
 import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/components/recent_searches.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/functions/directions/getDirections.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,6 +66,8 @@ class _SearchPageState extends State<SearchPage> {
   UserWithTokenModel storeDetails;
   // Navigation details from the store.
   NavigationProvider navigationDetails;
+  // Parking details from the store.
+  NearbyParkingListModel nearbyParkingDetails;
   double latitude;
   double longitude;
 
@@ -86,6 +90,8 @@ class _SearchPageState extends State<SearchPage> {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
+      nearbyParkingDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
       if (navigationDetails != null) {
         if (navigationDetails.isNavigating &&
             navigationDetails.currentPosition != null) {
@@ -132,7 +138,25 @@ class _SearchPageState extends State<SearchPage> {
         latitude: latitude,
         longitude: longitude,
         zoom: 11.5);
+    addRouteToMap();
     _customInfoWindowController.googleMapController = controller;
+  }
+
+  void addRouteToMap() async {
+    if (navigationDetails != null && nearbyParkingDetails != null) {
+      if (navigationDetails.isNavigating &&
+          navigationDetails.currentPosition != null) {
+        LatLng origin = LatLng(navigationDetails.currentPosition.latitude,
+            navigationDetails.currentPosition.longitude);
+        // Coordinates for the destination, details from the store.
+        LatLng destination = LatLng(
+            nearbyParkingDetails.nearbyParkingLot.location.coordinates[1],
+            nearbyParkingDetails.nearbyParkingLot.location.coordinates[0]);
+        // Get Directions.
+        final directions = await DirectionsRepository()
+            .getDirections(origin: origin, destination: destination);
+      }
+    }
   }
 
   @override
@@ -299,7 +323,6 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
-                showBookNowTab: showBookNowTabFn,
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),

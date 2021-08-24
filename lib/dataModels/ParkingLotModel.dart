@@ -18,6 +18,8 @@ class ParkingLotModel with ChangeNotifier {
     address: null,
     city: null,
     price: null,
+    distance: null,
+    features: null,
   );
   bool loading = false;
 
@@ -31,30 +33,29 @@ class ParkingLotModel with ChangeNotifier {
     _parkingLot =
         await getParkingLotById(token: token, parkingLotId: parkingLotId);
     loading = false;
-
     notifyListeners();
   }
 
-  set parkingLot(ParkingLot value) {
+  set parkingLot(value) {
     _parkingLot = value;
-
     notifyListeners();
   }
 
   void clear() {
     _parkingLot = new ParkingLot(
-      id: null,
-      owner: null,
-      name: null,
-      spaces: null,
-      images: null,
-      location: null,
-      ratingCount: null,
-      ratingValue: null,
-      rating: null,
-      address: null,
-      city: null,
-      price: null,
-    );
+        id: null,
+        owner: null,
+        name: null,
+        spaces: null,
+        images: null,
+        location: null,
+        ratingCount: null,
+        ratingValue: null,
+        rating: null,
+        address: null,
+        distance: null,
+        city: null,
+        price: null,
+        features: null);
   }
 }

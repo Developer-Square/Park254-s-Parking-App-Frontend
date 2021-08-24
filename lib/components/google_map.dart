@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/functions/utils/request_interceptor.dart';
@@ -20,21 +21,16 @@ import 'helper_functions.dart';
 /// Requires [allMarkers], [mapController] and [customInfoWindowController].
 class GoogleMapWidget extends StatefulWidget {
   final Function mapCreated;
-  final Function showBookNowTab;
   final CustomInfoWindowController customInfoWindowController;
   final TextEditingController searchBarController;
-  final Function showToolTipFn;
-  final Function hideToolTip;
   GoogleMapController mapController;
 
-  GoogleMapWidget(
-      {@required this.mapCreated,
-      @required this.customInfoWindowController,
-      this.mapController,
-      this.searchBarController,
-      this.showBookNowTab,
-      this.showToolTipFn,
-      this.hideToolTip});
+  GoogleMapWidget({
+    @required this.mapCreated,
+    @required this.customInfoWindowController,
+    this.mapController,
+    this.searchBarController,
+  });
   @override
   _GoogleMapWidgetState createState() => _GoogleMapWidgetState();
 }
@@ -51,6 +47,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   bool setMarkers;
   // Navigation details from the store.
   NavigationProvider navigationDetails;
+  NearbyParkingListModel nearbyParkingListDetails;
 
   @override
   initState() {
@@ -60,7 +57,9 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
-      addRouteToMap();
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+      addCurrentLocationToMap();
       getCurrentLocation();
       loadDescriptors();
       getAllParkingLocations();
@@ -70,11 +69,10 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   // Add the map marker to show the user their current location.
   // then draw the route.
-  void addRouteToMap() {
+  void addCurrentLocationToMap() {
     if (navigationDetails != null) {
       if (navigationDetails.isNavigating &&
           navigationDetails.currentPosition != null) {
-        // Add the get distance and time function.
         double latitude = navigationDetails.currentPosition.latitude;
         double longitude = navigationDetails.currentPosition.longitude;
         // Add current location details to the map markers
@@ -113,7 +111,10 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
                     value.location.coordinates[0]),
                 icon: bitmapDescriptor,
                 onTap: () {
-                  widget.showBookNowTab('googleMapMarker', null);
+                  if (nearbyParkingListDetails != null) {
+                    nearbyParkingListDetails
+                        .setNearByParkingLots('googleMapMarker');
+                  }
                   widget.searchBarController.text = value.name;
                   widget.customInfoWindowController.addInfoWindow(
                       InfoWindowWidget(value: value),
@@ -123,6 +124,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           );
         });
       }).catchError((err) {
+        log('In google_map.dart');
         log(err.toString());
       });
     }

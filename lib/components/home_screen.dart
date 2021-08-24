@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -41,13 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
   bool showBackground;
-  bool hideMapButtons;
   bool showBookingTab;
   bool showToolTip;
   String text;
   int index;
   bool isLoading = true;
-  NearbyParkingLot selectedParkingLot;
   // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
   // Navigation details from the store.
@@ -63,14 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
     showMap = true;
     showBackground = false;
     showTopPageStyling = true;
-    hideMapButtons = false;
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
     showToolTip = false;
     index = 1;
     if (mounted) {
-      nearbyParkingDetails =
-          Provider.of<NearbyParkingListModel>(context, listen: false);
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
     }
@@ -143,46 +140,21 @@ class _HomeScreenState extends State<HomeScreen> {
   // This widget is also used to determine when to show the booking tab.
   // i.e. The booking tab will only show if the map buttons aren't being.
   // displayed.
-  void hideMapButtonsFn(currentWidget, parkingData) {
-    // If the function is being called by the booking tab close icon.
-    // then add hide/show functionality else hide map buttons remains true
-    if (currentWidget == 'bookingTab') {
-      hideMapButtons = !hideMapButtons;
-    } else {
-      setState(() {
-        // Set the selected parkingLot.
-        selectedParkingLot = parkingData;
-      });
-      hideMapButtons = true;
-    }
-  }
-
-  hideToolTip() {
-    setState(() {
-      showToolTip = false;
-    });
-  }
-
-  showToolTipFn(message) {
-    setState(() {
-      showToolTip = true;
-      text = message;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
     return SafeArea(
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
-                  showBookNowTab: hideMapButtonsFn,
-                  mapCreated: mapCreated,
-                  customInfoWindowController: _customInfoWindowController,
-                  searchBarController: searchBarController,
-                  mapController: mapController),
+                mapCreated: mapCreated,
+                customInfoWindowController: _customInfoWindowController,
+                searchBarController: searchBarController,
+                mapController: mapController,
+              ),
               // Show Loader to prevent the black/error screen that appears before.
               // the map is displayed.
               isLoading ? Loader() : Container(),
@@ -204,23 +176,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       hideDetails: showFullParkingWidget,
                       showFullBackground: showFullBackground,
                       searchBarController: searchBarController,
-                      hideMapButtons: hideMapButtonsFn,
-                      showToolTipFn: showToolTipFn,
                     )
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
               // on the parking widget.
-              hideMapButtons
+              nearbyParkingDetails?.showNearByParkingLots
                   ? Container(
                       margin: EdgeInsets.only(
                           bottom: MediaQuery.of(context).size.height / 20.0),
                       child: BookingTab(
-                          index: index,
-                          homeScreen: true,
-                          showNearbyParking: showNearByParkingFn,
-                          hideMapButtons: hideMapButtonsFn,
-                          searchBarController: searchBarController,
-                          selectedParkingLot: selectedParkingLot),
+                        index: index,
+                        homeScreen: true,
+                        showNearbyParking: showNearByParkingFn,
+                        searchBarController: searchBarController,
+                      ),
                     )
                   : Container(),
               showTopPageStyling
@@ -229,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       currentPage: 'home',
                     )
                   : Container(),
-              showMap && !hideMapButtons
+              showMap && !nearbyParkingDetails?.showNearByParkingLots
                   ? Positioned(
                       bottom: showNearByParking ? 350.0 : 100.0,
                       right: 0,
