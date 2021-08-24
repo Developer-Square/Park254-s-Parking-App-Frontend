@@ -17,6 +17,7 @@ import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/functions/directions/getDirections.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:park254_s_parking_app/pages/search%20page/widgets/navigation_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -137,7 +138,7 @@ class _SearchPageState extends State<SearchPage> {
         controller: mapController,
         latitude: latitude,
         longitude: longitude,
-        zoom: 11.5);
+        zoom: 14.0);
     addRouteToMap();
     _customInfoWindowController.googleMapController = controller;
   }
@@ -152,9 +153,15 @@ class _SearchPageState extends State<SearchPage> {
         LatLng destination = LatLng(
             nearbyParkingDetails.nearbyParkingLot.location.coordinates[1],
             nearbyParkingDetails.nearbyParkingLot.location.coordinates[0]);
-        // Get Directions.
-        final directions = await DirectionsRepository()
-            .getDirections(origin: origin, destination: destination);
+        try {
+          // Get Directions.
+          final directions = await DirectionsRepository()
+              .getDirections(origin: origin, destination: destination);
+          // Set the details in the store.
+          nearbyParkingDetails.setDirections(value: directions);
+        } catch (e) {
+          buildNotification(e.toString(), 'error');
+        }
       }
     }
   }
@@ -297,6 +304,12 @@ class _SearchPageState extends State<SearchPage> {
   getSavedRecentSearches() async {
     await SharedPreferences.getInstance().then((prefs) {
       _recentSearchesList = json.decode(prefs.getString(recentSearchesKey));
+
+      if (_recentSearchesList == null) {
+        setState(() {
+          _recentSearchesList = [];
+        });
+      }
     });
   }
 
@@ -326,6 +339,15 @@ class _SearchPageState extends State<SearchPage> {
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),
+            // A pop-up that show the distance and time when a user is navigating.
+            nearbyParkingDetails != null
+                ? NavigationInfo(
+                    totalDistance:
+                        nearbyParkingDetails.directionsInfo.totalDistance,
+                    totalDuration:
+                        nearbyParkingDetails.directionsInfo.totalDistance,
+                  )
+                : Container(),
             // The rating pop up shown at the end of the parking session.
             // Show Loader to prevent the black/error screen that appears before.
             // the map is displayed.
@@ -368,7 +390,8 @@ class _SearchPageState extends State<SearchPage> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 35.0, top: 25.0),
-                              child: showRecentSearches
+                              child: showRecentSearches &&
+                                      _recentSearchesList.length > 0
                                   ? showRecentSearchesWidget(
                                       addSearchToList: addSearchToList,
                                       recentSearchesList: _recentSearchesList,

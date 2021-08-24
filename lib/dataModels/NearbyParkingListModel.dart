@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
+import 'package:park254_s_parking_app/models/directions.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 
@@ -26,10 +28,12 @@ class NearbyParkingListModel with ChangeNotifier {
   bool loading = false;
   bool _showNearByParkingLots = false;
   Position _currentPosition;
+  Directions _directionsInfo;
 
   NearbyParkingLots get nearbyParking => _nearbyParking;
   NearbyParkingLot get nearbyParkingLot => _nearbyParkingLot;
   Position get currentPosition => _currentPosition;
+  Directions get directionsInfo => _directionsInfo;
   bool get showNearByParkingLots => _showNearByParkingLots;
 
   void setCurrentPositon(Position value) {
@@ -73,6 +77,13 @@ class NearbyParkingListModel with ChangeNotifier {
   // Add the parking lot selected by the user in the nearbyparking widget.
   void setNearbyParkingLot({@required NearbyParkingLot value}) {
     _nearbyParkingLot = value;
+    notifyListeners();
+  }
+
+  // Set the destination details to be used to make the polylines when,
+  // directing a user.
+  void setDirections({@required Directions value}) {
+    _directionsInfo = value;
     notifyListeners();
   }
 

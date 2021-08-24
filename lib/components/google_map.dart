@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -59,6 +60,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           Provider.of<NavigationProvider>(context, listen: false);
       nearbyParkingListDetails =
           Provider.of<NearbyParkingListModel>(context, listen: false);
+
       addCurrentLocationToMap();
       getCurrentLocation();
       loadDescriptors();
@@ -70,17 +72,31 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   // Add the map marker to show the user their current location.
   // then draw the route.
   void addCurrentLocationToMap() {
-    if (navigationDetails != null) {
+    if (navigationDetails != null && nearbyParkingListDetails != null) {
       if (navigationDetails.isNavigating &&
-          navigationDetails.currentPosition != null) {
-        double latitude = navigationDetails.currentPosition.latitude;
-        double longitude = navigationDetails.currentPosition.longitude;
+          navigationDetails.currentPosition != null &&
+          nearbyParkingListDetails.nearbyParkingLot != null) {
+        LatLng origin = LatLng(navigationDetails.currentPosition.latitude,
+            navigationDetails.currentPosition.longitude);
+        LatLng destination = LatLng(
+            nearbyParkingListDetails.nearbyParkingLot.location.coordinates[1],
+            nearbyParkingListDetails.nearbyParkingLot.location.coordinates[0]);
+
         // Add current location details to the map markers
         setState(() {
           allMarkers.add(Marker(
-              markerId: MarkerId('currentLocation'),
-              position: LatLng(latitude, longitude),
-              infoWindow: InfoWindow(title: 'Current Location')));
+            markerId: MarkerId('Current Location'),
+            position: LatLng(origin.latitude, origin.longitude),
+            infoWindow: InfoWindow(title: 'Current Location'),
+          ));
+        });
+
+        setState(() {
+          allMarkers.add(Marker(
+            markerId: MarkerId('Destination Location'),
+            position: LatLng(destination.latitude, destination.longitude),
+            infoWindow: InfoWindow(title: 'Destination Location'),
+          ));
         });
       }
     }
@@ -89,6 +105,8 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   // Make an api request to get all the parking locations and add markers.
   // to each of them.
   getAllParkingLocations() async {
+    log(nearbyParkingListDetails.toString());
+
     if (storeDetails != null) {
       var accessToken = storeDetails.user.accessToken.token;
       getParkingLots(token: accessToken).then((value) {
@@ -153,6 +171,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   }
 
   Widget build(BuildContext context) {
+    nearbyParkingListDetails = Provider.of<NearbyParkingListModel>(context);
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -165,6 +184,18 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
             CameraPosition(target: LatLng(-1.2834, 36.8235), zoom: 14.0),
         markers: Set.from(allMarkers),
         onMapCreated: widget.mapCreated,
+        polylines: {
+          nearbyParkingListDetails.directionsInfo != null
+              ? Polyline(
+                  polylineId: PolylineId('overview_polyline'),
+                  color: Colors.blue,
+                  width: 5,
+                  points: nearbyParkingListDetails.directionsInfo.polylinePoints
+                      .map((e) => LatLng(e.latitude, e.longitude))
+                      .toList(),
+                )
+              : Polyline(polylineId: PolylineId('none'))
+        },
         padding:
             EdgeInsets.only(top: MediaQuery.of(context).size.height - 520.0),
         onTap: (position) {
