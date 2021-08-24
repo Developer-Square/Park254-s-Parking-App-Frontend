@@ -423,7 +423,8 @@ class _SearchPageState extends State<SearchPage> {
             // Helper: To inform the user that they can scroll down to see more.
             // suggestions.
             showRecentSearches ||
-                    _placeList.length > 0 && !navigationDetails?.isNavigating
+                    _placeList.length > 0 &&
+                        nearbyParkingDetails.directionsInfo == null
                 ? Positioned(
                     top: showRecentSearches
                         ? MediaQuery.of(context).size.height / 9

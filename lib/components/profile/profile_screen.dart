@@ -77,13 +77,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           showLoader = false;
         });
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
         if (storeDetails != null && nearbyParkingDetails != null) {
           // Clear all the details in the store.
           storeDetails.clear();
           nearbyParkingDetails.clear();
         }
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       }
     }).catchError((err) {
       setState(() {

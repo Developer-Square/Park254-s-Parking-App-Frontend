@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
@@ -18,7 +20,6 @@ class ParkingLotModel with ChangeNotifier {
     address: null,
     city: null,
     price: null,
-    distance: null,
     features: null,
   );
   bool loading = false;
@@ -53,7 +54,6 @@ class ParkingLotModel with ChangeNotifier {
         ratingValue: null,
         rating: null,
         address: null,
-        distance: null,
         city: null,
         price: null,
         features: null);
