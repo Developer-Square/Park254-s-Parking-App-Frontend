@@ -170,6 +170,9 @@ class MyParkingState extends State<MyParkingScreen> {
                             padding: const EdgeInsets.only(right: 18.0),
                             child: InkWell(
                               onTap: () {
+                                if (userModel != null) {
+                                  userModel.setCurrentScreen('create');
+                                }
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         CreateUpdateParkingLot(

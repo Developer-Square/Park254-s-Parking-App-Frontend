@@ -311,7 +311,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              leading: BackArrow(),
+              leading: BackArrow(clearFields: clearFields),
               backgroundColor: Colors.transparent,
               automaticallyImplyLeading: true,
               title: Text(
