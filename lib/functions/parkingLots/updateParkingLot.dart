@@ -16,7 +16,6 @@ import '../../config/globals.dart' as globals;
 Future<ParkingLot> updateParkingLot({
   @required String token,
   @required String parkingLotId,
-  String name = '',
   String owner = '',
   int spaces = 0,
   num longitude = 0,
@@ -31,7 +30,6 @@ Future<ParkingLot> updateParkingLot({
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
-    "name": name,
     "owner": owner,
     "spaces": spaces,
     'location': {

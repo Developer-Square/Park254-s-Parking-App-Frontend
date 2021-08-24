@@ -167,7 +167,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         widget.address.text + ', ' + widget.city.text);
 
     setState(() {
-      showLoader = false;
+      showLoader = true;
     });
     if (widget.currentScreen == 'create') {
       createParkingLot(
@@ -186,20 +186,18 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         if (parkingLotList != null) {
           parkingLotList.add(parkingLot: value);
         }
-        // // Retrieve the new details from the backend.
-        // widget.getParkingDetails();
         setState(() {
           showLoader = false;
         });
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
-        buildNotification(err.message, 'error');
         setState(() {
           showLoader = false;
         });
-        print("In create_update_parking_lot");
-        print(err);
+        log("In create_update_parking_lot");
+        log(err.toString());
+        buildNotification(err.message, 'error');
       });
     } else if (widget.currentScreen == 'update') {
       setState(() {
@@ -224,8 +222,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
         if (parkingLotList != null) {
           parkingLotList.updateParkingLot(value);
         }
-        // // Retrieve the new details from the backend.
-        // widget.getParkingDetails();
         clearFields();
         Navigator.of(context).pop();
       }).catchError((err) {
@@ -233,7 +229,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
           showLoader = false;
         });
         log("In create_update_parking_lot");
-        log(err.message.toString());
+        log(err.toString());
         buildNotification(err.toString(), 'error');
       });
     }
