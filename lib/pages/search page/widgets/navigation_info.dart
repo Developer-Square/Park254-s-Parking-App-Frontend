@@ -22,29 +22,32 @@ class NavigationInfo extends StatelessWidget {
   });
 
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 20.0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 6.0,
-          horizontal: 12.0,
-        ),
-        decoration: BoxDecoration(
-          color: globals.primaryColor,
-          borderRadius: BorderRadius.circular(20.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-              blurRadius: 6.0,
-            )
-          ],
-        ),
-        child: Text(
-          '$totalDistance, $totalDuration',
-          style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Positioned(
+        top: 20.0,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 6.0,
+            horizontal: 12.0,
+          ),
+          decoration: BoxDecoration(
+            color: globals.primaryColor,
+            borderRadius: BorderRadius.circular(20.0),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(0, 2),
+                blurRadius: 6.0,
+              )
+            ],
+          ),
+          child: Text(
+            '$totalDistance, $totalDuration',
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

@@ -341,12 +341,16 @@ class _SearchPageState extends State<SearchPage> {
                 customInfoWindowController: _customInfoWindowController),
             // A pop-up that show the distance and time when a user is navigating.
             nearbyParkingDetails != null
-                ? NavigationInfo(
-                    totalDistance:
-                        nearbyParkingDetails.directionsInfo.totalDistance,
-                    totalDuration:
-                        nearbyParkingDetails.directionsInfo.totalDistance,
-                  )
+                ? nearbyParkingDetails.directionsInfo != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: NavigationInfo(
+                            totalDistance: nearbyParkingDetails
+                                .directionsInfo.totalDistance,
+                            totalDuration: nearbyParkingDetails
+                                .directionsInfo.totalDuration),
+                      )
+                    : Container()
                 : Container(),
             // The rating pop up shown at the end of the parking session.
             // Show Loader to prevent the black/error screen that appears before.
