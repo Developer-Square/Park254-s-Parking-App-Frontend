@@ -94,7 +94,6 @@ class NearbyParkingListModel with ChangeNotifier {
 
   void clear() {
     _nearbyParking.lots.clear();
-    notifyListeners();
   }
 
   NearbyParkingLot findById({@required String id}) {

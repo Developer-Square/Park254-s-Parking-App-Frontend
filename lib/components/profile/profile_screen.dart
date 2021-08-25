@@ -80,6 +80,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (storeDetails != null && nearbyParkingDetails != null) {
           // Clear all the details in the store.
           storeDetails.clear();
+          // Clear the details in shared preferences.
+          clearStorage();
           nearbyParkingDetails.clear();
         }
         Navigator.of(context)

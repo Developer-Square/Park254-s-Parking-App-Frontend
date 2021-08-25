@@ -49,6 +49,7 @@ storeLoginDetails(details) async {
   // Then store them in memory.
   storeDetailsInMemory('accessToken', access.base64);
   storeDetailsInMemory('refreshToken', refresh.base64);
+  storeDetailsInMemory('userId', details.user.id);
 }
 
 // Clears the details when a user logouts.
@@ -114,13 +115,16 @@ void cameraAnimate({
   @required double longitude,
   double zoom,
 }) async {
-  await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(latitude - 0.0001, latitude), zoom: zoom ?? 14.0)));
+  if (latitude != null && longitude != null) {
+    await controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target: LatLng(latitude - 0.0001, latitude), zoom: zoom ?? 14.0)));
 
-  await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      // The subtraction is done to ensure the booking tab does not block the marker.
-      target: LatLng(latitude - 0.0015, longitude),
-      zoom: zoom ?? 14.0)));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        // The subtraction is done to ensure the booking tab does not block the marker.
+        target: LatLng(latitude - 0.0015, longitude),
+        zoom: zoom ?? 14.0)));
+  }
 }
 
 /// Takes a user to their current location.

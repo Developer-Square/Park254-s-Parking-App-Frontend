@@ -101,13 +101,13 @@ class _MyAppState extends State<MyApp> {
       prefs.setString(key, value);
     }).catchError((err) {
       log("In storeDetailsMemory, main.dart");
-      log(err);
+      log(err.toString());
     });
   }
 
-  checkForCredentials() {
+  checkForCredentials() async {
     if (data != null) {
-      var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
+      var token = await encryptDecryptData('userRefreshToken', data, 'decrypt');
       if (token != null && userId != null) {
         refreshTokens(refreshToken: token).then((value) {
           getUserById(token: value.accessToken.token, userId: userId)
@@ -129,6 +129,9 @@ class _MyAppState extends State<MyApp> {
             setState(() {
               data = null;
               role = null;
+              userDetails = null;
+              accessToken = null;
+              refreshToken = null;
             });
           });
           var access = encryptDecryptData(
@@ -137,6 +140,9 @@ class _MyAppState extends State<MyApp> {
               'userRefreshToken', value.refreshToken.token, 'encrypt');
           storeDetailsInMemory('accessToken', access.base64);
           storeDetailsInMemory('refreshToken', refresh.base64);
+          if (userDetails != null) {
+            storeDetailsInMemory('userId', userDetails.id);
+          }
 
           // Then redirect the user to the homepage.
         }).catchError((err) {
@@ -147,7 +153,7 @@ class _MyAppState extends State<MyApp> {
             accessToken = null;
             refreshToken = null;
           });
-          log(err.message);
+          log(err.toString());
           log("In main.dart");
         });
       }
