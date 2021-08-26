@@ -18,7 +18,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
-import 'widgets/helpers.dart';
+import 'widgets/helpers_widgets.dart';
+import './widgets/helper_functions.dart';
 
 /// Builds a page where vendors can create or update their parking lots.
 
@@ -96,6 +97,10 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     }
   }
 
+  void setLoader(bool value) {
+    showLoader = value;
+  }
+
   // Select an image via gallery or camera.
   Future<void> pickImage(ImageSource source) async {
     final selected = await picker.getImage(source: source, imageQuality: 50);
@@ -156,125 +161,6 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     });
   }
 
-  createUpdateParkingLots([links = linksParam]) async {
-    // Combine the newly added images with the old ones.
-    var updatedImages = links + _backendImages;
-    var accessToken = storeDetails.user.accessToken.token;
-    var userId = storeDetails.user.user.id;
-    // Get the coordinates of the address the user entered.
-    // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
-    List<dynamic> locations = await locationFromAddress(
-        widget.address.text + ', ' + widget.city.text);
-
-    setState(() {
-      showLoader = true;
-    });
-    if (widget.currentScreen == 'create') {
-      createParkingLot(
-              token: accessToken,
-              owner: userId,
-              name: widget.name.text,
-              spaces: int.parse(widget.spaces.text),
-              images: links,
-              price: int.parse(widget.prices.text),
-              address: widget.address.text,
-              city: widget.city.text,
-              latitude: locations[0].latitude,
-              longitude: locations[0].longitude)
-          .then((value) {
-        buildNotification('Parking lot created successfully', 'success');
-        if (parkingLotList != null) {
-          parkingLotList.add(parkingLot: value);
-        }
-        setState(() {
-          showLoader = false;
-        });
-        clearFields();
-        Navigator.of(context).pop();
-      }).catchError((err) {
-        setState(() {
-          showLoader = false;
-        });
-        log("In create_update_parking_lot");
-        log(err.toString());
-        buildNotification(err.message, 'error');
-      });
-    } else if (widget.currentScreen == 'update') {
-      setState(() {
-        showLoader = true;
-      });
-      // ToDo: Add a way to check if the values were changed.
-      updateParkingLot(
-              token: accessToken,
-              parkingLotId: widget.parkingData.id,
-              spaces: int.parse(widget.spaces.text),
-              price: int.parse(widget.prices.text),
-              address: widget.address.text,
-              images: updatedImages,
-              city: widget.city.text,
-              latitude: locations[0].latitude,
-              longitude: locations[0].longitude)
-          .then((value) {
-        buildNotification('Parking lot updated successfully', 'success');
-        setState(() {
-          showLoader = false;
-        });
-        if (parkingLotList != null) {
-          parkingLotList.updateParkingLot(value);
-        }
-        clearFields();
-        Navigator.of(context).pop();
-      }).catchError((err) {
-        setState(() {
-          showLoader = false;
-        });
-        log("In create_update_parking_lot");
-        log(err.toString());
-        buildNotification(err.toString(), 'error');
-      });
-    }
-  }
-
-  createUpdateParking() async {
-    // Links to send to the backend.
-    var cloudinaryLinks = [];
-    // Make a fixed list from the _imagesToSend array so that we can use its values as indexes.
-    final List fixedList =
-        Iterable<int>.generate(_imagesToSend.length).toList();
-    setState(() {
-      showLoader = true;
-    });
-    if (_imagesToSend.length != 0) {
-      fixedList.map((index) {
-        // Make sure that we're not sending images that have already been uploaded.
-        if (!_imagesToSend[index].contains('https')) {
-          // Upload the images to cloudinary.
-          uploadImages(imagePath: _imagesToSend[index]).then((value) {
-            cloudinaryLinks.add(value.secureUrl);
-
-            // check if the map is done.
-            if (index == _imagesToSend.length - 1) {
-              // Call backend api.
-              createUpdateParkingLots(cloudinaryLinks);
-            }
-          }).catchError((err) {
-            setState(() {
-              showLoader = false;
-            });
-            print(err);
-          });
-        }
-        // If the mapping is done, make sure cloudinaryLinks has some value before updating the backend
-        else if (index == _imagesToSend.length - 1) {
-          createUpdateParkingLots(cloudinaryLinks);
-        }
-      }).toList();
-    } else {
-      // For updating the backend with the altered or deleted links.
-      createUpdateParkingLots(cloudinaryLinks);
-    }
-  }
-
   Widget build(BuildContext context) {
     fields = [
       {
@@ -310,18 +196,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     ];
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(
-              leading: BackArrow(clearFields: clearFields),
-              backgroundColor: Colors.transparent,
-              automaticallyImplyLeading: true,
-              title: Text(
-                widget.currentScreen != 'create'
-                    ? 'Edit Parking Lot'
-                    : 'Add New Parking Lot',
-                style: globals.buildTextStyle(18.0, true, globals.textColor),
-              ),
-              elevation: 0.0,
-              centerTitle: true,
+            appBar: appBar(
+              clearFields: clearFields,
+              currentScreen: widget.currentScreen,
             ),
             body: Stack(
               children: [
@@ -370,7 +247,23 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
                       fields != null ? buildFields(fields) : Container(),
                       SizedBox(height: 18.0),
                       InkWell(
-                          onTap: createUpdateParking,
+                          onTap: () => createUpdateParking(
+                                storeDetails: storeDetails,
+                                links: linksParam,
+                                spaces: widget.spaces.text,
+                                backendImages: _backendImages,
+                                parkingData: widget.parkingData,
+                                parkingLotList: parkingLotList,
+                                address: widget.address.text,
+                                city: widget.city.text,
+                                currentScreen: widget.currentScreen,
+                                context: context,
+                                clearFields: clearFields,
+                                name: widget.name.text,
+                                prices: widget.prices.text,
+                                setLoader: setLoader,
+                                imagesToSend: _imagesToSend,
+                              ),
                           child: Container(
                             width: MediaQuery.of(context).size.width - 30.0,
                             height: 53.0,
