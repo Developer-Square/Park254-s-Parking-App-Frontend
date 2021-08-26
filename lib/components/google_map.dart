@@ -74,15 +74,11 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   // Add the map marker to show the user their current location.
   // then draw the route.
   void addCurrentLocationToMap() {
-    if (navigationDetails != null && nearbyParkingListDetails != null) {
+    if (navigationDetails != null) {
       if (navigationDetails.isNavigating &&
-          navigationDetails.currentPosition != null &&
-          nearbyParkingListDetails.nearbyParkingLot != null) {
+          navigationDetails.currentPosition != null) {
         LatLng origin = LatLng(navigationDetails.currentPosition.latitude,
             navigationDetails.currentPosition.longitude);
-        LatLng destination = LatLng(
-            nearbyParkingListDetails.nearbyParkingLot.location.coordinates[1],
-            nearbyParkingListDetails.nearbyParkingLot.location.coordinates[0]);
 
         // Add current location details to the map markers
         setState(() {
@@ -90,14 +86,6 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('Current Location'),
             position: LatLng(origin.latitude, origin.longitude),
             infoWindow: InfoWindow(title: 'Current Location'),
-          ));
-        });
-
-        setState(() {
-          allMarkers.add(Marker(
-            markerId: MarkerId('Destination Location'),
-            position: LatLng(destination.latitude, destination.longitude),
-            infoWindow: InfoWindow(title: 'Destination Location'),
           ));
         });
       }
