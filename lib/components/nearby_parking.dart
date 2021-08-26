@@ -54,7 +54,7 @@ class _NearByParkingState extends State<NearByParking>
   int maxRetries;
   // User's details from the store.
   UserWithTokenModel storeDetails;
-  // Pakring details from the store.
+  // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
 
   @override
@@ -160,7 +160,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(width: 12.0),
                 buildNearbyContainer('Nearby Parking'),
                 SizedBox(width: 15.0),
-                buildNearbyContainer('Recommeded Parking'),
+                buildNearbyContainer('Recommended Parking'),
                 SizedBox(width: 12.0),
               ]))),
     );
@@ -208,7 +208,9 @@ class _NearByParkingState extends State<NearByParking>
             children: [
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
-                imgPath: parkingLots.lots[index].images[0],
+                imgPath: parkingLots.lots[index].images.length > 0
+                    ? parkingLots.lots[index].images[0]
+                    : '',
                 parkingPrice: parkingLots.lots[index].price,
                 parkingPlaceName: parkingLots.lots[index].name,
                 rating: parkingLots.lots[index].rating,

@@ -238,6 +238,7 @@ class _MyAppState extends State<MyApp> {
                         setShowRecentSearches: args.setShowRecentSearches,
                       ),
                       GoogleMapWidget(
+                        currentPage: args3.currentPage,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
@@ -267,7 +268,6 @@ class _MyAppState extends State<MyApp> {
                 final NearByParkingArguements args1 = settings.arguments;
                 final TopPageStylingArguements args2 = settings.arguments;
                 final GoogleMapWidgetArguements args3 = settings.arguments;
-                final HomePageArguements args4 = settings.arguments;
                 final RatingTabArguements args5 = settings.arguments;
                 final SearchBarArguements args6 = settings.arguments;
                 final RecentSearchesArguements args7 = settings.arguments;
@@ -296,6 +296,7 @@ class _MyAppState extends State<MyApp> {
                           currentPage: args2.currentPage,
                           widget: args2.widget),
                       GoogleMapWidget(
+                        currentPage: args3.currentPage,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,

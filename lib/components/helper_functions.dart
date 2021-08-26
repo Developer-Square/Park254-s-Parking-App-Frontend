@@ -162,12 +162,14 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(address);
 
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    cameraAnimate(
-        controller: _controller,
-        latitude: locations[0].latitude,
-        longitude: locations[0].longitude);
-    _clearPlaceList(address);
+    if (locations.length > 0) {
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+      cameraAnimate(
+          controller: _controller,
+          latitude: locations[0].latitude,
+          longitude: locations[0].longitude);
+      _clearPlaceList(address);
+    }
   } catch (e) {
     log('In get location in helper_function.dart');
     log(e.toString());

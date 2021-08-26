@@ -21,12 +21,14 @@ import 'helper_functions.dart';
 ///
 /// Requires [allMarkers], [mapController] and [customInfoWindowController].
 class GoogleMapWidget extends StatefulWidget {
+  final String currentPage;
   final Function mapCreated;
   final CustomInfoWindowController customInfoWindowController;
   final TextEditingController searchBarController;
   GoogleMapController mapController;
 
   GoogleMapWidget({
+    @required this.currentPage,
     @required this.mapCreated,
     @required this.customInfoWindowController,
     this.mapController,
@@ -102,11 +104,21 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     }
   }
 
+  void getSelectedParkingLot(id) {
+    if (nearbyParkingListDetails.nearbyParking.lots != null) {
+      // Map through the existing parking lots then set the user selected parking lot
+      // to the store.
+      nearbyParkingListDetails.nearbyParking.lots.forEach((lot) {
+        if (lot.id == id) {
+          nearbyParkingListDetails.setNearbyParkingLot(value: lot);
+        }
+      });
+    }
+  }
+
   // Make an api request to get all the parking locations and add markers.
   // to each of them.
   getAllParkingLocations() async {
-    log(nearbyParkingListDetails.toString());
-
     if (storeDetails != null) {
       var accessToken = storeDetails.user.accessToken.token;
       getParkingLots(token: accessToken).then((value) {
@@ -124,14 +136,19 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           });
           allMarkers.add(
             Marker(
-                markerId: MarkerId(value.name),
+                markerId: MarkerId(value.id.toString()),
                 position: LatLng(value.location.coordinates[1],
                     value.location.coordinates[0]),
                 icon: bitmapDescriptor,
                 onTap: () {
                   if (nearbyParkingListDetails != null) {
-                    nearbyParkingListDetails
-                        .setNearByParkingLots('googleMapMarker');
+                    String parkingLotId = value.id;
+                    // Show the book now tab according to which page the user is currently on.
+                    // Tip: Since we're using one google map for both the home page and search page,
+                    // you wouldn't want to show the book now tab in both pages simultaneously.
+                    nearbyParkingListDetails.setBookNowTab('googleMapMarker');
+                    nearbyParkingListDetails.setCurrentPage(widget.currentPage);
+                    getSelectedParkingLot(parkingLotId);
                   }
                   widget.searchBarController.text = value.name;
                   widget.customInfoWindowController.addInfoWindow(

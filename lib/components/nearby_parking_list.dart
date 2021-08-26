@@ -106,7 +106,9 @@ class _NearByParkingList extends State<NearByParkingList> {
             widget.parkingData.location.coordinates[0]));
     widget.searchBarController.text = widget.parkingPlaceName;
     if (nearbyParkingListDetails != null) {
-      nearbyParkingListDetails.setNearByParkingLots('nearbyparkinglot');
+      // Show the book now tab after a user has selected their parkingLot
+      nearbyParkingListDetails.setBookNowTab('nearbyparkinglot');
+      nearbyParkingListDetails.setCurrentPage('home');
       nearbyParkingListDetails.setNearbyParkingLot(value: widget.parkingData);
     }
   }

@@ -26,28 +26,34 @@ class NearbyParkingListModel with ChangeNotifier {
     distance: null,
   );
   bool loading = false;
-  bool _showNearByParkingLots = false;
+  bool _showBookNowTab = false;
   Position _currentPosition;
   Directions _directionsInfo;
+  String _currentPage;
 
   NearbyParkingLots get nearbyParking => _nearbyParking;
   NearbyParkingLot get nearbyParkingLot => _nearbyParkingLot;
   Position get currentPosition => _currentPosition;
   Directions get directionsInfo => _directionsInfo;
-  bool get showNearByParkingLots => _showNearByParkingLots;
+  bool get showBookNowTab => _showBookNowTab;
+  String get currentPage => _currentPage;
 
   void setCurrentPositon(Position value) {
     _currentPosition = value;
     notifyListeners();
   }
 
-  void setNearByParkingLots(String value) {
+  void setCurrentPage(String value) {
+    _currentPage = value;
+  }
+
+  void setBookNowTab(String value) {
     // If the function is being called by the booking tab close icon.
     // then add hide/show functionality else hide map buttons remains true
     if (value == 'bookingTab') {
-      _showNearByParkingLots = !_showNearByParkingLots;
+      _showBookNowTab = !_showBookNowTab;
     } else {
-      _showNearByParkingLots = true;
+      _showBookNowTab = true;
     }
     notifyListeners();
   }

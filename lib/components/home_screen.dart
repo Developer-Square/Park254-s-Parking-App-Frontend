@@ -70,6 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) {
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
+      nearbyParkingDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+    }
+
+    if (nearbyParkingDetails != null) {
+      nearbyParkingDetails.setCurrentPage('home');
     }
   }
 
@@ -150,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
+                currentPage: 'home',
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController,
                 searchBarController: searchBarController,
@@ -180,12 +187,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   : Container(),
               // Show the booking tab when a user clicks on one of the parking locations.
               // on the parking widget.
-              nearbyParkingDetails?.showNearByParkingLots
+              nearbyParkingDetails?.showBookNowTab &&
+                      nearbyParkingDetails?.currentPage == 'home'
                   ? Container(
                       margin: EdgeInsets.only(
                           bottom: MediaQuery.of(context).size.height / 20.0),
                       child: BookingTab(
-                        index: index,
                         homeScreen: true,
                         showNearbyParking: showNearByParkingFn,
                         searchBarController: searchBarController,
@@ -198,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       currentPage: 'home',
                     )
                   : Container(),
-              showMap && !nearbyParkingDetails?.showNearByParkingLots
+              showMap && !nearbyParkingDetails?.showBookNowTab
                   ? Positioned(
                       bottom: showNearByParking ? 350.0 : 100.0,
                       right: 0,

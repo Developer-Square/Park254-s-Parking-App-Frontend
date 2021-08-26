@@ -5,14 +5,6 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class HomePageArguements {
-  final FlutterSecureStorage loginDetails;
-
-  HomePageArguements({
-    @required this.loginDetails,
-  });
-}
-
 class NearByParkingListArguments {
   final String imgPath;
   final double parkingPrice;
@@ -58,7 +50,11 @@ class TopPageStylingArguements {
 class GoogleMapWidgetArguements {
   final Function mapCreated;
   final CustomInfoWindowController customInfoWindowController;
+  final String currentPage;
 
-  GoogleMapWidgetArguements(
-      {@required this.mapCreated, @required this.customInfoWindowController});
+  GoogleMapWidgetArguements({
+    @required this.mapCreated,
+    @required this.customInfoWindowController,
+    @required this.currentPage,
+  });
 }

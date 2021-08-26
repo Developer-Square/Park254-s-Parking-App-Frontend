@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -23,13 +23,11 @@ class BookingTab extends StatefulWidget {
   TextEditingController searchBarController;
   bool homeScreen;
   final Function showNearbyParking;
-  final int index;
 
   BookingTab({
     @required this.searchBarController,
     this.homeScreen,
     this.showNearbyParking,
-    this.index,
   });
   @override
   _BookingTabState createState() => _BookingTabState();
@@ -56,10 +54,11 @@ class _BookingTabState extends State<BookingTab> {
 
   @override
   Widget build(BuildContext context) {
+    developer.log(nearbyParkingListDetails.nearbyParkingLot.name.toString());
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-          height: widget.homeScreen ? 195.0 : 170.0,
+          height: 195.0,
           width: MediaQuery.of(context).size.width / 1.13,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -80,27 +79,29 @@ class _BookingTabState extends State<BookingTab> {
           child: Column(
             children: <Widget>[
               // Display the close icon on in homescreen.
-              widget.homeScreen
-                  ? Container(
-                      margin: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width / 1.4),
-                      child: InkWell(
-                          onTap: widget.homeScreen
-                              ? () {
-                                  widget.showNearbyParking();
-                                  if (nearbyParkingListDetails != null) {
-                                    nearbyParkingListDetails
-                                        .setNearByParkingLots('bookingTab');
-                                  }
+              Container(
+                  margin: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 1.4),
+                  child: InkWell(
+                      onTap: () {
+                        if (nearbyParkingListDetails != null) {
+                          if (nearbyParkingListDetails.currentPage == 'home') {
+                            widget.showNearbyParking();
+                          }
 
-                                  widget.searchBarController.text = '';
-                                }
-                              : () {},
-                          child: Icon(Icons.close)))
-                  : Container(),
+                          nearbyParkingListDetails.setBookNowTab('bookingTab');
+                        }
+
+                        widget.searchBarController.text = '';
+                      },
+                      child: Icon(Icons.close))),
               NearByParkingList(
                   activeCard: false,
-                  imgPath: nearbyParkingListDetails.nearbyParkingLot.images[0],
+                  imgPath:
+                      nearbyParkingListDetails.nearbyParkingLot.images.length >
+                              0
+                          ? nearbyParkingListDetails.nearbyParkingLot.images[0]
+                          : '',
                   parkingPrice: nearbyParkingListDetails.nearbyParkingLot.price,
                   parkingPlaceName:
                       nearbyParkingListDetails.nearbyParkingLot.name.length > 20

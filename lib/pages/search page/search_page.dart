@@ -101,6 +101,10 @@ class _SearchPageState extends State<SearchPage> {
             longitude = navigationDetails.currentPosition.longitude;
           });
         }
+
+        if (nearbyParkingDetails != null) {
+          nearbyParkingDetails.setCurrentPage('search');
+        }
       }
       getSavedRecentSearches();
     }
@@ -314,6 +318,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget build(BuildContext context) {
+    nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab
@@ -336,6 +341,7 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
+                currentPage: 'search',
                 searchBarController: searchBarController,
                 mapCreated: mapCreated,
                 customInfoWindowController: _customInfoWindowController),
@@ -452,7 +458,8 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   )
                 : Container(),
-            showBookNowTab
+            nearbyParkingDetails?.showBookNowTab &&
+                    nearbyParkingDetails?.currentPage == 'search'
                 ? BookingTab(
                     homeScreen: false,
                     searchBarController: searchBarController,
