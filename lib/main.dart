@@ -331,7 +331,6 @@ class _MyAppState extends State<MyApp> {
                       price: args.price,
                       rating: args.rating,
                       availableSpaces: args.availableSpaces,
-                      availableLots: args.availableLots,
                       address: args.address,
                       imageOne: args.imageOne,
                       imageTwo: args.imageTwo);

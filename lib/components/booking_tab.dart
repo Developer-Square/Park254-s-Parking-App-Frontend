@@ -54,7 +54,6 @@ class _BookingTabState extends State<BookingTab> {
 
   @override
   Widget build(BuildContext context) {
-    developer.log(nearbyParkingListDetails.nearbyParkingLot.name.toString());
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -88,7 +87,6 @@ class _BookingTabState extends State<BookingTab> {
                           if (nearbyParkingListDetails.currentPage == 'home') {
                             widget.showNearbyParking();
                           }
-
                           nearbyParkingListDetails.setBookNowTab('bookingTab');
                         }
 
@@ -133,17 +131,46 @@ class _BookingTabState extends State<BookingTab> {
   Widget _buildButtons(String text, Color _color) {
     return InkWell(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => Booking(
-                  address: nearbyParkingListDetails.nearbyParkingLot.location
-                      .toString(),
-                  bookingNumber: getRandomNumber(),
-                  destination: nearbyParkingListDetails.nearbyParkingLot.name,
-                  parkingLotNumber: getRandomNumber(),
-                  // TODO: Change that number when in production.
-                  price: 1,
-                  imagePath:
-                      nearbyParkingListDetails.nearbyParkingLot.images[0])));
+          text.contains('book')
+              ? Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Booking(
+                      address: nearbyParkingListDetails
+                          .nearbyParkingLot.location
+                          .toString(),
+                      bookingNumber: getRandomNumber(),
+                      destination:
+                          nearbyParkingListDetails.nearbyParkingLot.name,
+                      parkingLotNumber: getRandomNumber(),
+                      // TODO: Change that number when in production.
+                      price: 1,
+                      imagePath:
+                          nearbyParkingListDetails.nearbyParkingLot.images[0])))
+              : Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => MoreInfo(
+                        address: nearbyParkingListDetails.nearbyParkingLot.name,
+                        destination:
+                            nearbyParkingListDetails.nearbyParkingLot.name,
+                        rating:
+                            nearbyParkingListDetails.nearbyParkingLot.rating,
+                        price: nearbyParkingListDetails.nearbyParkingLot.price,
+                        city: nearbyParkingListDetails.nearbyParkingLot.city,
+                        imageOne: nearbyParkingListDetails
+                                    .nearbyParkingLot.images.length >
+                                0
+                            ? nearbyParkingListDetails
+                                .nearbyParkingLot.images[0]
+                            : null,
+                        imageTwo: nearbyParkingListDetails
+                                    .nearbyParkingLot.images.length >
+                                0
+                            ? nearbyParkingListDetails
+                                .nearbyParkingLot.images[1]
+                            : null,
+                        distance:
+                            nearbyParkingListDetails.nearbyParkingLot.distance,
+                        availableSpaces:
+                            nearbyParkingListDetails.nearbyParkingLot.spaces,
+                      )));
         },
         child: Container(
           decoration: BoxDecoration(
