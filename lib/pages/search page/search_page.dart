@@ -428,35 +428,36 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Helper: To inform the user that they can scroll down to see more.
             // suggestions.
-            showRecentSearches ||
-                    _placeList.length > 0 &&
-                        nearbyParkingDetails.directionsInfo == null
-                ? Positioned(
-                    top: showRecentSearches
-                        ? MediaQuery.of(context).size.height / 9
-                        : MediaQuery.of(context).size.height / 9,
-                    right: MediaQuery.of(context).size.width / 4,
-                    child: Column(
-                      children: [
-                        Text(
-                          'Scroll down for more suggestions',
-                          style:
-                              globals.buildTextStyle(12.0, false, Colors.grey),
+            showRecentSearches || _placeList.length > 0
+                // Hide the suggestions helper when the user is navigating
+                ? !navigationDetails.isNavigating
+                    ? Positioned(
+                        top: showRecentSearches
+                            ? MediaQuery.of(context).size.height / 9
+                            : MediaQuery.of(context).size.height / 9,
+                        right: MediaQuery.of(context).size.width / 4,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Scroll down for more suggestions',
+                              style: globals.buildTextStyle(
+                                  12.0, false, Colors.grey),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  color: globals.textColor),
+                              height: 30,
+                              width: 30,
+                              child: Icon(
+                                Icons.arrow_circle_down_sharp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100.0),
-                              color: globals.textColor),
-                          height: 30,
-                          width: 30,
-                          child: Icon(
-                            Icons.arrow_circle_down_sharp,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+                      )
+                    : Container()
                 : Container(),
             nearbyParkingDetails?.showBookNowTab &&
                     nearbyParkingDetails?.currentPage == 'search'

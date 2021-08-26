@@ -4,9 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
-import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
-import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
 import 'package:provider/provider.dart';
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
@@ -34,7 +33,9 @@ class BookingTab extends StatefulWidget {
 }
 
 class _BookingTabState extends State<BookingTab> {
+  // Details from the store
   NearbyParkingListModel nearbyParkingListDetails;
+  NavigationProvider navigationDetails;
 
   @override
   initState() {
@@ -42,6 +43,8 @@ class _BookingTabState extends State<BookingTab> {
     if (mounted) {
       nearbyParkingListDetails =
           Provider.of<NearbyParkingListModel>(context, listen: false);
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
     }
   }
 
@@ -113,9 +116,18 @@ class _BookingTabState extends State<BookingTab> {
                       nearbyParkingListDetails.nearbyParkingLot.spaces),
               SizedBox(height: 20.0),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: navigationDetails != null
+                    ? navigationDetails.isNavigating
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.spaceAround
+                    : MainAxisAlignment.spaceAround,
                 children: [
-                  _buildButtons('Book Now', globals.backgroundColor),
+                  navigationDetails != null
+                      // If the user is navigating, hide the book now button for the book now tab.
+                      ? navigationDetails.isNavigating
+                          ? Container()
+                          : _buildButtons('Book Now', globals.backgroundColor)
+                      : _buildButtons('Book Now', globals.backgroundColor),
                   _buildButtons('More Info', Colors.white),
                 ],
               )
@@ -131,7 +143,7 @@ class _BookingTabState extends State<BookingTab> {
   Widget _buildButtons(String text, Color _color) {
     return InkWell(
         onTap: () {
-          text.contains('book')
+          text.contains('Book')
               ? Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => Booking(
                       address: nearbyParkingListDetails

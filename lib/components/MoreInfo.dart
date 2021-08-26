@@ -186,7 +186,7 @@ class _MoreInfoState extends State<MoreInfo> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               _textWithIcon(Icons.near_me,
-                  '${widget.distance.toString().substring(0, 4)} ft'),
+                  '${widget.distance.toString().substring(0, 4)} m'),
               _textWithIcon(
                   Icons.attach_money, '${widget.price.toString()} / Hour'),
               PrimaryText(content: '${widget.rating.toString()}'),
