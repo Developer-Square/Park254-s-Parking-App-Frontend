@@ -39,6 +39,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController emailController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
+  TextEditingController vehicleTypeController = new TextEditingController();
+  TextEditingController vehiclePlateController = new TextEditingController();
   bool showLoader;
   String userRole;
   String carPlate = 'KCB 8793K';
@@ -124,6 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   email: emailController,
                                   phone: phoneController,
                                   password: passwordController,
+                                  vehiclePlateController:
+                                      vehiclePlateController,
+                                  vehicleTypeController: vehicleTypeController,
                                   currentScreen: 'profile',
                                 )));
                       },
@@ -143,40 +148,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    buildContainer(widget.logo1Path, true, 'wallet', carPlate),
-                    SizedBox(height: 1.0),
-                    buildContainer(widget.logo2Path, false, 'wallet', carPlate),
+                    buildContainer(logo: widget.logo2Path, type: 'wallet'),
                     SizedBox(height: 50.0),
                     userRole != 'vendor'
                         ? Padding(
                             padding:
                                 const EdgeInsets.only(left: 30.0, right: 30.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
                               children: [
-                                Text(
-                                  'Vehicles',
-                                  style: globals.buildTextStyle(
-                                      18.0, true, globals.textColor),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Vehicles',
+                                      style: globals.buildTextStyle(
+                                          18.0, true, globals.textColor),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditScreen(
+                                                      fullName:
+                                                          fullNameController,
+                                                      email: emailController,
+                                                      phone: phoneController,
+                                                      password:
+                                                          passwordController,
+                                                      vehiclePlateController:
+                                                          vehiclePlateController,
+                                                      vehicleTypeController:
+                                                          vehicleTypeController,
+                                                      currentScreen: 'vehicles',
+                                                    )));
+                                      },
+                                      child: Container(
+                                        width: 37.0,
+                                        height: 37.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(100.0)),
+                                            color: Colors.white),
+                                        child: Icon(Icons.add),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => EditScreen(
-                                                  currentScreen: 'vehicles',
-                                                )));
-                                  },
-                                  child: Container(
-                                    width: 37.0,
-                                    height: 37.0,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(100.0)),
-                                        color: Colors.white),
-                                    child: Icon(Icons.add),
-                                  ),
-                                ),
+                                SizedBox(height: 25.0),
+                                storeDetails.user.user.vehicles.length > 0
+                                    ? Column(
+                                        children: storeDetails
+                                            .user.user.vehicles
+                                            .map((vehicle) =>
+                                                Column(children: <Widget>[
+                                                  buildContainer(
+                                                    type: 'vehicles',
+                                                    carModel: vehicle.model,
+                                                    carPlate: vehicle.plate,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.0,
+                                                  )
+                                                ]))
+                                            .toList())
+                                    : Container()
                               ],
                             ),
                           )

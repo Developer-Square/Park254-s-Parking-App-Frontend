@@ -31,12 +31,14 @@ Future<User> updateUser({
     "name": name,
     "email": email,
     "phone": phone.toString(),
-    "vehicles": vehicles,
+    // "vehicles": vehicles,
   };
   body.removeWhere((key, value) => value == '' || value == 0);
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
+
+  log(body.toString());
 
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response = await http.patch(url, headers: headers, body: body);

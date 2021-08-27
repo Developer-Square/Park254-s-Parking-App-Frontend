@@ -8,6 +8,7 @@ import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 
@@ -21,6 +22,8 @@ class EditScreen extends StatefulWidget {
   final phone;
   final password;
   final currentScreen;
+  final vehicleTypeController;
+  final vehiclePlateController;
 
   EditScreen({
     this.profileImgPath,
@@ -29,6 +32,8 @@ class EditScreen extends StatefulWidget {
     this.phone,
     this.password,
     @required this.currentScreen,
+    this.vehiclePlateController,
+    this.vehicleTypeController,
   });
 
   @override
@@ -36,26 +41,34 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  TextEditingController vehicleTypeController = new TextEditingController();
-  TextEditingController vehiclePlateController = new TextEditingController();
   bool showLoader;
   bool showToolTip;
   String text;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  List<Vehicle> vehiclesArray;
 
   initState() {
     super.initState();
     showLoader = false;
-    storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
-    if (widget.currentScreen == 'vehicles') {
-      vehicleTypeController.text = storeDetails.user.user.vehicles[0].model;
-      vehiclePlateController.text = storeDetails.user.user.vehicles[0].plate;
+    if (mounted) {
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+
+      if (storeDetails != null) {
+        vehiclesArray = storeDetails.user.user.vehicles;
+      }
     }
   }
 
-  hideToolTip() {
-    showToolTip = false;
+  void clearFields() {
+    setState(() {
+      widget.fullName.text = '';
+      widget.email.text = '';
+      widget.phone.text = '';
+      widget.password.text = '';
+      widget.vehicleTypeController.text = '';
+      widget.vehiclePlateController.text = '';
+    });
   }
 
   updateProfile() async {
@@ -64,15 +77,35 @@ class _EditScreenState extends State<EditScreen> {
     });
     var accessToken = storeDetails.user.accessToken.token;
     var userId = storeDetails.user.user.id;
+
+    // Add the new vehicle to the vehicles array, then send all the vehicles in the
+    // update request.
+    if (widget.currentScreen != 'profile' &&
+        widget.vehiclePlateController != '' &&
+        widget.vehicleTypeController != '') {
+      vehiclesArray.add(
+        new Vehicle(
+          model: widget.vehicleTypeController.text,
+          plate: widget.vehiclePlateController.text,
+        ),
+      );
+    }
+
     updateUser(
       token: accessToken,
       userId: userId,
       name: widget.fullName.text,
       email: widget.email.text,
       phone: int.parse(widget.phone.text),
+      vehicles: vehiclesArray,
     ).then((value) async {
-      storeDetails.updateUser(widget.fullName.text, widget.email.text,
-          int.parse(widget.phone.text));
+      storeDetails.updateUser(
+        widget.fullName.text,
+        widget.email.text,
+        int.parse(widget.phone.text),
+      );
+
+      clearFields();
       setState(() {
         showLoader = false;
       });
@@ -93,7 +126,9 @@ class _EditScreenState extends State<EditScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: BackArrow(),
+        leading: BackArrow(
+          clearFields: clearFields,
+        ),
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: true,
         title: Text(
@@ -119,13 +154,16 @@ class _EditScreenState extends State<EditScreen> {
                             text: 'vehicle',
                             label: 'Add vehicle type',
                             placeholder: 'vehicle type',
-                            controller: vehicleTypeController),
+                            controller: widget.vehicleTypeController),
                         SizedBox(height: 20.0),
                         BuildFormField(
                             text: 'vehicle',
                             label: 'Add vechicle plate',
                             placeholder: 'vehicle plate',
-                            controller: vehiclePlateController)
+                            controller: widget.vehiclePlateController),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height / 10.0),
+                        buildSubmitButton(type: 'vehicle')
                       ],
                     ),
             ),
@@ -183,23 +221,27 @@ class _EditScreenState extends State<EditScreen> {
         SizedBox(
           height: 55.0,
         ),
-        InkWell(
-            onTap: () {
-              updateProfile();
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width - 30.0,
-              height: 53.0,
-              decoration: BoxDecoration(
-                  color: globals.backgroundColor,
-                  borderRadius: BorderRadius.all(Radius.circular(35.0))),
-              child: Center(
-                  child: Text(
-                'Save Edits',
-                style: globals.buildTextStyle(18.0, true, globals.textColor),
-              )),
-            ))
+        buildSubmitButton(type: 'profile')
       ],
     );
+  }
+
+  Widget buildSubmitButton({@required String type}) {
+    return InkWell(
+        onTap: () {
+          updateProfile();
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width - 30.0,
+          height: 53.0,
+          decoration: BoxDecoration(
+              color: globals.backgroundColor,
+              borderRadius: BorderRadius.all(Radius.circular(35.0))),
+          child: Center(
+              child: Text(
+            type == 'profile' ? 'Save Edits' : 'Add Vehicle',
+            style: globals.buildTextStyle(18.0, true, globals.textColor),
+          )),
+        ));
   }
 }
