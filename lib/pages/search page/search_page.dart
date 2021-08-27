@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/booking_tab.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
@@ -17,6 +16,7 @@ import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/functions/directions/getDirections.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:park254_s_parking_app/pages/search%20page/widgets/helper_functions.dart';
 import 'package:park254_s_parking_app/pages/search%20page/widgets/navigation_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,8 +25,7 @@ import 'package:http/http.dart' as http;
 import '../../config/globals.dart' as globals;
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'dart:developer';
-import '../../.env.dart';
-import './helpers.dart';
+import 'helper_widgets.dart';
 
 /// Creates a search page with recent searches of the user.
 ///
@@ -143,31 +142,11 @@ class _SearchPageState extends State<SearchPage> {
         latitude: latitude,
         longitude: longitude,
         zoom: 14.0);
-    addRouteToMap();
+    addRouteToMap(
+      nearbyParkingDetails: nearbyParkingDetails,
+      navigationDetails: navigationDetails,
+    );
     _customInfoWindowController.googleMapController = controller;
-  }
-
-  void addRouteToMap() async {
-    if (navigationDetails != null && nearbyParkingDetails != null) {
-      if (navigationDetails.isNavigating &&
-          navigationDetails.currentPosition != null) {
-        LatLng origin = LatLng(navigationDetails.currentPosition.latitude,
-            navigationDetails.currentPosition.longitude);
-        // Coordinates for the destination, details from the store.
-        LatLng destination = LatLng(
-            nearbyParkingDetails.nearbyParkingLot.location.coordinates[1],
-            nearbyParkingDetails.nearbyParkingLot.location.coordinates[0]);
-        try {
-          // Get Directions.
-          final directions = await DirectionsRepository()
-              .getDirections(origin: origin, destination: destination);
-          // Set the details in the store.
-          nearbyParkingDetails.setDirections(value: directions);
-        } catch (e) {
-          buildNotification(e.toString(), 'error');
-        }
-      }
-    }
   }
 
   @override
@@ -194,30 +173,23 @@ class _SearchPageState extends State<SearchPage> {
     showSuggestion
         ?
         // Gets the suggestions by making an api call to the Places Api.
-        getSuggestion(searchBarController.text)
+        getSuggestion(
+            input: searchBarController.text,
+            sessionToken: _sessionToken,
+            setSearchResults: setSearchResults,
+          )
         // ignore: unnecessary_statements
         : () {};
   }
 
-  void getSuggestion(String input) async {
-    String country = 'country:ke';
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&components=$country&key=$kGOOGLE_API_KEY&sessiontoken=$_sessionToken';
-
-    var response = await http.get(request);
-    if (response.statusCode == 200) {
-      setState(() {
-        // TODO: Create a model for predictions data.
-        // If successfull store all the suggestions in a list to display below the search bar.
-        _placeList = json.decode(response.body)['predictions'];
-        // Hide the recent searches when the user starts typing on the search bar input.
-        _placeList.length > 0 ? showRecentSearches = false : null;
-      });
-    } else {
-      throw Exception('Failed to load predictions');
-    }
+  void setSearchResults(response) {
+    setState(() {
+      // TODO: Create a model for predictions data.
+      // If successfull store all the suggestions in a list to display below the search bar.
+      _placeList = json.decode(response.body)['predictions'];
+      // Hide the recent searches when the user starts typing on the search bar input.
+      _placeList.length > 0 ? showRecentSearches = false : null;
+    });
   }
 
   // Shows the rating tab and hides all other widgets.
@@ -263,57 +235,24 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  addSearchToList(value, town) {
-    // Add the destination that the user was searching for, to the search bar.
-    var location = [];
-    location.add(value);
-    location.add(town);
+  // Hide suggestions when the user has selected one.
+  void hideSuggestions({String value, String town}) {
     setState(() {
       showSuggestion = false;
       showRecentSearches = false;
       searchBarController.text = '$value, $town';
     });
-
-    // If the location is already in the list then don't add it.
-    // ToDo: Add a better way of testing this.
-    if (!_recentSearchesList.contains(value)) {
-      // If the list has five items remove the first one since it's.
-      // the oldest and add the latest one.
-      if (_recentSearchesList.length == 5) {
-        // Adding a setState here so as the changes on the recent searches.
-        // can be seen.
-        setState(() {
-          addedSearch = true;
-        });
-
-        _recentSearchesList.removeAt(0);
-        _recentSearchesList.add(location);
-      } else {
-        _recentSearchesList.add(location);
-      }
-    }
-    saveRecentSearches();
   }
 
-  // Save five of the user's recent searches in a list.
-  saveRecentSearches() async {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setString(recentSearchesKey, json.encode(_recentSearchesList));
-    }).catchError((err) {
-      print(err);
+  void addSearchFn() {
+    setState(() {
+      addedSearch = true;
     });
   }
 
-// Retrieve the saved recent searches to display them.
-  getSavedRecentSearches() async {
-    await SharedPreferences.getInstance().then((prefs) {
-      _recentSearchesList = json.decode(prefs.getString(recentSearchesKey));
-
-      if (_recentSearchesList == null) {
-        setState(() {
-          _recentSearchesList = [];
-        });
-      }
+  void clearRecentSearchList() {
+    setState(() {
+      _recentSearchesList = [];
     });
   }
 
@@ -322,29 +261,14 @@ class _SearchPageState extends State<SearchPage> {
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab
-          appBar: !showRatingTab
-              ? AppBar(
-                  backgroundColor: Colors.white,
-                  elevation: 0.0,
-                  leading: IconButton(
-                      icon: Icon(Icons.arrow_back_outlined),
-                      color: globals.textColor,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        FocusScope.of(context).unfocus();
-                      }),
-                  title: Text('Search',
-                      style: globals.buildTextStyle(
-                          18.0, true, globals.textColor)),
-                  centerTitle: true,
-                )
-              : null,
+          appBar: !showRatingTab ? buildAppBar(context: context) : null,
           body: Stack(children: <Widget>[
             GoogleMapWidget(
-                currentPage: 'search',
-                searchBarController: searchBarController,
-                mapCreated: mapCreated,
-                customInfoWindowController: _customInfoWindowController),
+              currentPage: 'search',
+              searchBarController: searchBarController,
+              mapCreated: mapCreated,
+              customInfoWindowController: _customInfoWindowController,
+            ),
             // A pop-up that show the distance and time when a user is navigating.
             nearbyParkingDetails != null
                 ? nearbyParkingDetails.directionsInfo != null
@@ -411,12 +335,21 @@ class _SearchPageState extends State<SearchPage> {
                                       customInfoWindowController:
                                           _customInfoWindowController,
                                       storeDetails: storeDetails,
-                                    )
+                                      hideSuggestions: hideSuggestions,
+                                      addedSearchFn: addSearchFn)
                                   // Display suggestions available.
                                   : _placeList.length > 0
                                       ? showSuggestions(
                                           placeList: _placeList,
-                                          buildSinglePlace: _buildSinglePlace)
+                                          storeDetails: storeDetails,
+                                          context: context,
+                                          clearPlaceList: clearPlaceList,
+                                          addSearchToList: addSearchToList,
+                                          mapController: mapController,
+                                          recentSearchesList:
+                                              _recentSearchesList,
+                                          hideSuggestions: hideSuggestions,
+                                          addedSearchFn: addSearchFn)
                                       : Padding(
                                           padding:
                                               EdgeInsets.only(bottom: 20.0),
@@ -431,32 +364,9 @@ class _SearchPageState extends State<SearchPage> {
             showRecentSearches || _placeList.length > 0
                 // Hide the suggestions helper when the user is navigating
                 ? !navigationDetails.isNavigating
-                    ? Positioned(
-                        top: showRecentSearches
-                            ? MediaQuery.of(context).size.height / 9
-                            : MediaQuery.of(context).size.height / 9,
-                        right: MediaQuery.of(context).size.width / 4,
-                        child: Column(
-                          children: [
-                            Text(
-                              'Scroll down for more suggestions',
-                              style: globals.buildTextStyle(
-                                  12.0, false, Colors.grey),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  color: globals.textColor),
-                              height: 30,
-                              width: 30,
-                              child: Icon(
-                                Icons.arrow_circle_down_sharp,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                    ? buildScrollHelper(
+                        showRecentSearches: showRecentSearches,
+                        context: context)
                     : Container()
                 : Container(),
             nearbyParkingDetails?.showBookNowTab &&
@@ -474,47 +384,5 @@ class _SearchPageState extends State<SearchPage> {
                 offset: 32),
           ])),
     );
-  }
-
-  /// A widget that builds and displays the suggestions from google.
-  ///
-  /// When a user clicks on one of the places they're directed to that specific area.
-  /// on the map.
-  Widget _buildSinglePlace(index) {
-    var placeDescription = _placeList[index]['description'].toString();
-    // Split the location string e.g. from Nairobi, Kenya to Nairobi as the specific location.
-    // and Kenya as the general location.
-    var split = placeDescription.split(',');
-    Map<int, String> values = {};
-    for (int i = 0; i < split.length; i++) {
-      values[i] = split[i];
-    }
-
-    // First check if the value is there before cutting it.
-    if (values[0] != null) {
-      // Cut the words in the suggestion so that they don't overflow.
-      // on the page.
-      if (values[0].length > 19) {
-        values[0] = values[0].substring(0, 19) + '...';
-      }
-    }
-
-    if (values[1] != null) {
-      if (values[1].length > 19) {
-        values[1] = values[1].substring(0, 19) + '...';
-      }
-    }
-
-    // Re-using Recent searches widget to display user's suggestions
-    return RecentSearches(
-        storeDetails: storeDetails,
-        recentSearchesListFn: addSearchToList,
-        specificLocation: values[0],
-        town: values[1] == null ? 'None' : values[1],
-        setShowRecentSearches: () {},
-        controller: mapController,
-        newSearch: true,
-        clearPlaceListFn: clearPlaceList,
-        context: context);
   }
 }

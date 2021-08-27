@@ -30,21 +30,28 @@ class RecentSearches extends StatelessWidget {
   final parkingData;
   final context;
   final Function recentSearchesListFn;
+  final Function addedSearchFn;
+  final Function hideSuggestions;
+  final List recentSearchesList;
   // User's details from the store.
   UserWithTokenModel storeDetails;
 
-  RecentSearches(
-      {@required this.specificLocation,
-      @required this.town,
-      @required this.setShowRecentSearches,
-      this.newSearch,
-      this.controller,
-      this.clearPlaceListFn,
-      this.parkingData,
-      this.context,
-      this.customInfoWindowController,
-      this.recentSearchesListFn,
-      this.storeDetails});
+  RecentSearches({
+    @required this.specificLocation,
+    @required this.town,
+    @required this.setShowRecentSearches,
+    this.newSearch,
+    this.controller,
+    this.clearPlaceListFn,
+    this.parkingData,
+    this.context,
+    this.customInfoWindowController,
+    this.recentSearchesListFn,
+    this.storeDetails,
+    this.addedSearchFn,
+    this.hideSuggestions,
+    this.recentSearchesList,
+  });
 
   var parkingLotNames = [];
 
@@ -62,7 +69,13 @@ class RecentSearches extends StatelessWidget {
   }
 
   runGetFunction() {
-    recentSearchesListFn(specificLocation, town);
+    recentSearchesListFn(
+      value: specificLocation,
+      town: town,
+      hideSuggestions: hideSuggestions,
+      recentSearchesList: recentSearchesList,
+      addedSearchFn: addedSearchFn,
+    );
     getLocation(
         specificLocation + ',' + town, controller, clearPlaceListFn, context);
   }
