@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 
-class BookingDetails {
+class BookingDetailsPopulated {
   final String id;
-  final String parkingLotId;
+  final ParkingLot parkingLotId;
   final String clientId;
   final num spaces;
   final DateTime entryTime;
   final DateTime exitTime;
   final bool isCancelled;
 
-  BookingDetails({
-    this.id,
+  BookingDetailsPopulated({
+    @required this.id,
     @required this.parkingLotId,
     @required this.clientId,
     @required this.spaces,
     @required this.entryTime,
     @required this.exitTime,
-    this.isCancelled,
+    @required this.isCancelled,
   });
 
-  factory BookingDetails.fromJson(Map<String, dynamic> json) {
-    return BookingDetails(
+  factory BookingDetailsPopulated.fromJson(Map<String, dynamic> json) {
+    return BookingDetailsPopulated(
       id: json['id'],
-      parkingLotId: json['parkingLotId'],
+      parkingLotId: ParkingLot.fromJson(json['parkingLotId']),
       clientId: json['clientId'],
       spaces: json['spaces'],
       entryTime: DateTime.parse(json['entryTime']),
@@ -30,12 +31,4 @@ class BookingDetails {
       isCancelled: json['isCancelled'],
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        'parkingLotId': parkingLotId,
-        'clientId': clientId,
-        'spaces': spaces,
-        'entryTime': entryTime.toUtc().toIso8601String(),
-        'exitTime': exitTime.toUtc().toIso8601String(),
-      };
 }

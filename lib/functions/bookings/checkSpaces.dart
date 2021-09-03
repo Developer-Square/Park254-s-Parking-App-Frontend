@@ -1,18 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as dartIO;
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/models/spaceList.model.dart';
 import '../../config/globals.dart' as globals;
 
-/// Updates a booking
-Future<BookingDetails> updateBooking({
+/// Check occupied spaces
+Future<SpaceList> checkSpaces({
   @required String token,
-  @required String bookingId,
-  @required String parkingLotId,
-  @required num spaces,
+  @required List<String> parkingLots,
   @required DateTime entryTime,
   @required DateTime exitTime,
 }) async {
@@ -20,24 +18,23 @@ Future<BookingDetails> updateBooking({
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
-  final url = Uri.https(globals.apiKey, '/v1/bookings/$bookingId');
+  final url = Uri.https(globals.apiKey, '/v1/spaces');
 
   Map<String, dynamic> body = {
-    "parkingLotId": parkingLotId,
-    "spaces": spaces.toString(),
+    "parkingLots": parkingLots,
     "entryTime": entryTime.toUtc().toIso8601String(),
     "exitTime": exitTime.toUtc().toIso8601String(),
   };
 
-  final response = await http.patch(
+  final response = await http.post(
     url,
     headers: headers,
     body: jsonEncode(body),
   );
 
   if (response.statusCode == 200) {
-    final booking = BookingDetails.fromJson(jsonDecode(response.body));
-    return booking;
+    final spaces = SpaceList.fromJson(jsonDecode(response.body));
+    return spaces;
   } else {
     handleError(response.body);
   }

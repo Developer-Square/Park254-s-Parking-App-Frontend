@@ -21,6 +21,7 @@ class ParkingLotModel with ChangeNotifier {
     city: null,
     price: null,
     features: null,
+    availableSpaces: null,
   );
   bool loading = false;
 
@@ -44,18 +45,19 @@ class ParkingLotModel with ChangeNotifier {
 
   void clear() {
     _parkingLot = new ParkingLot(
-        id: null,
-        owner: null,
-        name: null,
-        spaces: null,
-        images: null,
-        location: null,
-        ratingCount: null,
-        ratingValue: null,
-        rating: null,
-        address: null,
-        city: null,
-        price: null,
-        features: null);
+      id: null,
+      owner: null,
+      name: null,
+      spaces: null,
+      images: null,
+      location: null,
+      ratingCount: null,
+      ratingValue: null,
+      rating: null,
+      address: null,
+      city: null,
+      price: null,
+      availableSpaces: null,
+    );
   }
 }

@@ -18,6 +18,7 @@ class NearbyParkingLot {
   final dynamic address;
   final dynamic city;
   final Features features;
+  final int availableSpaces;
 
   NearbyParkingLot({
     @required this.id,
@@ -34,6 +35,7 @@ class NearbyParkingLot {
     @required this.address,
     @required this.city,
     @required this.features,
+    @required this.availableSpaces,
   });
 
   factory NearbyParkingLot.fromJson(Map<String, dynamic> json) {
@@ -54,6 +56,7 @@ class NearbyParkingLot {
       address: json['address'],
       city: json['city'],
       features: Features.fromJson(json['features']),
+      availableSpaces: json['availableSpaces'],
     );
   }
 }
