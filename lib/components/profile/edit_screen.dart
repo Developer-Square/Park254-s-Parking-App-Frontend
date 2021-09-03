@@ -174,7 +174,7 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-  /// Builds out an edit profile screen
+  /// Builds out an edit profile screen.
   Widget buildEditProfile() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
