@@ -48,6 +48,21 @@ class _BookingTabState extends State<BookingTab> {
     }
   }
 
+  // Book a parking lot then redirect the user to the booking page.
+  // for payment.
+  void handleParkingLotBooking() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Booking(
+            address:
+                nearbyParkingListDetails.nearbyParkingLot.location.toString(),
+            bookingNumber: getRandomNumber(),
+            destination: nearbyParkingListDetails.nearbyParkingLot.name,
+            parkingLotNumber: getRandomNumber(),
+            // TODO: Change that number when in production.
+            price: 1,
+            imagePath: nearbyParkingListDetails.nearbyParkingLot.images[0])));
+  }
+
   getRandomNumber() {
     Random rng = new Random();
     List<String> randomList =
@@ -144,19 +159,7 @@ class _BookingTabState extends State<BookingTab> {
     return InkWell(
         onTap: () {
           text.contains('Book')
-              ? Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Booking(
-                      address: nearbyParkingListDetails
-                          .nearbyParkingLot.location
-                          .toString(),
-                      bookingNumber: getRandomNumber(),
-                      destination:
-                          nearbyParkingListDetails.nearbyParkingLot.name,
-                      parkingLotNumber: getRandomNumber(),
-                      // TODO: Change that number when in production.
-                      price: 1,
-                      imagePath:
-                          nearbyParkingListDetails.nearbyParkingLot.images[0])))
+              ? handleParkingLotBooking()
               : Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MoreInfo(
                         address: nearbyParkingListDetails.nearbyParkingLot.name,
