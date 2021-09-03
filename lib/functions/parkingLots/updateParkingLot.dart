@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,6 +48,8 @@ Future<ParkingLot> updateParkingLot({
   if (images.length == 0) {
     body.remove('images');
   }
+
+  log(jsonEncode(body));
 
   final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.patch(
