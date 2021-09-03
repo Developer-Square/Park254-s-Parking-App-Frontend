@@ -18,6 +18,7 @@ class ParkingLotModel with ChangeNotifier {
     address: null,
     city: null,
     price: null,
+    availableSpaces: null,
   );
   bool loading = false;
 
@@ -55,6 +56,7 @@ class ParkingLotModel with ChangeNotifier {
       address: null,
       city: null,
       price: null,
+      availableSpaces: null,
     );
   }
 }
