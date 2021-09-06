@@ -7,6 +7,7 @@ import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
@@ -15,6 +16,7 @@ import 'package:park254_s_parking_app/pages/search page/search_page.dart';
 
 import '../CircleWithIcon.dart';
 import '../DottedHorizontalLine.dart';
+import '../helper_functions.dart';
 
 /// Creates a receipt
 ///
@@ -189,9 +191,13 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
-                    child: Image(
-                      image: AssetImage('assets/images/qrcode.png'),
-                      fit: BoxFit.cover,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MyParkingScreen())),
+                      child: Image(
+                        image: AssetImage('assets/images/qrcode.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     flex: 7,
                   ),
@@ -283,6 +289,8 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 desiredAccuracy: LocationAccuracy.high);
             navigationDetails.setNavigation();
             navigationDetails.setCurrentLocation(position);
+            buildNotification(
+                'On arrival, present the QR Code for scanning', 'info');
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => SearchPage()));
           },

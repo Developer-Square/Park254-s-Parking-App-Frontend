@@ -63,8 +63,15 @@ clearStorage() async {
 ///
 /// It can be used to show success or error messages.
 buildNotification(textMsg, msgType) {
-  return showSimpleNotification(Text(textMsg),
-      background: msgType == 'error' ? Colors.red : globals.backgroundColor,
+  return showSimpleNotification(
+      Text(
+        textMsg,
+      ),
+      background: msgType == 'error'
+          ? Colors.red
+          : msgType == 'info'
+              ? Colors.blue
+              : globals.backgroundColor,
       autoDismiss: false, trailing: Builder(builder: (context) {
     return FlatButton(
         onPressed: () {

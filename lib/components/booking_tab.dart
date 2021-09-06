@@ -140,7 +140,8 @@ class _BookingTabState extends State<BookingTab> {
                   navigationDetails != null
                       // If the user is navigating, hide the book now button for the book now tab.
                       ? navigationDetails.isNavigating
-                          ? Container()
+                          ? _buildButtons(
+                              'Show QR Code', globals.backgroundColor)
                           : _buildButtons('Book Now', globals.backgroundColor)
                       : _buildButtons('Book Now', globals.backgroundColor),
                   _buildButtons('More Info', Colors.white),
@@ -160,32 +161,38 @@ class _BookingTabState extends State<BookingTab> {
         onTap: () {
           text.contains('Book')
               ? handleParkingLotBooking()
-              : Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MoreInfo(
-                        address: nearbyParkingListDetails.nearbyParkingLot.name,
-                        destination:
-                            nearbyParkingListDetails.nearbyParkingLot.name,
-                        rating:
-                            nearbyParkingListDetails.nearbyParkingLot.rating,
-                        price: nearbyParkingListDetails.nearbyParkingLot.price,
-                        city: nearbyParkingListDetails.nearbyParkingLot.city,
-                        imageOne: nearbyParkingListDetails
-                                    .nearbyParkingLot.images.length >
-                                0
-                            ? nearbyParkingListDetails
-                                .nearbyParkingLot.images[0]
-                            : null,
-                        imageTwo: nearbyParkingListDetails
-                                    .nearbyParkingLot.images.length >
-                                0
-                            ? nearbyParkingListDetails
-                                .nearbyParkingLot.images[1]
-                            : null,
-                        distance:
-                            nearbyParkingListDetails.nearbyParkingLot.distance,
-                        availableSpaces:
-                            nearbyParkingListDetails.nearbyParkingLot.spaces,
-                      )));
+              // Take user back to the PaymentSuccessful page for QR code scanning
+              : text.contains('Show')
+                  ? Navigator.of(context).pop()
+                  : Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MoreInfo(
+                            address:
+                                nearbyParkingListDetails.nearbyParkingLot.name,
+                            destination:
+                                nearbyParkingListDetails.nearbyParkingLot.name,
+                            rating: nearbyParkingListDetails
+                                .nearbyParkingLot.rating,
+                            price:
+                                nearbyParkingListDetails.nearbyParkingLot.price,
+                            city:
+                                nearbyParkingListDetails.nearbyParkingLot.city,
+                            imageOne: nearbyParkingListDetails
+                                        .nearbyParkingLot.images.length >
+                                    0
+                                ? nearbyParkingListDetails
+                                    .nearbyParkingLot.images[0]
+                                : null,
+                            imageTwo: nearbyParkingListDetails
+                                        .nearbyParkingLot.images.length >
+                                    0
+                                ? nearbyParkingListDetails
+                                    .nearbyParkingLot.images[1]
+                                : null,
+                            distance: nearbyParkingListDetails
+                                .nearbyParkingLot.distance,
+                            availableSpaces: nearbyParkingListDetails
+                                .nearbyParkingLot.spaces,
+                          )));
         },
         child: Container(
           decoration: BoxDecoration(
