@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getNearbyParkingLots.dart';
 import 'package:park254_s_parking_app/models/directions.model.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
@@ -10,21 +9,21 @@ import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 class NearbyParkingListModel with ChangeNotifier {
   NearbyParkingLots _nearbyParking = new NearbyParkingLots(lots: null);
   NearbyParkingLot _nearbyParkingLot = new NearbyParkingLot(
-    id: null,
-    city: null,
-    owner: null,
-    images: null,
-    price: null,
-    rating: null,
-    ratingCount: null,
-    ratingValue: null,
-    location: null,
-    spaces: null,
-    features: null,
-    name: null,
-    address: null,
-    distance: null,
-  );
+      id: null,
+      city: null,
+      owner: null,
+      images: null,
+      price: null,
+      rating: null,
+      ratingCount: null,
+      ratingValue: null,
+      location: null,
+      spaces: null,
+      features: null,
+      name: null,
+      address: null,
+      distance: null,
+      availableSpaces: null);
   bool loading = false;
   bool _showBookNowTab = false;
   Position _currentPosition;

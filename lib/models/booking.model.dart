@@ -34,7 +34,7 @@ class BookingDetails {
   Map<String, dynamic> toJson() => {
         'parkingLotId': parkingLotId,
         'clientId': clientId,
-        'spaces': spaces,
+        'spaces': spaces.toString(),
         'entryTime': entryTime.toUtc().toIso8601String(),
         'exitTime': exitTime.toUtc().toIso8601String(),
       };

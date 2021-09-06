@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +21,6 @@ Future<BookingDetails> book({
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
-    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
 
   final url = Uri.https('${globals.apiKey}', '/v1/bookings');
@@ -32,6 +32,7 @@ Future<BookingDetails> book({
     entryTime: entryTime,
     exitTime: exitTime,
   ).toJson();
+  log(body.toString());
 
   final response = await http.post(url, body: body, headers: headers);
 

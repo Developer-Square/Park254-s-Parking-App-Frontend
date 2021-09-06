@@ -48,19 +48,19 @@ class _BookingTabState extends State<BookingTab> {
     }
   }
 
-  // Book a parking lot then redirect the user to the booking page.
-  // for payment.
+  // Move to the booking page to book the parking lot and then pay.
   void handleParkingLotBooking() {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => Booking(
-            address:
-                nearbyParkingListDetails.nearbyParkingLot.location.toString(),
-            bookingNumber: getRandomNumber(),
-            destination: nearbyParkingListDetails.nearbyParkingLot.name,
-            parkingLotNumber: getRandomNumber(),
-            // TODO: Change that number when in production.
-            price: 1,
-            imagePath: nearbyParkingListDetails.nearbyParkingLot.images[0])));
+              address:
+                  nearbyParkingListDetails.nearbyParkingLot.location.toString(),
+              bookingNumber: getRandomNumber(),
+              destination: nearbyParkingListDetails.nearbyParkingLot.name,
+              parkingLotNumber: getRandomNumber(),
+              // TODO: Change that number when in production.
+              price: 1,
+              imagePath: nearbyParkingListDetails.nearbyParkingLot.images[0],
+            )));
   }
 
   getRandomNumber() {

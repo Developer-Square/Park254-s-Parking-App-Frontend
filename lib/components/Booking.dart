@@ -9,6 +9,7 @@ import 'package:park254_s_parking_app/components/transactions/PayUp.dart';
 import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
@@ -207,16 +208,24 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt() {
-    Navigator.pushNamed(context, PaymentSuccessful.routeName,
-        arguments: ReceiptArguments(
-          parkingSpace: widget.parkingLotNumber,
+  void _generateReceipt(BookingProvider bookingDetails) {
+    if (bookingDetails != null) {
+      bookingDetails.setBooking(
           price: amount,
           destination: widget.destination,
-          address: widget.address,
-          arrivalTime: arrivalTime,
-          leavingTime: leavingTime,
-        ));
+          arrival: arrivalTime,
+          leaving: leavingTime);
+
+      Navigator.pushNamed(context, PaymentSuccessful.routeName,
+          arguments: ReceiptArguments(
+            parkingSpace: widget.parkingLotNumber,
+            price: amount,
+            destination: widget.destination,
+            address: widget.address,
+            arrivalTime: arrivalTime,
+            leavingTime: leavingTime,
+          ));
+    }
   }
 
   Widget _dropDown(
@@ -515,7 +524,10 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: () => _generateReceipt(),
+                      receiptGenerator: (bookingDetails) =>
+                          _generateReceipt(bookingDetails),
+                      arrivalTime: arrivalTime,
+                      leavingTime: leavingTime,
                     )
                   : Container(),
               isLoading ? Loader() : Container()

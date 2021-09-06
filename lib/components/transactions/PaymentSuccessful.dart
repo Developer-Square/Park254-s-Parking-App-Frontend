@@ -28,23 +28,18 @@ import '../DottedHorizontalLine.dart';
 ///      destination: 'Nairobi',
 ///      parkingSpace: 'pajh5114',
 ///      price: 10,
-///      address: '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya'
 ///   )
 ///);
 class PaymentSuccessful extends StatefulWidget {
-  final String parkingSpaces;
   final int price;
   final String destination;
-  final String address;
   final TimeOfDay arrivalTime;
   final TimeOfDay leavingTime;
   static const routeName = '/receipt';
 
   PaymentSuccessful(
-      {@required this.parkingSpaces,
-      @required this.price,
+      {@required this.price,
       @required this.destination,
-      @required this.address,
       @required this.arrivalTime,
       @required this.leavingTime});
 
@@ -297,12 +292,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
             iconColor: globals.textColor,
             sizeFactor: 2,
           ),
-        ),
-        CircleWithIcon(
-          icon: Icons.error_outline,
-          bgColor: Colors.red,
-          iconColor: Colors.white,
-          sizeFactor: 1,
         ),
         CircleWithIcon(
           icon: Icons.call,

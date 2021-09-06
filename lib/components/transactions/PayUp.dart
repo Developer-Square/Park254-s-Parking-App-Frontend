@@ -6,11 +6,12 @@ import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:park254_s_parking_app/models/transaction.model.dart';
 import 'package:provider/provider.dart';
 
 import '../helper_functions.dart';
@@ -20,6 +21,8 @@ import '../helper_functions.dart';
 /// ```dart
 /// PayUp(
 ///   total: amount,
+///   arrivalTime: arrivalTime
+///   leavingTime: leavingTime
 ///   timeDatePicker: _timeDatePicker(),
 ///   toggleDisplay: () => _togglePayUp(),
 ///   receiptGenerator: () => _generateReceipt(),
@@ -30,12 +33,17 @@ class PayUp extends StatefulWidget {
   final Widget timeDatePicker;
   final Function toggleDisplay;
   final Function receiptGenerator;
+  final TimeOfDay arrivalTime;
+  final TimeOfDay leavingTime;
 
-  PayUp(
-      {@required this.total,
-      @required this.timeDatePicker,
-      @required this.toggleDisplay,
-      @required this.receiptGenerator});
+  PayUp({
+    @required this.total,
+    @required this.timeDatePicker,
+    @required this.toggleDisplay,
+    @required this.receiptGenerator,
+    @required this.arrivalTime,
+    @required this.leavingTime,
+  });
   @override
   _PayUpState createState() => _PayUpState();
 }
@@ -47,19 +55,52 @@ class _PayUpState extends State<PayUp> {
   TransactionModel transactionDetails;
   // User's details from the store.
   UserWithTokenModel storeDetails;
+  // Details from the store
+  NearbyParkingListModel nearbyParkingListDetails;
+  BookingProvider bookingDetails;
 
   @override
   void initState() {
     super.initState();
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+      bookingDetails = Provider.of<BookingProvider>(context, listen: false);
     }
   }
 
-  callPaymentMethod(transactionDetails) async {
+  void createBooking(TransactionModel transactionDetails) {
+    if (storeDetails != null &&
+        nearbyParkingListDetails != null &&
+        bookingDetails != null) {
+      final now = new DateTime.now();
+      transactionDetails.setLoading(true);
+
+      book(
+        token: storeDetails.user.accessToken.token.toString(),
+        parkingLotId: nearbyParkingListDetails.nearbyParkingLot.id,
+        clientId: storeDetails.user.user.id,
+        spaces: 1,
+        entryTime: new DateTime(now.year, now.month, now.day,
+            widget.arrivalTime.hour, widget.arrivalTime.minute),
+        exitTime: new DateTime(now.year, now.month, now.day,
+            widget.leavingTime.hour, widget.leavingTime.minute),
+      ).then((value) {
+        buildNotification('Parking lot booked successfully', 'success');
+        // Call the mpesa STK push.
+        callPaymentMethod(transactionDetails);
+      }).catchError((err) {
+        log("In PayUp.dart");
+        log(err.toString());
+        buildNotification(err.message.toString(), 'error');
+      });
+    }
+  }
+
+  void callPaymentMethod(transactionDetails) async {
     String access = storeDetails.user.accessToken.token;
     if (access != null) {
-      transactionDetails.setLoading(true);
       pay(
               phoneNumber: 254796867328,
               amount: widget.total,
@@ -73,7 +114,7 @@ class _PayUpState extends State<PayUp> {
         if (value.resultCode == 0) {
           buildNotification('Payment Successful', 'success');
           // Move the payment successful page.
-          widget.receiptGenerator();
+          widget.receiptGenerator(bookingDetails);
         }
         // If the transaction failed and the user has not retried it then show retry modal.
         else if (value.resultCode == 503) {
@@ -157,7 +198,7 @@ class _PayUpState extends State<PayUp> {
                 ),
                 Expanded(
                   child: GoButton(
-                      onTap: () => callPaymentMethod(transactionDetails),
+                      onTap: () => createBooking(transactionDetails),
                       title: 'Pay Up'),
                   flex: 2,
                 ),

@@ -18,6 +18,7 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/parkingInfoArguments.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
@@ -181,6 +182,8 @@ class _MyAppState extends State<MyApp> {
             create: (context) => TransactionModel()),
         ChangeNotifierProvider<NavigationProvider>(
             create: (context) => NavigationProvider()),
+        ChangeNotifierProvider<BookingProvider>(
+            create: (context) => BookingProvider()),
       ],
       child: OverlaySupport(
         child: MaterialApp(
@@ -339,22 +342,8 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
-                    parkingSpaces: args.parkingSpace,
                     price: args.price,
                     destination: args.destination,
-                    address: args.address,
-                    arrivalTime: args.arrivalTime,
-                    leavingTime: args.leavingTime,
-                  );
-                });
-              } else if (settings.name == PaymentSuccessful.routeName) {
-                final ReceiptArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PaymentSuccessful(
-                    parkingSpaces: args.parkingSpace,
-                    price: args.price,
-                    destination: args.destination,
-                    address: args.address,
                     arrivalTime: args.arrivalTime,
                     leavingTime: args.leavingTime,
                   );
