@@ -11,6 +11,7 @@ import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/book.dart';
+import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +59,7 @@ class _PayUpState extends State<PayUp> {
   // Details from the store
   NearbyParkingListModel nearbyParkingListDetails;
   BookingProvider bookingDetails;
+  String bookingId;
 
   @override
   void initState() {
@@ -88,10 +90,29 @@ class _PayUpState extends State<PayUp> {
             widget.leavingTime.hour, widget.leavingTime.minute),
       ).then((value) {
         buildNotification('Parking lot booked successfully', 'success');
+        // Set the bookingId to be used incase the transaction fails.
+        bookingId = value.id;
         // Call the mpesa STK push.
         callPaymentMethod(transactionDetails);
       }).catchError((err) {
-        log("In PayUp.dart");
+        transactionDetails.setLoading(false);
+        log("In PayUp.dart, createBooking function");
+        log(err.toString());
+        buildNotification(err.message.toString(), 'error');
+      });
+    }
+  }
+
+  /// Cancel the transaction when the user cancels the retryModal.
+  void cancelParkingLotBooking({String access, String bookingId}) {
+    if (access != null && bookingId != null) {
+      cancelBooking(token: access, bookingId: bookingId).then((value) {
+        if (value.isCancelled) {
+          buildNotification(
+              'Booking was cancelled due to a failed transaction', 'success');
+        }
+      }).catchError((err) {
+        log("In PayUp.dart, cancelParkingLotBooking function");
         log(err.toString());
         buildNotification(err.message.toString(), 'error');
       });
@@ -112,6 +133,7 @@ class _PayUpState extends State<PayUp> {
         // If resultCode is equal to 0 then the transcation other than that.
         // then it failed.
         if (value.resultCode == 0) {
+          transactionDetails.setLoading(false);
           buildNotification('Payment Successful', 'success');
           // Move the payment successful page.
           widget.receiptGenerator(bookingDetails);
@@ -120,11 +142,20 @@ class _PayUpState extends State<PayUp> {
         else if (value.resultCode == 503) {
           buildNotification(resultDesc ?? 'Transaction failed', 'error');
 
-          retryModal(context, transactionDetails, widget.total, access,
-              widget.receiptGenerator);
+          retryModal(
+            parentContext: context,
+            transactionDetails: transactionDetails,
+            total: widget.total,
+            token: access,
+            receiptGenerator: widget.receiptGenerator,
+            cancelBooking: () =>
+                cancelParkingLotBooking(access: access, bookingId: bookingId),
+          );
         }
       }).catchError((err) {
-        log("In PayUp.dart");
+        cancelParkingLotBooking(access: access, bookingId: bookingId);
+        transactionDetails.setLoading(false);
+        log("In PayUp.dart, callPaymentMethod function");
         log(err.toString());
         buildNotification(err.message.toString(), 'error');
       });

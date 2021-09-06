@@ -4,8 +4,14 @@ import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.da
 
 import '../../helper_functions.dart';
 
-void retryFunction(
-    transactionDetails, total, token, context, receiptGenerator) {
+void retryFunction({
+  dynamic transactionDetails,
+  int total,
+  String token,
+  BuildContext context,
+  Function receiptGenerator,
+  Function cancelBooking,
+}) {
   transactionDetails.setLoading(true);
   fetchTransaction(
           phoneNumber: 254796867328,
@@ -21,6 +27,7 @@ void retryFunction(
       receiptGenerator();
     } else if (value.resultCode == 503) {
       buildNotification(value.resultDesc, 'error');
+      cancelBooking();
     }
   });
 
@@ -30,8 +37,14 @@ void retryFunction(
 /// Builds out the comment section modal to allow users to
 /// view and comment on pictures.
 /// Requires [context].
-void retryModal(BuildContext parentContext, transactionDetails, int total,
-    String token, Function receiptGenerator) {
+void retryModal({
+  BuildContext parentContext,
+  dynamic transactionDetails,
+  int total,
+  String token,
+  Function receiptGenerator,
+  Function cancelBooking,
+}) {
   showDialog(
       context: parentContext,
       builder: (BuildContext context) {
@@ -59,6 +72,7 @@ void retryModal(BuildContext parentContext, transactionDetails, int total,
                         InkWell(
                           onTap: () {
                             Navigator.pop(parentContext);
+                            cancelBooking();
                           },
                           child: const Icon(Icons.close, color: Colors.white),
                         )
@@ -77,8 +91,13 @@ void retryModal(BuildContext parentContext, transactionDetails, int total,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           FlatButton(
-                            onPressed: () => retryFunction(transactionDetails,
-                                total, token, context, receiptGenerator),
+                            onPressed: () => retryFunction(
+                                transactionDetails: transactionDetails,
+                                total: total,
+                                token: token,
+                                context: context,
+                                receiptGenerator: receiptGenerator,
+                                cancelBooking: cancelBooking),
                             color: globals.primaryColor,
                             textColor: Colors.white,
                             minWidth: 30.0,
@@ -87,7 +106,10 @@ void retryModal(BuildContext parentContext, transactionDetails, int total,
                           ),
                           SizedBox(width: 15.0),
                           FlatButton(
-                            onPressed: () => Navigator.pop(parentContext),
+                            onPressed: () {
+                              cancelBooking();
+                              Navigator.pop(parentContext);
+                            },
                             color: Colors.red,
                             textColor: Colors.white,
                             minWidth: 30.0,

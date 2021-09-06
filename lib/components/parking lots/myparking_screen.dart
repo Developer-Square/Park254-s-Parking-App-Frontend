@@ -9,9 +9,12 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/getBookings.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
+import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
@@ -36,6 +39,7 @@ class MyParkingState extends State<MyParkingScreen> {
   // Parking lots from the store.
   ParkingLotListModel parkingLotList;
   UserModel userModel;
+  List<BookingDetailsPopulated> bookingDetailsList;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -46,6 +50,7 @@ class MyParkingState extends State<MyParkingScreen> {
   void initState() {
     super.initState();
     showLoader = false;
+
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
       parkingLotList = Provider.of<ParkingLotListModel>(context, listen: false);
@@ -54,6 +59,10 @@ class MyParkingState extends State<MyParkingScreen> {
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;
       getParkingDetails();
+      // If the current user is a normal user fetch their parkingLots history.
+      if (userRole == 'user') {
+        fetchParkingLotHistory(access: accessToken, userId: userId);
+      }
     }
   }
 
@@ -65,6 +74,18 @@ class MyParkingState extends State<MyParkingScreen> {
     pricesController.dispose();
     addressController.dispose();
     cityController.dispose();
+  }
+
+  void fetchParkingLotHistory({String access, String userId}) {
+    getBookings(token: access, clientId: userId, sortBy: 'desc').then((value) {
+      setState(() {
+        bookingDetailsList = value.bookingDetailsList;
+      });
+    }).catchError((err) {
+      log("In fetchParkingLotHistory, myparking_screen");
+      log(err.toString());
+      buildNotification(err.message, 'error');
+    });
   }
 
   redirectToCreateorUpdatePage(text, [parkingData]) {
@@ -86,6 +107,12 @@ class MyParkingState extends State<MyParkingScreen> {
     if (accessToken != null && userId != null) {
       parkingLotList.fetch(token: accessToken, owner: userId);
     }
+  }
+
+  // Convert DateTime to TimeOfDay to be displayed in the parking history list.
+  String timeOfDayToString(value) {
+    var time = TimeOfDay.fromDateTime(value).toString();
+    return time.substring(10, 15);
   }
 
   // Update the form fields then move to the page.
@@ -124,7 +151,7 @@ class MyParkingState extends State<MyParkingScreen> {
         showLoader = false;
       });
       print("In deleteParkingLot, myparking_screen");
-      buildNotification(err.message, 'success');
+      buildNotification(err.message, 'error');
       log(err.toString());
     });
   }
@@ -149,9 +176,8 @@ class MyParkingState extends State<MyParkingScreen> {
                     children: <Widget>[
                       TopPageStyling(
                           currentPage: 'myparking',
-                          widget: userRole == 'vendor'
-                              ? Container()
-                              : buildParkingTab()),
+                          widget:
+                              userRole == 'vendor' ? Container() : Container()),
                       SizedBox(height: 50.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,32 +228,10 @@ class MyParkingState extends State<MyParkingScreen> {
                         height: 20.0,
                       ),
                       userRole == 'vendor' && parkingLotsResults != null
-                          ? buildParkingLotResults(parkingLotsResults)
-                          : userRole == 'user'
-                              ? Column(
-                                  children: [
-                                    buildParkingContainer(
-                                        'MALL: P2 . 5B',
-                                        'Ksh 2400',
-                                        'First Church of Christ',
-                                        'Payment Success',
-                                        globals.backgroundColor),
-                                    SizedBox(height: 10.0),
-                                    buildParkingContainer(
-                                        'MALL: P2 . 5B',
-                                        'Ksh 2400',
-                                        'Parklands Ave, Nairobi',
-                                        'Payment failed',
-                                        Colors.orange[800]),
-                                    SizedBox(height: 10.0),
-                                    buildParkingContainer(
-                                        'MALL: P2 . 5B',
-                                        'Ksh 2400',
-                                        'Parklands Ave, Nairobi',
-                                        'Payment failed',
-                                        Colors.orange[800]),
-                                  ],
-                                )
+                          ? buildParkingLotResults(results: parkingLotsResults)
+                          : userRole == 'user' && bookingDetailsList != null
+                              ? buildParkingLotResults(
+                                  results: bookingDetailsList)
                               : Center(
                                   child: Text(
                                   'Loading....',
@@ -248,21 +252,28 @@ class MyParkingState extends State<MyParkingScreen> {
   /// Builds out all the parking widgets on the page.
   ///
   /// This happens after the parking lots are fetched from the backend.
-  Widget buildParkingLotResults(List results) {
+  Widget buildParkingLotResults({List results}) {
     return new Column(
         children: results
             .map(
               (item) => Column(
                 children: [
                   InkWell(
-                    child: buildParkingContainer(
-                      item.name,
-                      'Ksh ${item.price} / hr',
-                      item.address,
-                      'Parking Slots: ${item.spaces}',
-                      Colors.white,
-                      item,
-                    ),
+                    child: userRole == 'user'
+                        ? buildParkingContainer(
+                            parkingLotName: item.parkingLotId.city,
+                            parkingPrice: timeOfDayToString(item.entryTime),
+                            parkingLocation: item.parkingLotId.city,
+                            paymentStatus: timeOfDayToString(item.exitTime),
+                          )
+                        : buildParkingContainer(
+                            parkingLotName: item.name,
+                            parkingPrice: 'Ksh ${item.price} / hr',
+                            parkingLocation: item.address,
+                            paymentStatus: 'Parking Slots: ${item.spaces}',
+                            paymentColor: Colors.white,
+                            parkingLotData: item,
+                          ),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -288,23 +299,28 @@ class MyParkingState extends State<MyParkingScreen> {
   }
 
   /// Builds out the parking tabs on the page.
-  Widget buildParkingTab() {
-    return Center(
-        child: buildParkingContainer(
-            'SPACE: P5 . 6A',
-            'Ksh 200',
-            'Parking on Wabera St',
-            'Waiting for payment',
-            globals.backgroundColor));
-  }
+  // Widget buildParkingTab() {
+  //   return Center(
+  //       child: buildParkingContainer(
+  //           'SPACE: P5 . 6A',
+  //           'Ksh 200',
+  //           'Parking on Wabera St',
+  //           'Waiting for payment',
+  //           globals.backgroundColor));
+  // }
 
   /// Builds out the different containers on the page
   ///
   /// Requires [parkingLotNumber], [parkingPrice], [parkingLocation], [paymentStatus], [paymentColor] and [parkingLotData].
   /// The parkingLotData will be used when updating and deleting parking lots.
-  Widget buildParkingContainer(parkingLotName, parkingPrice, parkingLocation,
-      paymentStatus, paymentColor,
-      [parkingLotData]) {
+  Widget buildParkingContainer({
+    String parkingLotName,
+    String parkingPrice,
+    String parkingLocation,
+    String paymentStatus,
+    Color paymentColor,
+    dynamic parkingLotData,
+  }) {
     return BoxShadowWrapper(
       offsetY: 0.0,
       offsetX: 0.0,
@@ -325,11 +341,11 @@ class MyParkingState extends State<MyParkingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  parkingLotName,
+                  parkingLotName ?? '',
                   style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
                 ),
                 Text(
-                  parkingPrice,
+                  parkingPrice ?? '',
                   style: globals.buildTextStyle(16.0, true, globals.textColor),
                 )
               ],
@@ -339,7 +355,7 @@ class MyParkingState extends State<MyParkingScreen> {
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Text(
-              parkingLocation,
+              parkingLocation ?? '',
               style: globals.buildTextStyle(17.0, true, globals.textColor),
             ),
           ),
@@ -371,7 +387,9 @@ class MyParkingState extends State<MyParkingScreen> {
                           ? SizedBox(width: 10.0)
                           : SizedBox(width: 0.0),
                       Text(
-                        paymentStatus,
+                        userRole == 'user'
+                            ? '$parkingPrice - $paymentStatus'
+                            : paymentStatus,
                         style: globals.buildTextStyle(
                             15.0, true, globals.textColor),
                       ),

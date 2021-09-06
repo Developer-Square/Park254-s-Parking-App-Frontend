@@ -32,7 +32,6 @@ Future<BookingDetails> book({
     entryTime: entryTime,
     exitTime: exitTime,
   ).toJson();
-  log(body.toString());
 
   final response = await http.post(url, body: body, headers: headers);
 
