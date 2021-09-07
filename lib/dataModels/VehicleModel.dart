@@ -5,7 +5,7 @@ import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/models/vehicleList.model.dart';
 
 class VehicleModel with ChangeNotifier {
-  VehicleList vehicleData = new VehicleList(
+  VehicleList _vehicleData = new VehicleList(
     vehicles: null,
     page: null,
     limit: null,
@@ -14,7 +14,7 @@ class VehicleModel with ChangeNotifier {
   );
   bool loading = false;
 
-  VehicleList get vehicle => vehicleData;
+  VehicleList get vehicleData => _vehicleData;
 
   void fetch({
     @required String token,
@@ -25,7 +25,7 @@ class VehicleModel with ChangeNotifier {
     int page = 1,
   }) async {
     loading = true;
-    vehicleData = await getVehicles(
+    _vehicleData = await getVehicles(
       token: token,
       plate: plate,
       owner: owner,
@@ -38,27 +38,27 @@ class VehicleModel with ChangeNotifier {
   }
 
   void add({@required Vehicle vehicle}) {
-    vehicleData.vehicles.add(vehicle);
+    _vehicleData.vehicles.add(vehicle);
     notifyListeners();
   }
 
   void remove({@required Vehicle vehicle}) {
-    vehicleData.vehicles.removeWhere((v) => v.id == vehicle.id);
+    _vehicleData.vehicles.removeWhere((v) => v.id == vehicle.id);
     notifyListeners();
   }
 
   void clear() {
-    vehicleData.vehicles.clear();
+    _vehicleData.vehicles.clear();
     notifyListeners();
   }
 
   Vehicle findById({@required String id}) {
-    return vehicleData.vehicles.firstWhere((v) => v.id == id);
+    return _vehicleData.vehicles.firstWhere((v) => v.id == id);
   }
 
   void updateVehicle(Vehicle vehicle) {
-    num index = vehicleData.vehicles.indexWhere((v) => v.id == vehicle.id);
-    vehicleData.vehicles[index] = vehicle;
+    num index = _vehicleData.vehicles.indexWhere((v) => v.id == vehicle.id);
+    _vehicleData.vehicles[index] = vehicle;
     notifyListeners();
   }
 }
