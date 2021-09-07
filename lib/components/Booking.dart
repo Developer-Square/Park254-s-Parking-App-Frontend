@@ -45,13 +45,14 @@ class Booking extends StatefulWidget {
   final String address;
   static const routeName = '/booking';
 
-  Booking(
-      {@required this.bookingNumber,
-      @required this.destination,
-      @required this.parkingLotNumber,
-      @required this.price,
-      @required this.imagePath,
-      @required this.address});
+  Booking({
+    @required this.bookingNumber,
+    @required this.destination,
+    @required this.parkingLotNumber,
+    @required this.price,
+    @required this.imagePath,
+    @required this.address,
+  });
 
   @override
   _BookingState createState() => _BookingState();
@@ -80,11 +81,26 @@ class _BookingState extends State<Booking> {
   ];
   final List<String> driverList = <String>['Linus', 'Ryan'];
   TransactionModel transactionDetails;
+  BookingProvider bookingDetailsProvider;
 
   @override
   void initState() {
     super.initState();
     isLoading = false;
+
+    if (mounted) {
+      bookingDetailsProvider =
+          Provider.of<BookingProvider>(context, listen: false);
+
+      if (bookingDetailsProvider != null) {
+        if (bookingDetailsProvider.update) {
+          arrivalTime = bookingDetailsProvider.arrivalTime;
+          leavingTime = bookingDetailsProvider.leavingTime;
+          arrivalDate = bookingDetailsProvider.arrivalDate;
+          leavingDate = bookingDetailsProvider.leavingDate;
+        }
+      }
+    }
   }
 
   void showHideLoader(value) {
@@ -174,12 +190,28 @@ class _BookingState extends State<Booking> {
     }
   }
 
-  ///Calculates the parking duration and cost
+  /// Calculates the parking duration and cost
   String _parkingTime() {
-    final Duration parkingDays = leavingDate.difference(arrivalDate);
-    final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
-        (arrivalTime.hour + (arrivalTime.minute / 60)) +
-        parkingDays.inHours;
+    Duration parkingDays;
+    double totalTime;
+    // If the user is updating the time, he/she should only be charged for the difference.
+    // between the initial leaving time and the leaving time he/she has set.
+    if (bookingDetailsProvider != null) {
+      if (bookingDetailsProvider.update) {
+        parkingDays =
+            leavingDate.difference(bookingDetailsProvider.leavingDate);
+        totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+            (bookingDetailsProvider.leavingTime.hour +
+                (bookingDetailsProvider.leavingTime.minute / 60)) +
+            parkingDays.inHours;
+      }
+    } else {
+      parkingDays = leavingDate.difference(arrivalDate);
+      totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+          (arrivalTime.hour + (arrivalTime.minute / 60)) +
+          parkingDays.inHours;
+    }
+
     int hours;
     int minutes;
     if (totalTime >= 0) {
@@ -211,10 +243,13 @@ class _BookingState extends State<Booking> {
   void _generateReceipt(BookingProvider bookingDetails) {
     if (bookingDetails != null) {
       bookingDetails.setBooking(
-          price: amount,
-          destination: widget.destination,
-          arrival: arrivalTime,
-          leaving: leavingTime);
+        price: amount,
+        destination: widget.destination,
+        arrival: arrivalTime,
+        leaving: leavingTime,
+        arrivalDate: arrivalDate,
+        leavingDate: leavingDate,
+      );
 
       Navigator.pushNamed(context, PaymentSuccessful.routeName,
           arguments: ReceiptArguments(
@@ -415,8 +450,17 @@ class _BookingState extends State<Booking> {
 
   Widget _timeDatePicker() {
     return TimeDatePicker(
-        pickArrivalDate: () => _selectArrivalDate(context),
-        pickArrivalTime: () => _selectArrivalTime(context),
+        // If the user is updating time, they're not allowed to update the arrival time.
+        pickArrivalDate: bookingDetailsProvider != null
+            ? bookingDetailsProvider.update
+                ? () => _selectArrivalDate(context)
+                : () {}
+            : () {},
+        pickArrivalTime: bookingDetailsProvider != null
+            ? bookingDetailsProvider.update
+                ? () => _selectArrivalTime(context)
+                : () {}
+            : () {},
         pickLeavingDate: () => _selectLeavingDate(context),
         pickLeavingTime: () => _selectLeavingTime(context),
         arrivalDate: arrivalDate.day == DateTime.now().day

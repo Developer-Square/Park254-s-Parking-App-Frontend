@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:math' as dartMath;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
@@ -16,8 +16,10 @@ import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dar
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
+import 'package:park254_s_parking_app/functions/utils/getRandomNumber.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
 import 'package:park254_s_parking_app/models/booking.populated.model.dart';
+import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
@@ -91,7 +93,12 @@ class MyParkingState extends State<MyParkingScreen> {
         if (element.parkingLotId != null) {
           getParkingLotById(token: access, parkingLotId: element.parkingLotId)
               .then((lot) {
-            parkingLotDetails.add({'name': lot.name, 'address': lot.address});
+            parkingLotDetails.add({
+              'name': lot.name,
+              'address': lot.address,
+              'image': lot.images.length > 0 ? lot.images[0] : '',
+              'id': lot.id,
+            });
 
             // Set the booking details to the store to avoid needless re-fetching.
             if (bookingDetailsProvider != null) {
@@ -113,6 +120,19 @@ class MyParkingState extends State<MyParkingScreen> {
       log(err.toString());
       buildNotification(err.message, 'error');
     });
+  }
+
+  void _updateParkingTime() {
+    bookingDetailsProvider.setUpdate(value: true);
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Booking(
+              destination: parkingLotDetails[0]['name'],
+              address: parkingLotDetails[0]['address'],
+              imagePath: parkingLotDetails[0]['image'],
+              price: 1,
+              bookingNumber: getRandomNumber(),
+              parkingLotNumber: getRandomNumber(),
+            )));
   }
 
   redirectToCreateorUpdatePage(text, [parkingData]) {
@@ -196,7 +216,6 @@ class MyParkingState extends State<MyParkingScreen> {
         parkingLotDetails = bookingDetailsProvider.parkingLotDetails;
       });
     }
-    log(parkingLotDetails.toString());
     return SafeArea(
       child: Scaffold(
         body: Stack(children: [
@@ -225,7 +244,7 @@ class MyParkingState extends State<MyParkingScreen> {
                                           : 'Loading...',
                                       paymentStatus: timeOfDayToString(
                                           bookingDetailsList[0].exitTime),
-                                    )
+                                      type: 'activeBooking')
                                   : Container()),
                       SizedBox(height: 50.0),
                       Row(
@@ -332,23 +351,25 @@ class MyParkingState extends State<MyParkingScreen> {
                       paymentColor: Colors.white,
                       parkingLotData: results[index],
                     ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ParkingInfo(
-                      images: results[index].images,
-                      name: results[index].name,
-                      accessibleParking:
-                          results[index].features.accessibleParking,
-                      cctv: results[index].features.cctv,
-                      carWash: results[index].features.carWash,
-                      evCharging: results[index].features.evCharging,
-                      valetParking: results[index].features.valetParking,
-                      rating: results[index].rating,
-                    ),
-                  ),
-                );
-              },
+              onTap: userRole == 'vendor'
+                  ? () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ParkingInfo(
+                            images: results[index].images,
+                            name: results[index].name,
+                            accessibleParking:
+                                results[index].features.accessibleParking,
+                            cctv: results[index].features.cctv,
+                            carWash: results[index].features.carWash,
+                            evCharging: results[index].features.evCharging,
+                            valetParking: results[index].features.valetParking,
+                            rating: results[index].rating,
+                          ),
+                        ),
+                      );
+                    }
+                  : () {},
             ),
             SizedBox(height: results.length - 1 == index ? 480.0 : 15.0)
           ],
@@ -368,6 +389,7 @@ class MyParkingState extends State<MyParkingScreen> {
     String paymentStatus,
     Color paymentColor,
     dynamic parkingLotData,
+    String type,
   }) {
     return BoxShadowWrapper(
       offsetY: 0.0,
@@ -443,7 +465,7 @@ class MyParkingState extends State<MyParkingScreen> {
                       ),
                     ],
                   ),
-                  _popUpMenu(parkingLotData)
+                  _popUpMenu(data: parkingLotData, type: type)
                 ]),
           )
         ]),
@@ -451,12 +473,16 @@ class MyParkingState extends State<MyParkingScreen> {
     );
   }
 
-  Widget _popUpMenu(parkingLotData) {
+  Widget _popUpMenu({List<ParkingLot> data, String type}) {
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          child: Text(userRole == 'vendor' ? 'Update' : 'Share Spot'),
+          child: Text(userRole == 'vendor'
+              ? 'Update'
+              : type == 'activeBooking'
+                  ? 'Update Time'
+                  : 'Share Spot'),
         ),
         PopupMenuItem(
           value: 2,
@@ -469,9 +495,11 @@ class MyParkingState extends State<MyParkingScreen> {
       onSelected: (value) => {
         userRole == 'vendor'
             ? value == 1
-                ? _updateParking(parkingLotData)
-                : _deleteParkingLot(parkingLotData)
-            : () {}
+                ? _updateParking(data)
+                : _deleteParkingLot(data)
+            : value == 1 && type == 'activeBooking'
+                ? _updateParkingTime()
+                : () {}
       },
       icon: Icon(
         Icons.more_vert,

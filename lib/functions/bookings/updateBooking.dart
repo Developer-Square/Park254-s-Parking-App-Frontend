@@ -12,8 +12,6 @@ Future<BookingDetails> updateBooking({
   @required String token,
   @required String bookingId,
   @required String parkingLotId,
-  @required num spaces,
-  @required DateTime entryTime,
   @required DateTime exitTime,
 }) async {
   Map<String, String> headers = {
@@ -24,8 +22,6 @@ Future<BookingDetails> updateBooking({
 
   Map<String, dynamic> body = {
     "parkingLotId": parkingLotId,
-    "spaces": spaces.toString(),
-    "entryTime": entryTime.toUtc().toIso8601String(),
     "exitTime": exitTime.toUtc().toIso8601String(),
   };
 

@@ -6,6 +6,7 @@ import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/functions/utils/getRandomNumber.dart';
 import 'package:provider/provider.dart';
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
@@ -61,13 +62,6 @@ class _BookingTabState extends State<BookingTab> {
               price: 1,
               imagePath: nearbyParkingListDetails.nearbyParkingLot.images[0],
             )));
-  }
-
-  getRandomNumber() {
-    Random rng = new Random();
-    List<String> randomList =
-        new List<String>.generate(4, (_) => rng.nextInt(100).toString());
-    return randomList.join();
   }
 
   @override

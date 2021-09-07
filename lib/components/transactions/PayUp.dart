@@ -12,6 +12,7 @@ import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
+import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:provider/provider.dart';
 
@@ -69,6 +70,32 @@ class _PayUpState extends State<PayUp> {
       nearbyParkingListDetails =
           Provider.of<NearbyParkingListModel>(context, listen: false);
       bookingDetails = Provider.of<BookingProvider>(context, listen: false);
+    }
+  }
+
+  void updateParkingLotBooking(TransactionModel transactionDetails) {
+    if (bookingDetails != null && storeDetails != null) {
+      transactionDetails.setLoading(true);
+      final now = new DateTime.now();
+
+      updateBooking(
+        token: storeDetails.user.accessToken.token.toString(),
+        bookingId: bookingDetails.bookingDetails[0].id,
+        parkingLotId: bookingDetails.parkingLotDetails[0].id,
+        exitTime: new DateTime(now.year, now.month, now.day,
+            widget.leavingTime.hour, widget.leavingTime.minute),
+      ).then((value) {
+        buildNotification('Parking lot updated successfully', 'success');
+        // Set the bookingId to be used incase the transaction fails.
+        bookingId = value.id;
+        // Call the mpesa STK push.
+        callPaymentMethod(transactionDetails);
+      }).catchError((err) {
+        transactionDetails.setLoading(false);
+        log("In PayUp.dart, updateParkingLotBooking function");
+        log(err.toString());
+        buildNotification(err.message.toString(), 'error');
+      });
     }
   }
 
@@ -229,7 +256,12 @@ class _PayUpState extends State<PayUp> {
                 ),
                 Expanded(
                   child: GoButton(
-                      onTap: () => createBooking(transactionDetails),
+                      onTap: bookingDetails != null
+                          ? bookingDetails.update
+                              ? () =>
+                                  updateParkingLotBooking(transactionDetails)
+                              : () => createBooking(transactionDetails)
+                          : () => createBooking(transactionDetails),
                       title: 'Pay Up'),
                   flex: 2,
                 ),
