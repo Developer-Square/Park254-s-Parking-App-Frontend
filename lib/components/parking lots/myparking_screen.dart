@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as dartMath;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,6 +12,7 @@ import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookings.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
+import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLots.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
@@ -38,8 +40,10 @@ class MyParkingState extends State<MyParkingScreen> {
   UserWithTokenModel storeDetails;
   // Parking lots from the store.
   ParkingLotListModel parkingLotList;
+  // Used when we are fetching details for individual parking lots.
+  List parkingLotDetails = [];
   UserModel userModel;
-  List<BookingDetailsPopulated> bookingDetailsList;
+  List<BookingDetails> bookingDetailsList;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -80,6 +84,21 @@ class MyParkingState extends State<MyParkingScreen> {
     getBookings(token: access, clientId: userId, sortBy: 'desc').then((value) {
       setState(() {
         bookingDetailsList = value.bookingDetailsList;
+      });
+      // Get parking lot details i.e. names, ratings etc.
+      value.bookingDetailsList.forEach((element) {
+        if (element.parkingLotId != null) {
+          getParkingLotById(token: access, parkingLotId: element.parkingLotId)
+              .then((value) {
+            setState(() {
+              parkingLotDetails
+                  .add({'name': value.name, 'address': value.address});
+            });
+          }).catchError((err) {
+            log("In fetchParkingLotHistory, myparking_screen");
+            log(err.toString());
+          });
+        }
       });
     }).catchError((err) {
       log("In fetchParkingLotHistory, myparking_screen");
@@ -141,7 +160,6 @@ class MyParkingState extends State<MyParkingScreen> {
         if (parkingLotList != null) {
           parkingLotList.remove(parkingLot: parkingLot);
         }
-        // getParkingDetails();
         setState(() {
           showLoader = false;
         });
@@ -261,9 +279,13 @@ class MyParkingState extends State<MyParkingScreen> {
                   InkWell(
                     child: userRole == 'user'
                         ? buildParkingContainer(
-                            parkingLotName: item.parkingLotId.city,
+                            parkingLotName: parkingLotDetails.length != 0
+                                ? parkingLotDetails[0]['name']
+                                : 'Loading...',
                             parkingPrice: timeOfDayToString(item.entryTime),
-                            parkingLocation: item.parkingLotId.city,
+                            parkingLocation: parkingLotDetails.length != 0
+                                ? parkingLotDetails[0]['address']
+                                : 'Loading...',
                             paymentStatus: timeOfDayToString(item.exitTime),
                           )
                         : buildParkingContainer(

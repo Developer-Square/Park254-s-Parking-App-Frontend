@@ -5,7 +5,7 @@ import 'dart:core';
 import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 
 class BookingsList {
-  final List<BookingDetailsPopulated> bookingDetailsList;
+  final List<BookingDetails> bookingDetailsList;
   final int page;
   final int limit;
   final int totalPages;
@@ -22,7 +22,7 @@ class BookingsList {
   factory BookingsList.fromJson(Map<String, dynamic> json) {
     return BookingsList(
       bookingDetailsList: (json['results'] as List)
-          .map((booking) => BookingDetailsPopulated.fromJson(booking))
+          .map((booking) => BookingDetails.fromJson(booking))
           .toList(),
       page: json['page'],
       limit: json['limit'],
