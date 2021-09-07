@@ -8,6 +8,7 @@ import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookings.dart';
@@ -40,6 +41,7 @@ class MyParkingState extends State<MyParkingScreen> {
   UserWithTokenModel storeDetails;
   // Parking lots from the store.
   ParkingLotListModel parkingLotList;
+  BookingProvider bookingDetailsProvider;
   // Used when we are fetching details for individual parking lots.
   List parkingLotDetails = [];
   UserModel userModel;
@@ -59,6 +61,8 @@ class MyParkingState extends State<MyParkingScreen> {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
       parkingLotList = Provider.of<ParkingLotListModel>(context, listen: false);
       userModel = Provider.of<UserModel>(context, listen: false);
+      bookingDetailsProvider =
+          Provider.of<BookingProvider>(context, listen: false);
       userRole = storeDetails.user.user.role;
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;
@@ -82,18 +86,22 @@ class MyParkingState extends State<MyParkingScreen> {
 
   void fetchParkingLotHistory({String access, String userId}) {
     getBookings(token: access, clientId: userId, sortBy: 'desc').then((value) {
-      setState(() {
-        bookingDetailsList = value.bookingDetailsList;
-      });
       // Get parking lot details i.e. names, ratings etc.
       value.bookingDetailsList.forEach((element) {
         if (element.parkingLotId != null) {
           getParkingLotById(token: access, parkingLotId: element.parkingLotId)
-              .then((value) {
-            setState(() {
-              parkingLotDetails
-                  .add({'name': value.name, 'address': value.address});
-            });
+              .then((lot) {
+            parkingLotDetails.add({'name': lot.name, 'address': lot.address});
+
+            // Set the booking details to the store to avoid needless re-fetching.
+            if (bookingDetailsProvider != null) {
+              if (value.bookingDetailsList.length == parkingLotDetails.length) {
+                bookingDetailsProvider.setBookingDetails(
+                    value: value.bookingDetailsList);
+                bookingDetailsProvider.setParkingLotDetails(
+                    value: parkingLotDetails);
+              }
+            }
           }).catchError((err) {
             log("In fetchParkingLotHistory, myparking_screen");
             log(err.toString());
@@ -176,10 +184,19 @@ class MyParkingState extends State<MyParkingScreen> {
 
   Widget build(BuildContext context) {
     parkingLotList = Provider.of<ParkingLotListModel>(context);
+    bookingDetailsProvider = Provider.of<BookingProvider>(context);
     if (parkingLotList.parkingLotList.parkingLots != null) {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
     }
+    // Get the booking data from the store.
+    if (bookingDetailsProvider != null) {
+      setState(() {
+        bookingDetailsList = bookingDetailsProvider.bookingDetails;
+        parkingLotDetails = bookingDetailsProvider.parkingLotDetails;
+      });
+    }
+    log(parkingLotDetails.toString());
     return SafeArea(
       child: Scaffold(
         body: Stack(children: [
@@ -194,8 +211,22 @@ class MyParkingState extends State<MyParkingScreen> {
                     children: <Widget>[
                       TopPageStyling(
                           currentPage: 'myparking',
-                          widget:
-                              userRole == 'vendor' ? Container() : Container()),
+                          widget: userRole == 'vendor'
+                              ? Container()
+                              : bookingDetailsList != null
+                                  ? buildParkingContainer(
+                                      parkingLotName: parkingLotDetails != null
+                                          ? parkingLotDetails[0]['name']
+                                          : 'Loading...',
+                                      parkingPrice: timeOfDayToString(
+                                          bookingDetailsList[0].entryTime),
+                                      parkingLocation: parkingLotDetails != null
+                                          ? parkingLotDetails[0]['address']
+                                          : 'Loading...',
+                                      paymentStatus: timeOfDayToString(
+                                          bookingDetailsList[0].exitTime),
+                                    )
+                                  : Container()),
                       SizedBox(height: 50.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -246,10 +277,15 @@ class MyParkingState extends State<MyParkingScreen> {
                         height: 20.0,
                       ),
                       userRole == 'vendor' && parkingLotsResults != null
-                          ? buildParkingLotResults(results: parkingLotsResults)
+                          ? SizedBox(
+                              height: MediaQuery.of(context).size.height,
+                              child: buildParkingLotResults(
+                                  results: parkingLotsResults))
                           : userRole == 'user' && bookingDetailsList != null
-                              ? buildParkingLotResults(
-                                  results: bookingDetailsList)
+                              ? SizedBox(
+                                  height: MediaQuery.of(context).size.height,
+                                  child: buildParkingLotResults(
+                                      results: bookingDetailsList))
                               : Center(
                                   child: Text(
                                   'Loading....',
@@ -271,65 +307,55 @@ class MyParkingState extends State<MyParkingScreen> {
   ///
   /// This happens after the parking lots are fetched from the backend.
   Widget buildParkingLotResults({List results}) {
-    return new Column(
-        children: results
-            .map(
-              (item) => Column(
-                children: [
-                  InkWell(
-                    child: userRole == 'user'
-                        ? buildParkingContainer(
-                            parkingLotName: parkingLotDetails.length != 0
-                                ? parkingLotDetails[0]['name']
-                                : 'Loading...',
-                            parkingPrice: timeOfDayToString(item.entryTime),
-                            parkingLocation: parkingLotDetails.length != 0
-                                ? parkingLotDetails[0]['address']
-                                : 'Loading...',
-                            paymentStatus: timeOfDayToString(item.exitTime),
-                          )
-                        : buildParkingContainer(
-                            parkingLotName: item.name,
-                            parkingPrice: 'Ksh ${item.price} / hr',
-                            parkingLocation: item.address,
-                            paymentStatus: 'Parking Slots: ${item.spaces}',
-                            paymentColor: Colors.white,
-                            parkingLotData: item,
-                          ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ParkingInfo(
-                            images: item.images,
-                            name: item.name,
-                            accessibleParking: item.features.accessibleParking,
-                            cctv: item.features.cctv,
-                            carWash: item.features.carWash,
-                            evCharging: item.features.evCharging,
-                            valetParking: item.features.valetParking,
-                            rating: item.rating,
-                          ),
-                        ),
-                      );
-                    },
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            InkWell(
+              child: userRole == 'user'
+                  ? buildParkingContainer(
+                      parkingLotName: parkingLotDetails != null
+                          ? parkingLotDetails[index]['name']
+                          : 'Loading...',
+                      parkingPrice: timeOfDayToString(results[index].entryTime),
+                      parkingLocation: parkingLotDetails != null
+                          ? parkingLotDetails[index]['address']
+                          : 'Loading...',
+                      paymentStatus: timeOfDayToString(results[index].exitTime),
+                    )
+                  : buildParkingContainer(
+                      parkingLotName: results[index].name,
+                      parkingPrice: 'Ksh ${results[index].price} / hr',
+                      parkingLocation: results[index].address,
+                      paymentStatus: 'Parking Slots: ${results[index].spaces}',
+                      paymentColor: Colors.white,
+                      parkingLotData: results[index],
+                    ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ParkingInfo(
+                      images: results[index].images,
+                      name: results[index].name,
+                      accessibleParking:
+                          results[index].features.accessibleParking,
+                      cctv: results[index].features.cctv,
+                      carWash: results[index].features.carWash,
+                      evCharging: results[index].features.evCharging,
+                      valetParking: results[index].features.valetParking,
+                      rating: results[index].rating,
+                    ),
                   ),
-                  SizedBox(height: 15.0)
-                ],
-              ),
-            )
-            .toList());
+                );
+              },
+            ),
+            SizedBox(height: results.length - 1 == index ? 480.0 : 15.0)
+          ],
+        );
+      },
+    );
   }
-
-  /// Builds out the parking tabs on the page.
-  // Widget buildParkingTab() {
-  //   return Center(
-  //       child: buildParkingContainer(
-  //           'SPACE: P5 . 6A',
-  //           'Ksh 200',
-  //           'Parking on Wabera St',
-  //           'Waiting for payment',
-  //           globals.backgroundColor));
-  // }
 
   /// Builds out the different containers on the page
   ///
