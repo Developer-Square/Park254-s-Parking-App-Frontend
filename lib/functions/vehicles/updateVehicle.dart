@@ -4,38 +4,36 @@ import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
-import 'package:park254_s_parking_app/models/user.model.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import '../../config/globals.dart' as globals;
 
-/// Updates user's [email], [name], or [role]
+/// Updates vehicles's [owner], [model], or [plate]
 ///
-/// Returns [User]
-/// Requires: [token], [userId]
-Future<User> updateUser({
+/// Returns [Vehicle]
+/// Requires: [token], [vehicleId]
+Future<Vehicle> updateUser({
   @required String token,
-  @required String userId,
-  String name = '',
-  String email = '',
-  String role = '',
-  int phone = 0,
+  @required String vehicleId,
+  String owner = '',
+  String model = '',
+  String plate = '',
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
   };
   Map<String, dynamic> body = {
-    "name": name,
-    "email": email,
-    "role": role,
-    "phone": phone,
+    "owner": owner,
+    "model": model,
+    "plate": plate,
   };
-  body.removeWhere((key, value) => value == '' || value == 0);
-  final url = Uri.https(globals.apiKey, '/v1/users/$userId');
+  body.removeWhere((key, value) => value == '');
+  final url = Uri.https(globals.apiKey, '/v1/vehicles/$vehicleId');
   final response =
       await http.patch(url, headers: headers, body: jsonEncode(body));
 
   if (response.statusCode == 200) {
-    final user = User.fromJson(jsonDecode(response.body));
-    return user;
+    final vehicle = Vehicle.fromJson(jsonDecode(response.body));
+    return vehicle;
   } else {
     handleError(response.body);
   }

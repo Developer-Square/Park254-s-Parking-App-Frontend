@@ -18,6 +18,7 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/parkingInfoArguments.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
@@ -172,6 +173,8 @@ class _MyAppState extends State<MyApp> {
             create: (context) => RatingListModel()),
         ChangeNotifierProvider<TransactionModel>(
             create: (context) => TransactionModel()),
+        ChangeNotifierProvider<VehicleModel>(
+            create: (context) => VehicleModel()),
       ],
       child: OverlaySupport(
         child: MaterialApp(

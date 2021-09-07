@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:park254_s_parking_app/models/vehicle.model.dart';
 
 /// Creates a user object from Json
 class User {
@@ -8,7 +7,6 @@ class User {
   String name;
   final String role;
   num phone;
-  final List<Vehicle> vehicles;
 
   User({
     @required this.id,
@@ -16,7 +14,6 @@ class User {
     @required this.name,
     @required this.role,
     @required this.phone,
-    this.vehicles,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -26,9 +23,6 @@ class User {
       name: json['name'],
       role: json['role'],
       phone: json['phone'],
-      vehicles: (json['vehicles'] as List)
-          .map((vehicle) => Vehicle.fromJson(vehicle))
-          .toList(),
     );
   }
 }
