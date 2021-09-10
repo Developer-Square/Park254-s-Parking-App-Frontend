@@ -35,6 +35,7 @@ class PayUp extends StatefulWidget {
   final Widget timeDatePicker;
   final Function toggleDisplay;
   final Function receiptGenerator;
+  final Function updateParkingTime;
   final TimeOfDay arrivalTime;
   final TimeOfDay leavingTime;
 
@@ -43,6 +44,7 @@ class PayUp extends StatefulWidget {
     @required this.timeDatePicker,
     @required this.toggleDisplay,
     @required this.receiptGenerator,
+    @required this.updateParkingTime,
     @required this.arrivalTime,
     @required this.leavingTime,
   });
@@ -162,8 +164,17 @@ class _PayUpState extends State<PayUp> {
         if (value.resultCode == 0) {
           transactionDetails.setLoading(false);
           buildNotification('Payment Successful', 'success');
-          // Move the payment successful page.
-          widget.receiptGenerator(bookingDetails);
+
+          // When a user is updating, redirect them to the myParkingScreen after.
+          // payment is complete.
+          if (bookingDetails != null) {
+            if (bookingDetails.update) {
+              widget.updateParkingTime();
+            }
+          } else {
+            // Move the payment successful page.
+            widget.receiptGenerator(bookingDetails);
+          }
         }
         // If the transaction failed and the user has not retried it then show retry modal.
         else if (value.resultCode == 503) {

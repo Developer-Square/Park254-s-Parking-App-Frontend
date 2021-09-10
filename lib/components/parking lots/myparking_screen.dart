@@ -458,7 +458,9 @@ class MyParkingState extends State<MyParkingScreen> {
                           : SizedBox(width: 0.0),
                       Text(
                         userRole == 'user'
-                            ? '$parkingPrice - $paymentStatus'
+                            ? int.parse(parkingPrice.substring(0, 2)) > 11
+                                ? '$parkingPrice pm - $paymentStatus pm'
+                                : '$parkingPrice am - $paymentStatus am'
                             : paymentStatus,
                         style: globals.buildTextStyle(
                             15.0, true, globals.textColor),

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/transactions/PayUp.dart';
 import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
@@ -482,6 +484,12 @@ class _BookingState extends State<Booking> {
         parkingTime: _parkingTime());
   }
 
+  void updateParkingTime() {
+    buildNotification('Parking time updated successfully', 'success');
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => MyParkingScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     var padding = MediaQuery.of(context).padding;
@@ -570,6 +578,7 @@ class _BookingState extends State<Booking> {
                       toggleDisplay: () => _togglePayUp(),
                       receiptGenerator: (bookingDetails) =>
                           _generateReceipt(bookingDetails),
+                      updateParkingTime: () => updateParkingTime(),
                       arrivalTime: arrivalTime,
                       leavingTime: leavingTime,
                     )
