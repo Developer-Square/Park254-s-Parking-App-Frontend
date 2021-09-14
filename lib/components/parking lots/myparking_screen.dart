@@ -105,11 +105,11 @@ class MyParkingState extends State<MyParkingScreen> {
             (currentTime.hour + (currentTime.minute / 60));
 
         if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
-          _getParkingLotsInfo(
-              element: element, access: access, value: value, active: true);
+          _getParkingLotsInfo(element: element, access: access, value: value);
+          // Add the booking id for active bookings.
+          activeBookings.add(element.id);
         } else {
-          _getParkingLotsInfo(
-              element: element, access: access, value: value, active: false);
+          _getParkingLotsInfo(element: element, access: access, value: value);
         }
       });
     }).catchError((err) {
@@ -123,15 +123,10 @@ class MyParkingState extends State<MyParkingScreen> {
     @required element,
     @required String access,
     @required value,
-    @required bool active,
   }) {
     if (element.parkingLotId != null) {
       getParkingLotById(token: access, parkingLotId: element.parkingLotId)
           .then((lot) {
-        // Add all the parkingLot info if active is true.
-        if (active) {
-          activeBookings.add(lot);
-        }
         parkingLotDetails.add({
           'name': lot.name,
           'address': lot.address,
@@ -143,7 +138,7 @@ class MyParkingState extends State<MyParkingScreen> {
         if (bookingDetailsProvider != null) {
           if (value.bookingDetailsList.length == parkingLotDetails.length) {
             bookingDetailsProvider.setBookingDetails(
-                value: value.bookingDetailsList);
+                value: value.bookingDetailsList, bookings: activeBookings);
             bookingDetailsProvider.setParkingLotDetails(
                 value: parkingLotDetails);
           }
@@ -241,7 +236,6 @@ class MyParkingState extends State<MyParkingScreen> {
     if (parkingLotList.parkingLotList.parkingLots != null) {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
-      log(activeBookings.toString());
     }
 
     // Get the booking data from the store.
@@ -361,7 +355,8 @@ class MyParkingState extends State<MyParkingScreen> {
                           ? parkingLotDetails[index]['address']
                           : 'Loading...',
                       paymentStatus: timeOfDayToString(results[index].exitTime),
-                    )
+                      parkingLotData: parkingLotDetails[index],
+                      bookingId: results[index].id)
                   : buildParkingContainer(
                       parkingLotName: results[index].name,
                       parkingPrice: 'Ksh ${results[index].price} / hr',
@@ -397,6 +392,24 @@ class MyParkingState extends State<MyParkingScreen> {
     );
   }
 
+  /// Builds out a text followed by an icon to be used as a label.
+  /// for an active or expired booking.
+  Widget bookingLabel({bool active}) {
+    return Container(
+        child: Row(children: <Widget>[
+      Text(active ? 'Active' : 'Expired',
+          style: globals.buildTextStyle(16.0, true, globals.textColor)),
+      SizedBox(width: 5.0),
+      Container(
+        width: 14.0,
+        height: 14.0,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100.0),
+            color: active ? globals.backgroundColor : Colors.red),
+      )
+    ]));
+  }
+
   /// Builds out the different containers on the page
   ///
   /// Requires [parkingLotNumber], [parkingPrice], [parkingLocation], [paymentStatus], [paymentColor] and [parkingLotData].
@@ -408,7 +421,7 @@ class MyParkingState extends State<MyParkingScreen> {
     String paymentStatus,
     Color paymentColor,
     dynamic parkingLotData,
-    String type,
+    String bookingId,
   }) {
     return BoxShadowWrapper(
       offsetY: 0.0,
@@ -433,10 +446,11 @@ class MyParkingState extends State<MyParkingScreen> {
                   parkingLotName ?? '',
                   style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
                 ),
-                Text(
-                  parkingPrice ?? '',
-                  style: globals.buildTextStyle(16.0, true, globals.textColor),
-                )
+                userRole == 'user'
+                    ? activeBookings.contains(bookingId)
+                        ? bookingLabel(active: true)
+                        : bookingLabel(active: false)
+                    : parkingPrice ?? '',
               ],
             ),
           ),
@@ -486,7 +500,7 @@ class MyParkingState extends State<MyParkingScreen> {
                       ),
                     ],
                   ),
-                  _popUpMenu(data: parkingLotData, type: type)
+                  _popUpMenu(data: parkingLotData, bookingId: bookingId)
                 ]),
           )
         ]),
@@ -494,21 +508,25 @@ class MyParkingState extends State<MyParkingScreen> {
     );
   }
 
-  Widget _popUpMenu({List<ParkingLot> data, String type}) {
+  Widget _popUpMenu({dynamic data, String bookingId}) {
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
           child: Text(userRole == 'vendor'
               ? 'Update'
-              : type == 'activeBooking'
+              : activeBookings.contains(bookingId)
                   ? 'Update Time'
                   : 'Share Spot'),
         ),
         PopupMenuItem(
           value: 2,
           child: Text(
-            userRole == 'vendor' ? 'Delete' : 'Report an issue',
+            userRole == 'vendor'
+                ? 'Delete'
+                : activeBookings.contains(bookingId)
+                    ? 'Report an issue'
+                    : 'Delete',
             style: TextStyle(color: Colors.red),
           ),
         )
@@ -518,7 +536,7 @@ class MyParkingState extends State<MyParkingScreen> {
             ? value == 1
                 ? _updateParking(data)
                 : _deleteParkingLot(data)
-            : value == 1 && type == 'activeBooking'
+            : value == 1 && activeBookings.contains(bookingId)
                 ? _updateParkingTime()
                 : () {}
       },
