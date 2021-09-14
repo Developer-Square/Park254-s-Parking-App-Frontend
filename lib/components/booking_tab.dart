@@ -60,7 +60,10 @@ class _BookingTabState extends State<BookingTab> {
               parkingLotNumber: getRandomNumber(),
               // TODO: Change that number when in production.
               price: 1,
-              imagePath: nearbyParkingListDetails.nearbyParkingLot.images[0],
+              imagePath:
+                  nearbyParkingListDetails.nearbyParkingLot.images.length > 0
+                      ? nearbyParkingListDetails.nearbyParkingLot.images[0]
+                      : '',
             )));
   }
 

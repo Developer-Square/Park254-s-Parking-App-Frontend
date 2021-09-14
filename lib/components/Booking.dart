@@ -127,9 +127,9 @@ class _BookingState extends State<Booking> {
     }
   }
 
-  ///shows date picker for leaving date
+  /// Shows date picker for leaving date.
   ///
-  /// leaving date has to be set after arrival date
+  /// leaving date has to be set after arrival date.
   _selectLeavingDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -158,7 +158,7 @@ class _BookingState extends State<Booking> {
     );
   }
 
-  ///shows date picker for arrival time
+  /// shows date picker for arrival time
   _selectArrivalTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -195,7 +195,7 @@ class _BookingState extends State<Booking> {
   /// Calculates the parking duration and cost
   String _parkingTime() {
     Duration parkingDays;
-    double totalTime;
+    double totalTime = 0;
     // If the user is updating the time, he/she should only be charged for the difference.
     // between the initial leaving time and the leaving time he/she has set.
     if (bookingDetailsProvider != null) {
@@ -205,6 +205,11 @@ class _BookingState extends State<Booking> {
         totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
             (bookingDetailsProvider.leavingTime.hour +
                 (bookingDetailsProvider.leavingTime.minute / 60)) +
+            parkingDays.inHours;
+      } else {
+        parkingDays = leavingDate.difference(arrivalDate);
+        totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+            (arrivalTime.hour + (arrivalTime.minute / 60)) +
             parkingDays.inHours;
       }
     } else {
@@ -499,6 +504,8 @@ class _BookingState extends State<Booking> {
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
     isLoading = transactionDetails.loader;
+    // log(arrivalTime.toString().substring(10, 12));
+    // log(leavingTime.toString().substring(13, 15));
 
     return SafeArea(
       child: Scaffold(
@@ -579,8 +586,8 @@ class _BookingState extends State<Booking> {
                       receiptGenerator: (bookingDetails) =>
                           _generateReceipt(bookingDetails),
                       updateParkingTime: () => updateParkingTime(),
-                      arrivalTime: arrivalTime,
-                      leavingTime: leavingTime,
+                      arrivalTime: arrivalTime.toString(),
+                      leavingTime: leavingTime.toString(),
                     )
                   : Container(),
               isLoading ? Loader() : Container()

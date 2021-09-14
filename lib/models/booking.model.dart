@@ -25,8 +25,8 @@ class BookingDetails {
       parkingLotId: json['parkingLotId'],
       clientId: json['clientId'],
       spaces: json['spaces'],
-      entryTime: DateTime.parse(json['entryTime']),
-      exitTime: DateTime.parse(json['exitTime']),
+      entryTime: DateTime.parse(json['entryTime']).toLocal(),
+      exitTime: DateTime.parse(json['exitTime']).toLocal(),
       isCancelled: json['isCancelled'],
     );
   }

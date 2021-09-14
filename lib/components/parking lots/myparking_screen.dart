@@ -46,6 +46,7 @@ class MyParkingState extends State<MyParkingScreen> {
   BookingProvider bookingDetailsProvider;
   // Used when we are fetching details for individual parking lots.
   List parkingLotDetails = [];
+  List activeBookings = [];
   UserModel userModel;
   List<BookingDetails> bookingDetailsList;
   TextEditingController fullNameController = new TextEditingController();
@@ -53,6 +54,9 @@ class MyParkingState extends State<MyParkingScreen> {
   TextEditingController pricesController = new TextEditingController();
   TextEditingController addressController = new TextEditingController();
   TextEditingController cityController = new TextEditingController();
+  // Local timezone.
+  DateTime entryTime;
+  DateTime exitTime;
 
   @override
   void initState() {
@@ -87,32 +91,25 @@ class MyParkingState extends State<MyParkingScreen> {
   }
 
   void fetchParkingLotHistory({String access, String userId}) {
-    getBookings(token: access, clientId: userId, sortBy: 'desc').then((value) {
+    getBookings(token: access, clientId: userId, sortBy: 'entryTime:desc')
+        .then((value) {
+      DateTime currentDate = DateTime.now();
+      TimeOfDay currentTime = TimeOfDay.now();
+
       // Get parking lot details i.e. names, ratings etc.
       value.bookingDetailsList.forEach((element) {
-        if (element.parkingLotId != null) {
-          getParkingLotById(token: access, parkingLotId: element.parkingLotId)
-              .then((lot) {
-            parkingLotDetails.add({
-              'name': lot.name,
-              'address': lot.address,
-              'image': lot.images.length > 0 ? lot.images[0] : '',
-              'id': lot.id,
-            });
+        // Check for the active bookings.
+        Duration days = element.entryTime.difference(currentDate);
+        TimeOfDay exitTime = TimeOfDay.fromDateTime(element.exitTime);
+        double totalTime = (exitTime.hour + (exitTime.minute / 60)) -
+            (currentTime.hour + (currentTime.minute / 60));
 
-            // Set the booking details to the store to avoid needless re-fetching.
-            if (bookingDetailsProvider != null) {
-              if (value.bookingDetailsList.length == parkingLotDetails.length) {
-                bookingDetailsProvider.setBookingDetails(
-                    value: value.bookingDetailsList);
-                bookingDetailsProvider.setParkingLotDetails(
-                    value: parkingLotDetails);
-              }
-            }
-          }).catchError((err) {
-            log("In fetchParkingLotHistory, myparking_screen");
-            log(err.toString());
-          });
+        if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
+          _getParkingLotsInfo(
+              element: element, access: access, value: value, active: true);
+        } else {
+          _getParkingLotsInfo(
+              element: element, access: access, value: value, active: false);
         }
       });
     }).catchError((err) {
@@ -120,6 +117,42 @@ class MyParkingState extends State<MyParkingScreen> {
       log(err.toString());
       buildNotification(err.message, 'error');
     });
+  }
+
+  void _getParkingLotsInfo({
+    @required element,
+    @required String access,
+    @required value,
+    @required bool active,
+  }) {
+    if (element.parkingLotId != null) {
+      getParkingLotById(token: access, parkingLotId: element.parkingLotId)
+          .then((lot) {
+        // Add all the parkingLot info if active is true.
+        if (active) {
+          activeBookings.add(lot);
+        }
+        parkingLotDetails.add({
+          'name': lot.name,
+          'address': lot.address,
+          'image': lot.images.length > 0 ? lot.images[0] : '',
+          'id': lot.id,
+        });
+
+        // Set the booking details to the store to avoid needless re-fetching.
+        if (bookingDetailsProvider != null) {
+          if (value.bookingDetailsList.length == parkingLotDetails.length) {
+            bookingDetailsProvider.setBookingDetails(
+                value: value.bookingDetailsList);
+            bookingDetailsProvider.setParkingLotDetails(
+                value: parkingLotDetails);
+          }
+        }
+      }).catchError((err) {
+        log("In fetchParkingLotHistory, myparking_screen");
+        log(err.toString());
+      });
+    }
   }
 
   void _updateParkingTime() {
@@ -208,7 +241,9 @@ class MyParkingState extends State<MyParkingScreen> {
     if (parkingLotList.parkingLotList.parkingLots != null) {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
+      log(activeBookings.toString());
     }
+
     // Get the booking data from the store.
     if (bookingDetailsProvider != null) {
       setState(() {
@@ -229,24 +264,8 @@ class MyParkingState extends State<MyParkingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TopPageStyling(
-                          currentPage: 'myparking',
-                          widget: userRole == 'vendor'
-                              ? Container()
-                              : bookingDetailsList != null
-                                  ? buildParkingContainer(
-                                      parkingLotName: parkingLotDetails != null
-                                          ? parkingLotDetails[0]['name']
-                                          : 'Loading...',
-                                      parkingPrice: timeOfDayToString(
-                                          bookingDetailsList[0].entryTime),
-                                      parkingLocation: parkingLotDetails != null
-                                          ? parkingLotDetails[0]['address']
-                                          : 'Loading...',
-                                      paymentStatus: timeOfDayToString(
-                                          bookingDetailsList[0].exitTime),
-                                      type: 'activeBooking')
-                                  : Container()),
-                      SizedBox(height: 50.0),
+                          currentPage: 'myparking', widget: Container()),
+                      SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

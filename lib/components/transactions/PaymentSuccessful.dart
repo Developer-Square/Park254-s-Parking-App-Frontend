@@ -11,6 +11,7 @@ import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/pages/search page/search_page.dart';
 
@@ -193,7 +194,9 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                   Expanded(
                     child: InkWell(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MyParkingScreen())),
+                          builder: (context) => HomePage(
+                                activeTab: 'myparking',
+                              ))),
                       child: Image(
                         image: AssetImage('assets/images/qrcode.png'),
                         fit: BoxFit.cover,

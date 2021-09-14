@@ -11,6 +11,7 @@ class BookingProvider with ChangeNotifier {
   TimeOfDay _leavingTime;
   List<BookingDetails> _bookingDetails;
   List _parkingLotDetails = [];
+  List _activeBookings = [];
   bool _update = false;
   // The ID for the pakringLot that needs updating.
   String _parkingLotId;
@@ -24,6 +25,7 @@ class BookingProvider with ChangeNotifier {
   TimeOfDay get leavingTime => _leavingTime;
   List<BookingDetails> get bookingDetails => _bookingDetails;
   List get parkingLotDetails => _parkingLotDetails;
+  List get activeBookings => _activeBookings;
   bool get update => _update;
   String get parkingLotId => _parkingLotId;
   String get bookingId => _bookingId;
@@ -33,8 +35,10 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setBookingDetails({@required List<BookingDetails> value}) {
+  void setBookingDetails(
+      {@required List<BookingDetails> value, List bookings}) {
     _bookingDetails = value;
+    _activeBookings = bookings;
     notifyListeners();
   }
 

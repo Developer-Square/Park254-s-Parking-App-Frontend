@@ -36,8 +36,8 @@ class PayUp extends StatefulWidget {
   final Function toggleDisplay;
   final Function receiptGenerator;
   final Function updateParkingTime;
-  final TimeOfDay arrivalTime;
-  final TimeOfDay leavingTime;
+  final String arrivalTime;
+  final String leavingTime;
 
   PayUp({
     @required this.total,
@@ -62,7 +62,14 @@ class _PayUpState extends State<PayUp> {
   // Details from the store
   NearbyParkingListModel nearbyParkingListDetails;
   BookingProvider bookingDetails;
+  // Using arrivalTime.hour is proving problematic and gives incorrect results.
+  // i.e. if a user selects 3pm as their arrivalTime, the arrivalTime.hour will give.
+  // us 3 hours instead of 15 hours.
   String bookingId;
+  int arrivalHour;
+  int arrivalMinute;
+  int leavingHour;
+  int leavingMinute;
 
   @override
   void initState() {
@@ -73,19 +80,24 @@ class _PayUpState extends State<PayUp> {
           Provider.of<NearbyParkingListModel>(context, listen: false);
       bookingDetails = Provider.of<BookingProvider>(context, listen: false);
     }
+
+    arrivalHour = int.parse(widget.arrivalTime.substring(10, 12));
+    arrivalMinute = int.parse(widget.arrivalTime.substring(13, 15));
+    leavingHour = int.parse(widget.leavingTime.substring(10, 12));
+    leavingMinute = int.parse(widget.leavingTime.substring(13, 15));
   }
 
   void updateParkingLotBooking(TransactionModel transactionDetails) {
     if (bookingDetails != null && storeDetails != null) {
       transactionDetails.setLoading(true);
       final now = new DateTime.now();
-
+      final DateTime exitTime = new DateTime(
+          now.year, now.month, now.day, leavingHour, leavingMinute);
       updateBooking(
         token: storeDetails.user.accessToken.token.toString(),
         bookingId: bookingDetails.bookingDetails[0].id,
-        parkingLotId: bookingDetails.parkingLotDetails[0].id,
-        exitTime: new DateTime(now.year, now.month, now.day,
-            widget.leavingTime.hour, widget.leavingTime.minute),
+        parkingLotId: bookingDetails.parkingLotDetails[0]['id'],
+        exitTime: exitTime,
       ).then((value) {
         buildNotification('Parking lot updated successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
@@ -105,18 +117,21 @@ class _PayUpState extends State<PayUp> {
     if (storeDetails != null &&
         nearbyParkingListDetails != null &&
         bookingDetails != null) {
-      final now = new DateTime.now();
       transactionDetails.setLoading(true);
+
+      final now = new DateTime.now();
+      final DateTime entryTime = new DateTime(
+          now.year, now.month, now.day, arrivalHour, arrivalMinute);
+      final DateTime exitTime = new DateTime(
+          now.year, now.month, now.day, leavingHour, leavingMinute);
 
       book(
         token: storeDetails.user.accessToken.token.toString(),
         parkingLotId: nearbyParkingListDetails.nearbyParkingLot.id,
         clientId: storeDetails.user.user.id,
         spaces: 1,
-        entryTime: new DateTime(now.year, now.month, now.day,
-            widget.arrivalTime.hour, widget.arrivalTime.minute),
-        exitTime: new DateTime(now.year, now.month, now.day,
-            widget.leavingTime.hour, widget.leavingTime.minute),
+        entryTime: entryTime,
+        exitTime: exitTime,
       ).then((value) {
         buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
@@ -170,6 +185,9 @@ class _PayUpState extends State<PayUp> {
           if (bookingDetails != null) {
             if (bookingDetails.update) {
               widget.updateParkingTime();
+            } else {
+              // Move the payment successful page.
+              widget.receiptGenerator(bookingDetails);
             }
           } else {
             // Move the payment successful page.
@@ -207,6 +225,7 @@ class _PayUpState extends State<PayUp> {
     transactionDetails = Provider.of<TransactionModel>(context);
     resultCode = transactionDetails.transaction.resultCode;
     resultDesc = transactionDetails.transaction.resultDesc;
+    log(bookingDetails.update.toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

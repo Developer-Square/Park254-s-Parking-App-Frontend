@@ -32,7 +32,6 @@ Future<BookingDetails> book({
     entryTime: entryTime,
     exitTime: exitTime,
   ).toJson();
-
   final response = await http.post(url, body: body, headers: headers);
 
   if (response.statusCode == 201) {
