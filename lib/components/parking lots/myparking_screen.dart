@@ -72,10 +72,16 @@ class MyParkingState extends State<MyParkingScreen> {
       userRole = storeDetails.user.user.role;
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;
+      // Get all the parking lots if the current user is a vendor.
       getParkingDetails();
       // If the current user is a normal user fetch their parkingLots history.
-      if (userRole == 'user') {
-        fetchParkingLotHistory(access: accessToken, userId: userId);
+      if (bookingDetailsProvider != null) {
+        if (bookingDetailsProvider.bookingDetails == null ||
+            bookingDetailsProvider.update) {
+          if (userRole == 'user') {
+            fetchParkingLotHistory(access: accessToken, userId: userId);
+          }
+        }
       }
     }
   }
@@ -95,9 +101,12 @@ class MyParkingState extends State<MyParkingScreen> {
         .then((value) {
       DateTime currentDate = DateTime.now();
       TimeOfDay currentTime = TimeOfDay.now();
+      int index = 0;
 
       // Get parking lot details i.e. names, ratings etc.
       value.bookingDetailsList.forEach((element) {
+        // Keep track of the iterations.
+        index += 1;
         // Check for the active bookings.
         Duration days = element.entryTime.difference(currentDate);
         TimeOfDay exitTime = TimeOfDay.fromDateTime(element.exitTime);
@@ -105,11 +114,13 @@ class MyParkingState extends State<MyParkingScreen> {
             (currentTime.hour + (currentTime.minute / 60));
 
         if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
-          _getParkingLotsInfo(element: element, access: access, value: value);
+          _getParkingLotsInfo(
+              element: element, access: access, value: value, index: index);
           // Add the booking id for active bookings.
           activeBookings.add(element.id);
         } else {
-          _getParkingLotsInfo(element: element, access: access, value: value);
+          _getParkingLotsInfo(
+              element: element, access: access, value: value, index: index);
         }
       });
     }).catchError((err) {
@@ -123,6 +134,7 @@ class MyParkingState extends State<MyParkingScreen> {
     @required element,
     @required String access,
     @required value,
+    @required int index,
   }) {
     if (element.parkingLotId != null) {
       getParkingLotById(token: access, parkingLotId: element.parkingLotId)
@@ -136,7 +148,7 @@ class MyParkingState extends State<MyParkingScreen> {
 
         // Set the booking details to the store to avoid needless re-fetching.
         if (bookingDetailsProvider != null) {
-          if (value.bookingDetailsList.length == parkingLotDetails.length) {
+          if (value.bookingDetailsList.length == index) {
             bookingDetailsProvider.setBookingDetails(
                 value: value.bookingDetailsList, bookings: activeBookings);
             bookingDetailsProvider.setParkingLotDetails(
@@ -275,36 +287,40 @@ class MyParkingState extends State<MyParkingScreen> {
                                   17.0, true, globals.textColor),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 18.0),
-                            child: InkWell(
-                              onTap: () {
-                                if (userModel != null) {
-                                  userModel.setCurrentScreen('create');
-                                }
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        CreateUpdateParkingLot(
-                                            currentScreen: 'create',
-                                            name: fullNameController,
-                                            spaces: spacesController,
-                                            prices: pricesController,
-                                            address: addressController,
-                                            city: cityController,
-                                            getParkingDetails:
-                                                getParkingDetails)));
-                              },
-                              child: Container(
-                                width: 37.0,
-                                height: 37.0,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(100.0)),
-                                    color: Colors.white),
-                                child: Icon(Icons.add),
-                              ),
-                            ),
-                          ),
+                          userRole == 'vendor'
+                              ? Padding(
+                                  padding: const EdgeInsets.only(right: 18.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (userModel != null) {
+                                        userModel.setCurrentScreen('create');
+                                      }
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CreateUpdateParkingLot(
+                                                      currentScreen: 'create',
+                                                      name: fullNameController,
+                                                      spaces: spacesController,
+                                                      prices: pricesController,
+                                                      address:
+                                                          addressController,
+                                                      city: cityController,
+                                                      getParkingDetails:
+                                                          getParkingDetails)));
+                                    },
+                                    child: Container(
+                                      width: 37.0,
+                                      height: 37.0,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(100.0)),
+                                          color: Colors.white),
+                                      child: Icon(Icons.add),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                         ],
                       ),
                       SizedBox(
@@ -449,8 +465,11 @@ class MyParkingState extends State<MyParkingScreen> {
                   style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
                 ),
                 userRole == 'user'
-                    ? activeBookings.contains(bookingDetails.id)
-                        ? bookingLabel(active: true)
+                    ? bookingDetailsProvider != null
+                        ? bookingDetailsProvider.activeBookings
+                                .contains(bookingDetails.id)
+                            ? bookingLabel(active: true)
+                            : bookingLabel(active: false)
                         : bookingLabel(active: false)
                     : parkingPrice ?? '',
               ],
@@ -518,8 +537,11 @@ class MyParkingState extends State<MyParkingScreen> {
           value: 1,
           child: Text(userRole == 'vendor'
               ? 'Update'
-              : activeBookings.contains(bookingDetails.id)
-                  ? 'Update Time'
+              : bookingDetailsProvider != null
+                  ? bookingDetailsProvider.activeBookings
+                          .contains(bookingDetails.id)
+                      ? 'Update Time'
+                      : 'Share Spot'
                   : 'Share Spot'),
         ),
         PopupMenuItem(
@@ -527,8 +549,11 @@ class MyParkingState extends State<MyParkingScreen> {
           child: Text(
             userRole == 'vendor'
                 ? 'Delete'
-                : activeBookings.contains(bookingDetails.id)
-                    ? 'Report an issue'
+                : bookingDetailsProvider != null
+                    ? bookingDetailsProvider.activeBookings
+                            .contains(bookingDetails.id)
+                        ? 'Report an issue'
+                        : 'Delete'
                     : 'Delete',
             style: TextStyle(color: Colors.red),
           ),
@@ -539,7 +564,9 @@ class MyParkingState extends State<MyParkingScreen> {
             ? value == 1
                 ? _updateParking(data)
                 : _deleteParkingLot(data)
-            : value == 1 && activeBookings.contains(bookingDetails.id)
+            : value == 1 &&
+                    bookingDetailsProvider.activeBookings
+                        .contains(bookingDetails.id)
                 ? _updateParkingTime(bookingDetails: bookingDetails)
                 : () {}
       },

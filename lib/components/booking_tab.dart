@@ -22,6 +22,7 @@ import 'nearby_parking_list.dart';
 class BookingTab extends StatefulWidget {
   TextEditingController searchBarController;
   bool homeScreen;
+  NearbyParkingListModel nearbyParkingDetails;
   final Function showNearbyParking;
 
   BookingTab({
@@ -51,6 +52,10 @@ class _BookingTabState extends State<BookingTab> {
 
   // Move to the booking page to book the parking lot and then pay.
   void handleParkingLotBooking() {
+    // Close the booking tab when moving to the booking page.
+    if (nearbyParkingListDetails != null) {
+      nearbyParkingListDetails.setBookNowTab('bookingTab');
+    }
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => Booking(
               address:
