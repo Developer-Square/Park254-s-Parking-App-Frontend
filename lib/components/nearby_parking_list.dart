@@ -5,7 +5,10 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:park254_s_parking_app/components/info_window.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
 import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import 'helper_functions.dart';
 
@@ -43,33 +46,43 @@ class NearByParkingList extends StatefulWidget {
   final String title;
   final Function selectCard;
   final TextEditingController searchBarController;
-  final Function hideMapButtons;
-  NearbyParkingLot selectedParkingLot;
 
-  NearByParkingList(
-      {@required this.imgPath,
-      @required this.parkingPrice,
-      @required this.parkingPlaceName,
-      @required this.rating,
-      @required this.distance,
-      @required this.parkingSlots,
-      @required this.activeCard,
-      this.parkingData,
-      this.mapController,
-      this.showNearbyParking,
-      this.customInfoWindowController,
-      this.hideAllDetails,
-      this.large,
-      this.title,
-      this.selectedCard,
-      this.selectCard,
-      this.searchBarController,
-      this.hideMapButtons});
+  NearByParkingList({
+    @required this.imgPath,
+    @required this.parkingPrice,
+    @required this.parkingPlaceName,
+    @required this.rating,
+    @required this.distance,
+    @required this.parkingSlots,
+    @required this.activeCard,
+    this.parkingData,
+    this.mapController,
+    this.showNearbyParking,
+    this.customInfoWindowController,
+    this.hideAllDetails,
+    this.large,
+    this.title,
+    this.selectedCard,
+    this.selectCard,
+    this.searchBarController,
+  });
   @override
   _NearByParkingList createState() => _NearByParkingList();
 }
 
 class _NearByParkingList extends State<NearByParkingList> {
+  // Fetch details from the store.
+  NearbyParkingListModel nearbyParkingListDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) {
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+    }
+  }
+
   // Redirects the user to the specific parking location.
   // that he/she clicked on the Nearby parking widget or Recommended parking.
   // Opens up the infoWindow.
@@ -82,14 +95,22 @@ class _NearByParkingList extends State<NearByParkingList> {
     }
     final latitude = widget.parkingData.location.coordinates[1];
     final longitude = widget.parkingData.location.coordinates[0];
-    cameraAnimate(widget.mapController, latitude, longitude);
+    cameraAnimate(
+        controller: widget.mapController,
+        latitude: latitude,
+        longitude: longitude);
     widget.showNearbyParking();
     widget.customInfoWindowController.addInfoWindow(
         InfoWindowWidget(value: widget.parkingData),
         LatLng(widget.parkingData.location.coordinates[1],
             widget.parkingData.location.coordinates[0]));
     widget.searchBarController.text = widget.parkingPlaceName;
-    widget.hideMapButtons('nearByParkingList', widget.parkingData);
+    if (nearbyParkingListDetails != null) {
+      // Show the book now tab after a user has selected their parkingLot
+      nearbyParkingListDetails.setBookNowTab('nearbyparkinglot');
+      nearbyParkingListDetails.setCurrentPage('home');
+      nearbyParkingListDetails.setNearbyParkingLot(value: widget.parkingData);
+    }
   }
 
   @override

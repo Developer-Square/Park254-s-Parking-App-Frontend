@@ -18,6 +18,7 @@ import 'package:park254_s_parking_app/components/search_bar.dart';
 import 'package:park254_s_parking_app/config/login_registration_arguements.dart';
 import 'package:park254_s_parking_app/config/parkingInfoArguments.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
@@ -25,6 +26,7 @@ import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotModel.dart';
 import 'package:park254_s_parking_app/dataModels/RatingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
@@ -32,7 +34,7 @@ import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
-import 'package:park254_s_parking_app/pages/search_page.dart';
+import 'package:park254_s_parking_app/pages/search%20page/search_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/booking_tab.dart';
@@ -100,13 +102,13 @@ class _MyAppState extends State<MyApp> {
       prefs.setString(key, value);
     }).catchError((err) {
       log("In storeDetailsMemory, main.dart");
-      log(err);
+      log(err.toString());
     });
   }
 
-  checkForCredentials() {
+  checkForCredentials() async {
     if (data != null) {
-      var token = encryptDecryptData('userRefreshToken', data, 'decrypt');
+      var token = await encryptDecryptData('userRefreshToken', data, 'decrypt');
       if (token != null && userId != null) {
         refreshTokens(refreshToken: token).then((value) {
           getUserById(token: value.accessToken.token, userId: userId)
@@ -128,6 +130,9 @@ class _MyAppState extends State<MyApp> {
             setState(() {
               data = null;
               role = null;
+              userDetails = null;
+              accessToken = null;
+              refreshToken = null;
             });
           });
           var access = encryptDecryptData(
@@ -136,6 +141,9 @@ class _MyAppState extends State<MyApp> {
               'userRefreshToken', value.refreshToken.token, 'encrypt');
           storeDetailsInMemory('accessToken', access.base64);
           storeDetailsInMemory('refreshToken', refresh.base64);
+          if (userDetails != null) {
+            storeDetailsInMemory('userId', userDetails.id);
+          }
 
           // Then redirect the user to the homepage.
         }).catchError((err) {
@@ -146,7 +154,7 @@ class _MyAppState extends State<MyApp> {
             accessToken = null;
             refreshToken = null;
           });
-          log(err.message);
+          log(err.toString());
           log("In main.dart");
         });
       }
@@ -172,9 +180,14 @@ class _MyAppState extends State<MyApp> {
             create: (context) => RatingListModel()),
         ChangeNotifierProvider<TransactionModel>(
             create: (context) => TransactionModel()),
+        ChangeNotifierProvider<NavigationProvider>(
+            create: (context) => NavigationProvider()),
+        ChangeNotifierProvider<BookingProvider>(
+            create: (context) => BookingProvider()),
       ],
       child: OverlaySupport(
         child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Park254 Parking App',
             theme: ThemeData(
               primaryColor: primaryColor,
@@ -228,6 +241,7 @@ class _MyAppState extends State<MyApp> {
                         setShowRecentSearches: args.setShowRecentSearches,
                       ),
                       GoogleMapWidget(
+                        currentPage: args3.currentPage,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
@@ -257,7 +271,6 @@ class _MyAppState extends State<MyApp> {
                 final NearByParkingArguements args1 = settings.arguments;
                 final TopPageStylingArguements args2 = settings.arguments;
                 final GoogleMapWidgetArguements args3 = settings.arguments;
-                final HomePageArguements args4 = settings.arguments;
                 final RatingTabArguements args5 = settings.arguments;
                 final SearchBarArguements args6 = settings.arguments;
                 final RecentSearchesArguements args7 = settings.arguments;
@@ -286,6 +299,7 @@ class _MyAppState extends State<MyApp> {
                           currentPage: args2.currentPage,
                           widget: args2.widget),
                       GoogleMapWidget(
+                        currentPage: args3.currentPage,
                         mapCreated: args3.mapCreated,
                         customInfoWindowController:
                             args3.customInfoWindowController,
@@ -320,7 +334,6 @@ class _MyAppState extends State<MyApp> {
                       price: args.price,
                       rating: args.rating,
                       availableSpaces: args.availableSpaces,
-                      availableLots: args.availableLots,
                       address: args.address,
                       imageOne: args.imageOne,
                       imageTwo: args.imageTwo);
@@ -329,22 +342,8 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
-                    parkingSpaces: args.parkingSpace,
                     price: args.price,
                     destination: args.destination,
-                    address: args.address,
-                    arrivalTime: args.arrivalTime,
-                    leavingTime: args.leavingTime,
-                  );
-                });
-              } else if (settings.name == PaymentSuccessful.routeName) {
-                final ReceiptArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PaymentSuccessful(
-                    parkingSpaces: args.parkingSpace,
-                    price: args.price,
-                    destination: args.destination,
-                    address: args.address,
                     arrivalTime: args.arrivalTime,
                     leavingTime: args.leavingTime,
                   );

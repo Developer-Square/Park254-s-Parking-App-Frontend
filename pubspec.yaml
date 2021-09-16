@@ -25,6 +25,8 @@ dependencies:
   pin_code_fields: ^6.1.0
   google_maps_flutter: ^1.2.0
   geolocator: ^6.1.14
+  dio: ^3.0.10
+  flutter_polyline_points: ^0.2.4
   flutter_svg: ^0.19.1
   geocoding: ^1.0.5
   http: ^0.12.2

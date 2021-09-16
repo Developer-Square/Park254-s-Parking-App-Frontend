@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
@@ -15,8 +17,14 @@ class HomePage extends StatefulWidget {
   User userDetails;
   Token accessToken;
   Token refreshToken;
+  String activeTab;
 
-  HomePage({this.userDetails, this.accessToken, this.refreshToken});
+  HomePage({
+    this.userDetails,
+    this.accessToken,
+    this.refreshToken,
+    this.activeTab,
+  });
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -37,11 +45,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     //Pass initial values
+    if (widget.activeTab != null) {
+      _activeTab = widget.activeTab;
+    }
+
     showBottomNavigation = true;
     final storeDetails =
         Provider.of<UserWithTokenModel>(context, listen: false);
 
-    if (storeDetails != null) {
+    if (storeDetails != null && widget.userDetails != null) {
       // Store the user, access and refresh token in state.
       var userWithTokenDetails = UserWithToken(
           user: widget.userDetails,

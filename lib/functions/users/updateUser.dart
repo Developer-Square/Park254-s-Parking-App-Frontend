@@ -25,18 +25,27 @@ Future<User> updateUser({
   Map<String, String> headers = {
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
   };
+
+  // final vehiclesList = vehicles
+  //     .map((vehicle) =>
+  //         Vehicle(model: vehicle.model, plate: vehicle.plate).toJson())
+  //     .toList();
+
+  // Removed role as it was bringing back an error.
   Map<String, dynamic> body = {
-    "name": name,
-    "email": email,
-    "role": role,
-    "phone": phone,
-    "vehicles": vehicles,
+    'name': name,
+    'email': email,
+    'phone': phone.toString(),
+    'vehicles': vehicles,
   };
+
   body.removeWhere((key, value) => value == '' || value == 0);
   if (vehicles.length == 0) {
     body.remove("vehicles");
   }
+
   log(jsonEncode(body));
+
   final url = Uri.https(globals.apiKey, '/v1/users/$userId');
   final response =
       await http.patch(url, headers: headers, body: jsonEncode(body));

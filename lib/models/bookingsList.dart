@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
 import 'dart:core';
 
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
+
 class BookingsList {
   final List<BookingDetails> bookingDetailsList;
   final int page;

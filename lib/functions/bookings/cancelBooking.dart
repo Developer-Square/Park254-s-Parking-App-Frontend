@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +18,7 @@ Future<BookingDetails> cancelBooking({
   };
   final url = Uri.https(globals.apiKey, '/v1/bookings/$bookingId');
   final response = await http.post(url, headers: headers);
-
+  log(response.body.toString());
   if (response.statusCode == 200) {
     final bookingDetails = BookingDetails.fromJson(jsonDecode(response.body));
     return bookingDetails;

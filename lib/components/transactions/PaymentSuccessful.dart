@@ -1,17 +1,23 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/SecondaryText.dart';
 import 'package:park254_s_parking_app/components/TertiaryText.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
+import 'package:park254_s_parking_app/pages/search page/search_page.dart';
 
 import '../CircleWithIcon.dart';
 import '../DottedHorizontalLine.dart';
+import '../helper_functions.dart';
 
 /// Creates a receipt
 ///
@@ -25,23 +31,18 @@ import '../DottedHorizontalLine.dart';
 ///      destination: 'Nairobi',
 ///      parkingSpace: 'pajh5114',
 ///      price: 10,
-///      address: '100 West 33rd Street, Nairobi Industrial Area, 00100, Kenya'
 ///   )
 ///);
 class PaymentSuccessful extends StatefulWidget {
-  final String parkingSpaces;
   final int price;
   final String destination;
-  final String address;
   final TimeOfDay arrivalTime;
   final TimeOfDay leavingTime;
   static const routeName = '/receipt';
 
   PaymentSuccessful(
-      {@required this.parkingSpaces,
-      @required this.price,
+      {@required this.price,
       @required this.destination,
-      @required this.address,
       @required this.arrivalTime,
       @required this.leavingTime});
 
@@ -54,6 +55,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String transactionMonth;
   String transactionDay;
   String mpesaReceiptNumber;
+  NavigationProvider navigationDetails;
+
+  @override
+  initState() {
+    super.initState();
+    if (mounted) {
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+    }
+  }
 
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
@@ -181,9 +192,15 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
-                    child: Image(
-                      image: AssetImage('assets/images/qrcode.png'),
-                      fit: BoxFit.cover,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomePage(
+                                activeTab: 'myparking',
+                              ))),
+                      child: Image(
+                        image: AssetImage('assets/images/qrcode.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     flex: 7,
                   ),
@@ -269,17 +286,23 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        CircleWithIcon(
-          icon: Icons.near_me,
-          bgColor: globals.primaryColor,
-          iconColor: globals.textColor,
-          sizeFactor: 2,
-        ),
-        CircleWithIcon(
-          icon: Icons.error_outline,
-          bgColor: Colors.red,
-          iconColor: Colors.white,
-          sizeFactor: 1,
+        InkWell(
+          onTap: () async {
+            Position position = await Geolocator.getCurrentPosition(
+                desiredAccuracy: LocationAccuracy.high);
+            navigationDetails.setNavigation();
+            navigationDetails.setCurrentLocation(position);
+            buildNotification(
+                'On arrival, present the QR Code for scanning', 'info');
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => SearchPage()));
+          },
+          child: CircleWithIcon(
+            icon: Icons.near_me,
+            bgColor: globals.primaryColor,
+            iconColor: globals.textColor,
+            sizeFactor: 2,
+          ),
         ),
         CircleWithIcon(
           icon: Icons.call,
@@ -305,7 +328,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     transactionDay = transactionDetails.transaction.transactionDate
         .toString()
         .substring(6, 8);
-    log(mpesaReceiptNumber);
 
     return SafeArea(
       child: Scaffold(

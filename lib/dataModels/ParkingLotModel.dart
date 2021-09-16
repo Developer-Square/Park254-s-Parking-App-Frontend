@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
@@ -18,6 +20,7 @@ class ParkingLotModel with ChangeNotifier {
     address: null,
     city: null,
     price: null,
+    features: null,
     availableSpaces: null,
   );
   bool loading = false;
@@ -32,13 +35,11 @@ class ParkingLotModel with ChangeNotifier {
     _parkingLot =
         await getParkingLotById(token: token, parkingLotId: parkingLotId);
     loading = false;
-
     notifyListeners();
   }
 
-  set parkingLot(ParkingLot value) {
+  set parkingLot(value) {
     _parkingLot = value;
-
     notifyListeners();
   }
 

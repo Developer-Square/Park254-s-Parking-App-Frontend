@@ -26,7 +26,6 @@ class NearByParking extends StatefulWidget {
   final CustomInfoWindowController customInfoWindowController;
   final Function showFullBackground;
   final TextEditingController searchBarController;
-  final Function hideMapButtons;
   final Function showToolTipFn;
   final Function hideToolTip;
   NearbyParkingLot selectedParkingLot;
@@ -38,7 +37,6 @@ class NearByParking extends StatefulWidget {
     @required this.customInfoWindowController,
     @required this.showFullBackground,
     this.searchBarController,
-    this.hideMapButtons,
     this.showToolTipFn,
     this.hideToolTip,
   });
@@ -56,7 +54,7 @@ class _NearByParkingState extends State<NearByParking>
   int maxRetries;
   // User's details from the store.
   UserWithTokenModel storeDetails;
-  // Pakring details from the store.
+  // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
 
   @override
@@ -81,8 +79,6 @@ class _NearByParkingState extends State<NearByParking>
     // Set the current position to state.
     if (position != null && nearbyParkingDetails.nearbyParking.lots == null) {
       getNearestParkingPlaces(position);
-      // TODO: Remove if its never used.
-      nearbyParkingDetails.setCurrentPositon(position);
     }
   }
 
@@ -164,7 +160,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(width: 12.0),
                 buildNearbyContainer('Nearby Parking'),
                 SizedBox(width: 15.0),
-                buildNearbyContainer('Recommeded Parking'),
+                buildNearbyContainer('Recommended Parking'),
                 SizedBox(width: 12.0),
               ]))),
     );
@@ -212,7 +208,9 @@ class _NearByParkingState extends State<NearByParking>
             children: [
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
-                imgPath: parkingLots.lots[index].images[0],
+                imgPath: parkingLots.lots[index].images.length > 0
+                    ? parkingLots.lots[index].images[0]
+                    : '',
                 parkingPrice: parkingLots.lots[index].price,
                 parkingPlaceName: parkingLots.lots[index].name,
                 rating: parkingLots.lots[index].rating,
@@ -228,7 +226,6 @@ class _NearByParkingState extends State<NearByParking>
                 selectedCard: selectedCard,
                 selectCard: selectCard,
                 searchBarController: widget.searchBarController,
-                hideMapButtons: widget.hideMapButtons,
               ),
               SizedBox(height: 20.0)
             ],

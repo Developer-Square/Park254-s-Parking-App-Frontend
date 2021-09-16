@@ -40,27 +40,26 @@ import 'package:park254_s_parking_app/components/BorderContainer.dart';
 class MoreInfo extends StatefulWidget {
   final String destination;
   final String city;
-  final int distance;
+  final num distance;
   final int price;
-  final double rating;
+  final num rating;
   final int availableSpaces;
-  final List availableLots;
   final String address;
   final String imageOne;
   final String imageTwo;
   static const routeName = '/moreInfo';
 
-  MoreInfo(
-      {@required this.destination,
-      @required this.city,
-      @required this.distance,
-      @required this.price,
-      @required this.rating,
-      @required this.availableSpaces,
-      @required this.availableLots,
-      @required this.address,
-      @required this.imageOne,
-      @required this.imageTwo});
+  MoreInfo({
+    @required this.destination,
+    @required this.city,
+    @required this.distance,
+    @required this.price,
+    @required this.rating,
+    @required this.availableSpaces,
+    @required this.address,
+    @required this.imageOne,
+    @required this.imageTwo,
+  });
 
   @override
   _MoreInfoState createState() => _MoreInfoState();
@@ -71,17 +70,29 @@ class _MoreInfoState extends State<MoreInfo> {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Image(
-            image: AssetImage(widget.imageOne),
-            fit: BoxFit.cover,
-          ),
-          flex: 2,
+          child: widget.imageOne != null
+              ? Image.network(
+                  widget.imageOne,
+                  fit: BoxFit.cover,
+                )
+              : Image(
+                  image:
+                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  fit: BoxFit.cover,
+                ),
+          flex: 1,
         ),
         Expanded(
-          child: Image(
-            image: AssetImage(widget.imageTwo),
-            fit: BoxFit.cover,
-          ),
+          child: widget.imageTwo != null
+              ? Image.network(
+                  widget.imageTwo,
+                  fit: BoxFit.cover,
+                )
+              : Image(
+                  image:
+                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  fit: BoxFit.cover,
+                ),
           flex: 1,
         ),
       ],
@@ -174,7 +185,8 @@ class _MoreInfoState extends State<MoreInfo> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              _textWithIcon(Icons.near_me, '${widget.distance.toString()} ft'),
+              _textWithIcon(Icons.near_me,
+                  '${widget.distance.toString().substring(0, 4)} m'),
               _textWithIcon(
                   Icons.attach_money, '${widget.price.toString()} / Hour'),
               PrimaryText(content: '${widget.rating.toString()}'),
@@ -250,22 +262,6 @@ class _MoreInfoState extends State<MoreInfo> {
             flex: 6,
           ),
           Spacer(),
-          Expanded(
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int index) {
-                final item = widget.availableLots[index];
-                return _parkingSpace(
-                    item["lotNumber"], item["emptySpaces"], item["capacity"]);
-              },
-              separatorBuilder: (BuildContext context, int index) => Container(
-                width: width / 20,
-              ),
-              itemCount: widget.availableLots.length,
-            ),
-            flex: 6,
-          ),
-          Spacer(),
         ],
       ),
     );
@@ -290,38 +286,20 @@ class _MoreInfoState extends State<MoreInfo> {
                     ),
                     Spacer(),
                     Expanded(
-                      child: Image(
-                        image: AssetImage('assets/images/Park254_logo.png'),
-                        fit: BoxFit.cover,
-                      ),
+                      child: widget.imageOne != null
+                          ? Image.network(
+                              widget.imageOne,
+                              fit: BoxFit.cover,
+                            )
+                          : Image(
+                              image: AssetImage(
+                                  'assets/images/parking_photos/parking_1.jpg'),
+                              fit: BoxFit.cover,
+                            ),
                       flex: 1,
                     ),
                   ],
                 ),
-              ],
-            ),
-            flex: 2,
-          ),
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                Spacer(
-                  flex: 1,
-                ),
-                Expanded(
-                  child: Material(
-                    color: globals.primaryColor,
-                    child: InkWell(
-                      onTap: () => {},
-                      child: Center(
-                        child: PrimaryText(content: 'Book now'),
-                      ),
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                  ),
-                  flex: 2,
-                ),
-                Spacer(),
               ],
             ),
             flex: 2,
@@ -348,7 +326,14 @@ class _MoreInfoState extends State<MoreInfo> {
                 backgroundColor: Colors.white,
                 elevation: 0.0,
                 automaticallyImplyLeading: true,
-                leading: BackArrow(),
+                leading: Container(
+                    margin: EdgeInsets.only(left: 10.0, top: 10.0),
+                    width: 10.0,
+                    height: 10.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.0),
+                        color: Colors.white.withOpacity(0.8)),
+                    child: BackArrow()),
                 expandedHeight: height / 5,
                 flexibleSpace: FlexibleSpaceBar(
                   background: _appBar(),

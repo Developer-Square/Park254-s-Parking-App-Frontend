@@ -12,6 +12,7 @@ import 'package:encrypt/encrypt.dart' as encryptionPackage;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:overlay_support/overlay_support.dart';
 import '../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 
 /// Encrypts and Decrypts all the login the login details
 encryptDecryptData(String encryptionKey, data, String option) {
@@ -39,7 +40,7 @@ storeDetailsInMemory(String key, value) async {
 }
 
 /// Stores all the login details
-storeLoginDetails(details, user) async {
+storeLoginDetails(details) async {
   final accessToken = details.accessToken.token;
   final refreshToken = details.refreshToken.token;
   // First encrypt both tokens.
@@ -48,11 +49,11 @@ storeLoginDetails(details, user) async {
   // Then store them in memory.
   storeDetailsInMemory('accessToken', access.base64);
   storeDetailsInMemory('refreshToken', refresh.base64);
+  storeDetailsInMemory('userId', details.user.id);
 }
 
 // Clears the details when a user logouts.
-clearStorage(user) async {
-  await user.deleteAll();
+clearStorage() async {
   await SharedPreferences.getInstance().then((prefs) {
     prefs.clear();
   });
@@ -62,8 +63,15 @@ clearStorage(user) async {
 ///
 /// It can be used to show success or error messages.
 buildNotification(textMsg, msgType) {
-  return showSimpleNotification(Text(textMsg),
-      background: msgType == 'error' ? Colors.red : globals.backgroundColor,
+  return showSimpleNotification(
+      Text(
+        textMsg,
+      ),
+      background: msgType == 'error'
+          ? Colors.red
+          : msgType == 'info'
+              ? Colors.blue
+              : globals.backgroundColor,
       autoDismiss: false, trailing: Builder(builder: (context) {
     return FlatButton(
         onPressed: () {
@@ -108,29 +116,47 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
 /// and [parkingData].
 /// animates the Camera twice:
 /// First to a place near the marker, then to the marker.
-void cameraAnimate(_controller, latitude, longitude) async {
-  final GoogleMapController mapController = await _controller;
-  await mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: LatLng(latitude - 0.0001, latitude), zoom: 14.0)));
+void cameraAnimate({
+  @required GoogleMapController controller,
+  @required double latitude,
+  @required double longitude,
+  double zoom,
+}) async {
+  if (latitude != null && longitude != null) {
+    await controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target: LatLng(latitude - 0.0001, latitude), zoom: zoom ?? 14.0)));
 
-  await mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      // The subtraction is done to ensure the booking tab does not block the marker.
-      target: LatLng(latitude - 0.0015, longitude),
-      zoom: 14.0)));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        // The subtraction is done to ensure the booking tab does not block the marker.
+        target: LatLng(latitude - 0.0015, longitude),
+        zoom: zoom ?? 14.0)));
+  }
 }
 
 /// Takes a user to their current location.
 ///
 /// Requires [_controller], the Google Controller from the parent component.
 /// [currentPosition] and [load].
-void loadLocation(_controller, closeNearByParking) async {
-  closeNearByParking();
-  final c = await _controller;
+void loadLocation({
+  GoogleMapController controller,
+  Function closeNearByParking,
+  NavigationProvider navigationDetails,
+  double zoom,
+}) async {
+  if (closeNearByParking != null) {
+    closeNearByParking();
+  }
+
+  final c = await controller;
   Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
+  if (navigationDetails != null) {
+    navigationDetails.setCurrentLocation(position);
+  }
   LatLng latLngPosition = LatLng(position.latitude, position.longitude);
   CameraPosition cameraPosition =
-      new CameraPosition(target: latLngPosition, zoom: 14.0);
+      new CameraPosition(target: latLngPosition, zoom: zoom ?? 14.0);
   c.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 }
 
@@ -143,9 +169,14 @@ void getLocation(address, _controller, _clearPlaceList, _context) async {
     // Coordinates coordinates = await geoCode.forwardGeocoding(address: address);
     List<dynamic> locations = await locationFromAddress(address);
 
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    cameraAnimate(_controller, locations[0].latitude, locations[0].longitude);
-    _clearPlaceList(address);
+    if (locations.length > 0) {
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+      cameraAnimate(
+          controller: _controller,
+          latitude: locations[0].latitude,
+          longitude: locations[0].longitude);
+      _clearPlaceList(address);
+    }
   } catch (e) {
     log('In get location in helper_function.dart');
     log(e.toString());

@@ -44,11 +44,6 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
                 )
               ],
             ),
-            Text(
-              balance,
-              textAlign: TextAlign.right,
-              style: globals.buildTextStyle(16.0, true, globals.textColor),
-            )
           ],
         ),
       ),
@@ -59,16 +54,16 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
 /// Builds out the card widget.
 ///
 /// Requires a [card] variable.
-Widget buildCardDetails(card) {
+Widget buildCardDetails() {
   return Row(
     children: [
-      buildDots(false, card),
+      buildDots(false),
       SizedBox(width: 10.0),
-      buildDots(false, card),
+      buildDots(false),
       SizedBox(width: 10.0),
-      buildDots(false, card),
+      buildDots(false),
       SizedBox(width: 10.0),
-      buildDots(true, card),
+      buildDots(true),
     ],
   );
 }
@@ -76,7 +71,7 @@ Widget buildCardDetails(card) {
 /// Builds out the wallet section
 ///
 /// Requires [logo] and [card] variables.
-Widget buildWalletItem(logo, card) {
+Widget buildWalletItem(logo) {
   return Row(children: <Widget>[
     SvgPicture.asset(
       logo,
@@ -84,19 +79,19 @@ Widget buildWalletItem(logo, card) {
       width: 40.0,
     ),
     SizedBox(width: 15.0),
-    card ? (buildCardDetails(card)) : (buildDots(false, card)),
+    buildDots(false),
     SizedBox(width: 10.0),
   ]);
 }
 
 /// Builds out the vehicle section.
-Widget buildVehicleItem(carPlate) {
+Widget buildVehicleItem({String carPlate, String carModel}) {
   return Expanded(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(
-          'BMW',
+          carModel,
           style: globals.buildTextStyle(16.0, true, globals.textColor),
         ),
         Text(
@@ -111,7 +106,8 @@ Widget buildVehicleItem(carPlate) {
 /// Builds out the different containers on the page e.g. the vehicle container.
 ///
 /// Requires the [logo], [card] and [type] variables.
-Widget buildContainer(logo, card, type, carPlate) {
+Widget buildContainer(
+    {String logo, String type, String carPlate, String carModel}) {
   return BoxShadowWrapper(
       offsetY: 0.0,
       offsetX: 0.0,
@@ -122,24 +118,42 @@ Widget buildContainer(logo, card, type, carPlate) {
         padding: const EdgeInsets.only(left: 20.0, right: 15.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             type == 'wallet'
-                ? buildWalletItem(logo, card)
-                : buildVehicleItem(carPlate)
+                ? buildWalletItem(logo)
+                : buildVehicleItem(carModel: carModel, carPlate: carPlate),
+            // TODO: Add delete functionality.
+            popUpMenu()
           ],
         ),
       ));
 }
 
+Widget popUpMenu() {
+  return PopupMenuButton<int>(
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: 1,
+        child: Text(
+          'Delete',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+    ],
+    onSelected: (value) => {},
+    icon: Icon(
+      Icons.more_vert,
+      color: globals.textColor,
+    ),
+    offset: Offset(0, 100),
+  );
+}
+
 /// Returns dots or numbers.
-Widget buildDots(number, card) {
+Widget buildDots(number) {
   return Text(
-    //If it's  card display card details else display phone details.
-    card
-        ? number
-            ? '4567'
-            : '● ● ● ●'
-        : '● ● ● ● ● ● 7328',
+    '● ● ● ● ● ● 7328',
     style: globals.buildTextStyle(16.0, true, Colors.black),
   );
 }

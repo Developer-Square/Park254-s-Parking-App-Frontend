@@ -1,10 +1,13 @@
-import 'dart:developer';
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/MoreInfo.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
-import 'package:park254_s_parking_app/models/nearbyParkingLot.model.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import 'package:park254_s_parking_app/functions/utils/getRandomNumber.dart';
+import 'package:provider/provider.dart';
 import 'Booking.dart';
 import 'nearby_parking_list.dart';
 
@@ -19,28 +22,54 @@ import 'nearby_parking_list.dart';
 class BookingTab extends StatefulWidget {
   TextEditingController searchBarController;
   bool homeScreen;
+  NearbyParkingListModel nearbyParkingDetails;
   final Function showNearbyParking;
-  final Function hideMapButtons;
-  final int index;
-  NearbyParkingLot selectedParkingLot;
 
-  BookingTab(
-      {@required this.searchBarController,
-      this.homeScreen,
-      this.showNearbyParking,
-      this.hideMapButtons,
-      this.index,
-      this.selectedParkingLot});
+  BookingTab({
+    @required this.searchBarController,
+    this.homeScreen,
+    this.showNearbyParking,
+  });
   @override
   _BookingTabState createState() => _BookingTabState();
 }
 
 class _BookingTabState extends State<BookingTab> {
-  getRandomNumber() {
-    Random rng = new Random();
-    List<String> randomList =
-        new List<String>.generate(4, (_) => rng.nextInt(100).toString());
-    return randomList.join();
+  // Details from the store
+  NearbyParkingListModel nearbyParkingListDetails;
+  NavigationProvider navigationDetails;
+
+  @override
+  initState() {
+    super.initState();
+    if (mounted) {
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+    }
+  }
+
+  // Move to the booking page to book the parking lot and then pay.
+  void handleParkingLotBooking() {
+    // Close the booking tab when moving to the booking page.
+    if (nearbyParkingListDetails != null) {
+      nearbyParkingListDetails.setBookNowTab('bookingTab');
+    }
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Booking(
+              address:
+                  nearbyParkingListDetails.nearbyParkingLot.location.toString(),
+              bookingNumber: getRandomNumber(),
+              destination: nearbyParkingListDetails.nearbyParkingLot.name,
+              parkingLotNumber: getRandomNumber(),
+              // TODO: Change that number when in production.
+              price: 1,
+              imagePath:
+                  nearbyParkingListDetails.nearbyParkingLot.images.length > 0
+                      ? nearbyParkingListDetails.nearbyParkingLot.images[0]
+                      : '',
+            )));
   }
 
   @override
@@ -48,7 +77,7 @@ class _BookingTabState extends State<BookingTab> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-          height: widget.homeScreen ? 195.0 : 170.0,
+          height: 195.0,
           width: MediaQuery.of(context).size.width / 1.13,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -69,35 +98,54 @@ class _BookingTabState extends State<BookingTab> {
           child: Column(
             children: <Widget>[
               // Display the close icon on in homescreen.
-              widget.homeScreen
-                  ? Container(
-                      margin: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width / 1.4),
-                      child: InkWell(
-                          onTap: widget.homeScreen
-                              ? () {
-                                  widget.showNearbyParking();
-                                  widget.hideMapButtons('bookingTab', null);
-                                  widget.searchBarController.text = '';
-                                }
-                              : () {},
-                          child: Icon(Icons.close)))
-                  : Container(),
+              Container(
+                  margin: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 1.4),
+                  child: InkWell(
+                      onTap: () {
+                        if (nearbyParkingListDetails != null) {
+                          if (nearbyParkingListDetails.currentPage == 'home') {
+                            widget.showNearbyParking();
+                          }
+                          nearbyParkingListDetails.setBookNowTab('bookingTab');
+                        }
+
+                        widget.searchBarController.text = '';
+                      },
+                      child: Icon(Icons.close))),
               NearByParkingList(
                   activeCard: false,
-                  imgPath: widget.selectedParkingLot.images[0],
-                  parkingPrice: widget.selectedParkingLot.price,
-                  parkingPlaceName: widget.selectedParkingLot.name.length > 20
-                      ? widget.selectedParkingLot.name.substring(0, 20) + '...'
-                      : widget.selectedParkingLot.name,
-                  rating: widget.selectedParkingLot.rating,
-                  distance: widget.selectedParkingLot.distance,
-                  parkingSlots: widget.selectedParkingLot.spaces),
+                  imgPath:
+                      nearbyParkingListDetails.nearbyParkingLot.images.length >
+                              0
+                          ? nearbyParkingListDetails.nearbyParkingLot.images[0]
+                          : '',
+                  parkingPrice: nearbyParkingListDetails.nearbyParkingLot.price,
+                  parkingPlaceName:
+                      nearbyParkingListDetails.nearbyParkingLot.name.length > 20
+                          ? nearbyParkingListDetails.nearbyParkingLot.name
+                                  .substring(0, 20) +
+                              '...'
+                          : nearbyParkingListDetails.nearbyParkingLot.name,
+                  rating: nearbyParkingListDetails.nearbyParkingLot.rating,
+                  distance: nearbyParkingListDetails.nearbyParkingLot.distance,
+                  parkingSlots:
+                      nearbyParkingListDetails.nearbyParkingLot.spaces),
               SizedBox(height: 20.0),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: navigationDetails != null
+                    ? navigationDetails.isNavigating
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.spaceAround
+                    : MainAxisAlignment.spaceAround,
                 children: [
-                  _buildButtons('Book Now', globals.backgroundColor),
+                  navigationDetails != null
+                      // If the user is navigating, hide the book now button for the book now tab.
+                      ? navigationDetails.isNavigating
+                          ? _buildButtons(
+                              'Show QR Code', globals.backgroundColor)
+                          : _buildButtons('Book Now', globals.backgroundColor)
+                      : _buildButtons('Book Now', globals.backgroundColor),
                   _buildButtons('More Info', Colors.white),
                 ],
               )
@@ -113,14 +161,40 @@ class _BookingTabState extends State<BookingTab> {
   Widget _buildButtons(String text, Color _color) {
     return InkWell(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => Booking(
-                  address: widget.selectedParkingLot.location.toString(),
-                  bookingNumber: getRandomNumber(),
-                  destination: widget.selectedParkingLot.name,
-                  parkingLotNumber: getRandomNumber(),
-                  price: 1,
-                  imagePath: widget.selectedParkingLot.images[0])));
+          text.contains('Book')
+              ? handleParkingLotBooking()
+              // Take user back to the PaymentSuccessful page for QR code scanning
+              : text.contains('Show')
+                  ? Navigator.of(context).pop()
+                  : Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MoreInfo(
+                            address:
+                                nearbyParkingListDetails.nearbyParkingLot.name,
+                            destination:
+                                nearbyParkingListDetails.nearbyParkingLot.name,
+                            rating: nearbyParkingListDetails
+                                .nearbyParkingLot.rating,
+                            price:
+                                nearbyParkingListDetails.nearbyParkingLot.price,
+                            city:
+                                nearbyParkingListDetails.nearbyParkingLot.city,
+                            imageOne: nearbyParkingListDetails
+                                        .nearbyParkingLot.images.length >
+                                    0
+                                ? nearbyParkingListDetails
+                                    .nearbyParkingLot.images[0]
+                                : null,
+                            imageTwo: nearbyParkingListDetails
+                                        .nearbyParkingLot.images.length >
+                                    0
+                                ? nearbyParkingListDetails
+                                    .nearbyParkingLot.images[1]
+                                : null,
+                            distance: nearbyParkingListDetails
+                                .nearbyParkingLot.distance,
+                            availableSpaces: nearbyParkingListDetails
+                                .nearbyParkingLot.spaces,
+                          )));
         },
         child: Container(
           decoration: BoxDecoration(

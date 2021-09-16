@@ -8,7 +8,7 @@ class User {
   String name;
   final String role;
   num phone;
-  final List<Vehicle> vehicles;
+  List<Vehicle> vehicles;
 
   User({
     @required this.id,

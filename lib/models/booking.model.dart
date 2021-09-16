@@ -25,8 +25,8 @@ class BookingDetails {
       parkingLotId: json['parkingLotId'],
       clientId: json['clientId'],
       spaces: json['spaces'],
-      entryTime: DateTime.parse(json['entryTime']),
-      exitTime: DateTime.parse(json['exitTime']),
+      entryTime: DateTime.parse(json['entryTime']).toLocal(),
+      exitTime: DateTime.parse(json['exitTime']).toLocal(),
       isCancelled: json['isCancelled'],
     );
   }
@@ -34,7 +34,7 @@ class BookingDetails {
   Map<String, dynamic> toJson() => {
         'parkingLotId': parkingLotId,
         'clientId': clientId,
-        'spaces': spaces,
+        'spaces': spaces.toString(),
         'entryTime': entryTime.toUtc().toIso8601String(),
         'exitTime': exitTime.toUtc().toIso8601String(),
       };

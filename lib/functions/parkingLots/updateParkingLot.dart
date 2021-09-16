@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +16,6 @@ import '../../config/globals.dart' as globals;
 Future<ParkingLot> updateParkingLot({
   @required String token,
   @required String parkingLotId,
-  String name = '',
   String owner = '',
   int spaces = 0,
   num longitude = 0,
@@ -30,7 +30,6 @@ Future<ParkingLot> updateParkingLot({
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
-    "name": name,
     "owner": owner,
     "spaces": spaces,
     'location': {
@@ -49,6 +48,8 @@ Future<ParkingLot> updateParkingLot({
   if (images.length == 0) {
     body.remove('images');
   }
+
+  log(jsonEncode(body));
 
   final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.patch(

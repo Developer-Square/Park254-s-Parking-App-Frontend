@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 
 /// User model object with setters and getters
 class UserWithTokenModel with ChangeNotifier {
@@ -18,6 +19,7 @@ class UserWithTokenModel with ChangeNotifier {
     _user.user.name = name;
     _user.user.email = email;
     _user.user.phone = phone;
+    notifyListeners();
   }
 
   void clear() {

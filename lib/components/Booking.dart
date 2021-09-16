@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/transactions/PayUp.dart';
 import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
@@ -42,15 +45,20 @@ class Booking extends StatefulWidget {
   final int price;
   final String imagePath;
   final String address;
+  final DateTime entryDate;
+  final DateTime exitDate;
   static const routeName = '/booking';
 
-  Booking(
-      {@required this.bookingNumber,
-      @required this.destination,
-      @required this.parkingLotNumber,
-      @required this.price,
-      @required this.imagePath,
-      @required this.address});
+  Booking({
+    @required this.bookingNumber,
+    @required this.destination,
+    @required this.parkingLotNumber,
+    @required this.price,
+    @required this.imagePath,
+    @required this.address,
+    this.entryDate,
+    this.exitDate,
+  });
 
   @override
   _BookingState createState() => _BookingState();
@@ -79,11 +87,28 @@ class _BookingState extends State<Booking> {
   ];
   final List<String> driverList = <String>['Linus', 'Ryan'];
   TransactionModel transactionDetails;
+  BookingProvider bookingDetailsProvider;
 
   @override
   void initState() {
     super.initState();
     isLoading = false;
+
+    if (mounted) {
+      bookingDetailsProvider =
+          Provider.of<BookingProvider>(context, listen: false);
+
+      if (widget.entryDate != null &&
+          widget.exitDate != null &&
+          bookingDetailsProvider != null) {
+        if (bookingDetailsProvider.update) {
+          arrivalTime = TimeOfDay.fromDateTime(widget.entryDate);
+          leavingTime = TimeOfDay.fromDateTime(widget.exitDate);
+          arrivalDate = widget.entryDate;
+          leavingDate = widget.exitDate;
+        }
+      }
+    }
   }
 
   void showHideLoader(value) {
@@ -92,7 +117,7 @@ class _BookingState extends State<Booking> {
     });
   }
 
-  ///shows date picker for arrival date
+  /// shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -108,9 +133,9 @@ class _BookingState extends State<Booking> {
     }
   }
 
-  ///shows date picker for leaving date
+  /// Shows date picker for leaving date.
   ///
-  /// leaving date has to be set after arrival date
+  /// Leaving date has to be set after arrival date.
   _selectLeavingDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -139,7 +164,7 @@ class _BookingState extends State<Booking> {
     );
   }
 
-  ///shows date picker for arrival time
+  /// shows date picker for arrival time
   _selectArrivalTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -173,12 +198,31 @@ class _BookingState extends State<Booking> {
     }
   }
 
-  ///Calculates the parking duration and cost
+  /// Calculates the parking duration and cost
   String _parkingTime() {
-    final Duration parkingDays = leavingDate.difference(arrivalDate);
-    final double totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
-        (arrivalTime.hour + (arrivalTime.minute / 60)) +
-        parkingDays.inHours;
+    Duration parkingDays;
+    double totalTime = 0;
+    // If the user is updating the time, he/she should only be charged for the difference.
+    // between the initial leaving time and the leaving time he/she has set.
+    if (bookingDetailsProvider != null) {
+      if (bookingDetailsProvider.update) {
+        parkingDays = leavingDate.difference(widget.exitDate);
+        totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+            (widget.exitDate.hour + (widget.exitDate.minute / 60)) +
+            parkingDays.inHours;
+      } else {
+        parkingDays = leavingDate.difference(arrivalDate);
+        totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+            (arrivalTime.hour + (arrivalTime.minute / 60)) +
+            parkingDays.inHours;
+      }
+    } else {
+      parkingDays = leavingDate.difference(arrivalDate);
+      totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
+          (arrivalTime.hour + (arrivalTime.minute / 60)) +
+          parkingDays.inHours;
+    }
+
     int hours;
     int minutes;
     if (totalTime >= 0) {
@@ -207,16 +251,27 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt() {
-    Navigator.pushNamed(context, PaymentSuccessful.routeName,
-        arguments: ReceiptArguments(
-          parkingSpace: widget.parkingLotNumber,
-          price: amount,
-          destination: widget.destination,
-          address: widget.address,
-          arrivalTime: arrivalTime,
-          leavingTime: leavingTime,
-        ));
+  void _generateReceipt(BookingProvider bookingDetails) {
+    if (bookingDetails != null) {
+      bookingDetails.setBooking(
+        price: amount,
+        destination: widget.destination,
+        arrival: arrivalTime,
+        leaving: leavingTime,
+        arrivalDate: arrivalDate,
+        leavingDate: leavingDate,
+      );
+
+      Navigator.pushNamed(context, PaymentSuccessful.routeName,
+          arguments: ReceiptArguments(
+            parkingSpace: widget.parkingLotNumber,
+            price: amount,
+            destination: widget.destination,
+            address: widget.address,
+            arrivalTime: arrivalTime,
+            leavingTime: leavingTime,
+          ));
+    }
   }
 
   Widget _dropDown(
@@ -406,8 +461,17 @@ class _BookingState extends State<Booking> {
 
   Widget _timeDatePicker() {
     return TimeDatePicker(
-        pickArrivalDate: () => _selectArrivalDate(context),
-        pickArrivalTime: () => _selectArrivalTime(context),
+        // If the user is updating time, they're not allowed to update the arrival time.
+        pickArrivalDate: bookingDetailsProvider != null
+            ? bookingDetailsProvider.update
+                ? () => _selectArrivalDate(context)
+                : () {}
+            : () {},
+        pickArrivalTime: bookingDetailsProvider != null
+            ? bookingDetailsProvider.update
+                ? () => _selectArrivalTime(context)
+                : () {}
+            : () {},
         pickLeavingDate: () => _selectLeavingDate(context),
         pickLeavingTime: () => _selectLeavingTime(context),
         arrivalDate: arrivalDate.day == DateTime.now().day
@@ -427,6 +491,12 @@ class _BookingState extends State<Booking> {
             : ' ' +
                 '${leavingTime.hour.toString()}:0${leavingTime.minute.toString()}',
         parkingTime: _parkingTime());
+  }
+
+  void updateParkingTime() {
+    buildNotification('Parking time updated successfully', 'success');
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => MyParkingScreen()));
   }
 
   @override
@@ -515,7 +585,11 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: () => _generateReceipt(),
+                      receiptGenerator: (bookingDetails) =>
+                          _generateReceipt(bookingDetails),
+                      updateParkingTime: () => updateParkingTime(),
+                      arrivalTime: arrivalTime.toString(),
+                      leavingTime: leavingTime.toString(),
                     )
                   : Container(),
               isLoading ? Loader() : Container()

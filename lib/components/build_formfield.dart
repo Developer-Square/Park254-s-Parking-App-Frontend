@@ -110,6 +110,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                                                   value.isEmpty) {
                                                 return 'Please enter your ${widget.text == 'Phone number' ? 'full name' : 'vehicle model'}';
                                               }
+                                              // return value;
                                             },
                                             decoration: InputDecoration(
                                                 hintText: widget.text ==

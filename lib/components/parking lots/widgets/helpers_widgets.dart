@@ -2,6 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import '../../../config/globals.dart' as globals;
+import '../../BackArrow.dart';
+
+/// Builds the appbar for the page.
+Widget appBar({Function clearFields, String currentScreen}) {
+  return AppBar(
+    leading: BackArrow(clearFields: clearFields),
+    backgroundColor: Colors.transparent,
+    automaticallyImplyLeading: true,
+    title: Text(
+      currentScreen != 'create' ? 'Edit Parking Lot' : 'Add New Parking Lot',
+      style: globals.buildTextStyle(18.0, true, globals.textColor),
+    ),
+    elevation: 0.0,
+    centerTitle: true,
+  );
+}
 
 /// Edit image that has already been uploaded.
 Widget editUploadedImage(currentScreen, selected, _cropImage, _clear) {
