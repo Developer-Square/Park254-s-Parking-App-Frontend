@@ -91,12 +91,15 @@ class _PayUpState extends State<PayUp> {
     if (bookingDetails != null && storeDetails != null) {
       transactionDetails.setLoading(true);
       final now = new DateTime.now();
+      final DateTime entryTime = new DateTime(
+          now.year, now.month, now.day, arrivalHour, arrivalMinute);
       final DateTime exitTime = new DateTime(
           now.year, now.month, now.day, leavingHour, leavingMinute);
       updateBooking(
         token: storeDetails.user.accessToken.token.toString(),
         bookingId: bookingDetails.bookingDetails[0].id,
         parkingLotId: bookingDetails.parkingLotDetails[0]['id'],
+        entryTime: entryTime,
         exitTime: exitTime,
       ).then((value) {
         buildNotification('Parking lot updated successfully', 'success');
@@ -225,7 +228,6 @@ class _PayUpState extends State<PayUp> {
     transactionDetails = Provider.of<TransactionModel>(context);
     resultCode = transactionDetails.transaction.resultCode;
     resultDesc = transactionDetails.transaction.resultDesc;
-    log(bookingDetails.update.toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

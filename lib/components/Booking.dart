@@ -45,6 +45,8 @@ class Booking extends StatefulWidget {
   final int price;
   final String imagePath;
   final String address;
+  final DateTime entryDate;
+  final DateTime exitDate;
   static const routeName = '/booking';
 
   Booking({
@@ -54,6 +56,8 @@ class Booking extends StatefulWidget {
     @required this.price,
     @required this.imagePath,
     @required this.address,
+    this.entryDate,
+    this.exitDate,
   });
 
   @override
@@ -94,12 +98,14 @@ class _BookingState extends State<Booking> {
       bookingDetailsProvider =
           Provider.of<BookingProvider>(context, listen: false);
 
-      if (bookingDetailsProvider != null) {
+      if (widget.entryDate != null &&
+          widget.exitDate != null &&
+          bookingDetailsProvider != null) {
         if (bookingDetailsProvider.update) {
-          arrivalTime = bookingDetailsProvider.arrivalTime;
-          leavingTime = bookingDetailsProvider.leavingTime;
-          arrivalDate = bookingDetailsProvider.arrivalDate;
-          leavingDate = bookingDetailsProvider.leavingDate;
+          arrivalTime = TimeOfDay.fromDateTime(widget.entryDate);
+          leavingTime = TimeOfDay.fromDateTime(widget.exitDate);
+          arrivalDate = widget.entryDate;
+          leavingDate = widget.exitDate;
         }
       }
     }
@@ -111,7 +117,7 @@ class _BookingState extends State<Booking> {
     });
   }
 
-  ///shows date picker for arrival date
+  /// shows date picker for arrival date
   void _selectArrivalDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -129,7 +135,7 @@ class _BookingState extends State<Booking> {
 
   /// Shows date picker for leaving date.
   ///
-  /// leaving date has to be set after arrival date.
+  /// Leaving date has to be set after arrival date.
   _selectLeavingDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -200,11 +206,9 @@ class _BookingState extends State<Booking> {
     // between the initial leaving time and the leaving time he/she has set.
     if (bookingDetailsProvider != null) {
       if (bookingDetailsProvider.update) {
-        parkingDays =
-            leavingDate.difference(bookingDetailsProvider.leavingDate);
+        parkingDays = leavingDate.difference(widget.exitDate);
         totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
-            (bookingDetailsProvider.leavingTime.hour +
-                (bookingDetailsProvider.leavingTime.minute / 60)) +
+            (widget.exitDate.hour + (widget.exitDate.minute / 60)) +
             parkingDays.inHours;
       } else {
         parkingDays = leavingDate.difference(arrivalDate);
@@ -504,8 +508,6 @@ class _BookingState extends State<Booking> {
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
     isLoading = transactionDetails.loader;
-    // log(arrivalTime.toString().substring(10, 12));
-    // log(leavingTime.toString().substring(13, 15));
 
     return SafeArea(
       child: Scaffold(

@@ -150,7 +150,7 @@ class MyParkingState extends State<MyParkingScreen> {
     }
   }
 
-  void _updateParkingTime() {
+  void _updateParkingTime({dynamic bookingDetails}) {
     bookingDetailsProvider.setUpdate(value: true);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => Booking(
@@ -160,6 +160,8 @@ class MyParkingState extends State<MyParkingScreen> {
               price: 1,
               bookingNumber: getRandomNumber(),
               parkingLotNumber: getRandomNumber(),
+              entryDate: bookingDetails.entryTime,
+              exitDate: bookingDetails.exitTime,
             )));
   }
 
@@ -356,7 +358,7 @@ class MyParkingState extends State<MyParkingScreen> {
                           : 'Loading...',
                       paymentStatus: timeOfDayToString(results[index].exitTime),
                       parkingLotData: parkingLotDetails[index],
-                      bookingId: results[index].id)
+                      bookingDetails: results[index])
                   : buildParkingContainer(
                       parkingLotName: results[index].name,
                       parkingPrice: 'Ksh ${results[index].price} / hr',
@@ -421,7 +423,7 @@ class MyParkingState extends State<MyParkingScreen> {
     String paymentStatus,
     Color paymentColor,
     dynamic parkingLotData,
-    String bookingId,
+    dynamic bookingDetails,
   }) {
     return BoxShadowWrapper(
       offsetY: 0.0,
@@ -447,7 +449,7 @@ class MyParkingState extends State<MyParkingScreen> {
                   style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
                 ),
                 userRole == 'user'
-                    ? activeBookings.contains(bookingId)
+                    ? activeBookings.contains(bookingDetails.id)
                         ? bookingLabel(active: true)
                         : bookingLabel(active: false)
                     : parkingPrice ?? '',
@@ -500,7 +502,8 @@ class MyParkingState extends State<MyParkingScreen> {
                       ),
                     ],
                   ),
-                  _popUpMenu(data: parkingLotData, bookingId: bookingId)
+                  _popUpMenu(
+                      data: parkingLotData, bookingDetails: bookingDetails)
                 ]),
           )
         ]),
@@ -508,14 +511,14 @@ class MyParkingState extends State<MyParkingScreen> {
     );
   }
 
-  Widget _popUpMenu({dynamic data, String bookingId}) {
+  Widget _popUpMenu({dynamic data, dynamic bookingDetails}) {
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
           child: Text(userRole == 'vendor'
               ? 'Update'
-              : activeBookings.contains(bookingId)
+              : activeBookings.contains(bookingDetails.id)
                   ? 'Update Time'
                   : 'Share Spot'),
         ),
@@ -524,7 +527,7 @@ class MyParkingState extends State<MyParkingScreen> {
           child: Text(
             userRole == 'vendor'
                 ? 'Delete'
-                : activeBookings.contains(bookingId)
+                : activeBookings.contains(bookingDetails.id)
                     ? 'Report an issue'
                     : 'Delete',
             style: TextStyle(color: Colors.red),
@@ -536,8 +539,8 @@ class MyParkingState extends State<MyParkingScreen> {
             ? value == 1
                 ? _updateParking(data)
                 : _deleteParkingLot(data)
-            : value == 1 && activeBookings.contains(bookingId)
-                ? _updateParkingTime()
+            : value == 1 && activeBookings.contains(bookingDetails.id)
+                ? _updateParkingTime(bookingDetails: bookingDetails)
                 : () {}
       },
       icon: Icon(

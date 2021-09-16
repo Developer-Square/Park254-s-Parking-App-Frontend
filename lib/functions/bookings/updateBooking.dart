@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ Future<BookingDetails> updateBooking({
   @required String token,
   @required String bookingId,
   @required String parkingLotId,
+  @required DateTime entryTime,
   @required DateTime exitTime,
 }) async {
   Map<String, String> headers = {
@@ -22,6 +24,8 @@ Future<BookingDetails> updateBooking({
 
   Map<String, dynamic> body = {
     "parkingLotId": parkingLotId,
+    "spaces": 1,
+    "entryTime": entryTime.toUtc().toIso8601String(),
     "exitTime": exitTime.toUtc().toIso8601String(),
   };
 
