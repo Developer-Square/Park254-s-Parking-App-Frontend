@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' as dartMath;
 
@@ -14,12 +15,14 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookings.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/deleteParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/getParkingLotById.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/functions/utils/getRandomNumber.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
@@ -49,7 +52,7 @@ class MyParkingState extends State<MyParkingScreen> {
   List parkingLotDetails = [];
   List activeBookings = [];
   UserModel userModel;
-  List<BookingDetails> bookingDetailsList;
+  List<BookingDetailsPopulated> bookingDetailsList;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -139,28 +142,23 @@ class MyParkingState extends State<MyParkingScreen> {
     @required int index,
   }) {
     if (element.parkingLotId != null) {
-      getParkingLotById(token: access, parkingLotId: element.parkingLotId)
-          .then((lot) {
-        parkingLotDetails.add({
-          'name': lot.name,
-          'address': lot.address,
-          'image': lot.images.length > 0 ? lot.images[0] : '',
-          'id': lot.id,
-        });
-
-        // Set the booking details to the store to avoid needless re-fetching.
-        if (bookingDetailsProvider != null) {
-          if (value.bookingDetailsList.length == index) {
-            bookingDetailsProvider.setBookingDetails(
-                value: value.bookingDetailsList, bookings: activeBookings);
-            bookingDetailsProvider.setParkingLotDetails(
-                value: parkingLotDetails);
-          }
-        }
-      }).catchError((err) {
-        log("In fetchParkingLotHistory, myparking_screen");
-        log(err.toString());
+      parkingLotDetails.add({
+        'name': element.parkingLotId.name,
+        'address': element.parkingLotId.address,
+        'image': element.parkingLotId.images.length > 0
+            ? element.parkingLotId.images[0]
+            : '',
+        'id': element.parkingLotId.id,
       });
+
+      // Set the booking details to the store to avoid needless re-fetching.
+      if (bookingDetailsProvider != null) {
+        if (value.bookingDetailsList.length == index) {
+          bookingDetailsProvider.setBookingDetails(
+              value: value.bookingDetailsList, bookings: activeBookings);
+          bookingDetailsProvider.setParkingLotDetails(value: parkingLotDetails);
+        }
+      }
     }
   }
 
@@ -251,8 +249,36 @@ class MyParkingState extends State<MyParkingScreen> {
       ScanResult barcode = await BarcodeScanner.scan();
       setState(() {
         barcode = barcode;
+
+        if (storeDetails != null) {
+          Map<String, dynamic> qrCodeDetaails = jsonDecode(barcode.rawContent);
+          String numberPlate = qrCodeDetaails['numberPlate'];
+          String bookingId = qrCodeDetaails['bookingId'];
+          setState(() {
+            showLoader = true;
+          });
+          getBookingById(token: accessToken, bookingId: bookingId)
+              .then((value) {
+            if (!value.isCancelled) {
+              setState(() {
+                showLoader = false;
+              });
+              showBottomModal(
+                context: context,
+                bookingsDetails: value,
+                numberPlate: numberPlate,
+              );
+            }
+          }).catchError((err) {
+            setState(() {
+              showLoader = false;
+            });
+            log('In myparking_screen.dart, scan');
+            buildNotification(err.message, 'error');
+          });
+        }
       });
-      log(barcode.rawContent.toString());
+      log(barcode.rawContent);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
         setState(() {
@@ -285,6 +311,9 @@ class MyParkingState extends State<MyParkingScreen> {
 
     // Get the booking data from the store.
     if (bookingDetailsProvider != null) {
+      log(bookingDetailsProvider.bookingDetails != null
+          ? bookingDetailsProvider.bookingDetails[0].id
+          : 'not yet');
       setState(() {
         bookingDetailsList = bookingDetailsProvider.bookingDetails;
         parkingLotDetails = bookingDetailsProvider.parkingLotDetails;
@@ -427,4 +456,10 @@ class MyParkingState extends State<MyParkingScreen> {
       ),
     );
   }
+}
+
+class QrCodeDetails {
+  final String numberPlate;
+  final String bookingId;
+  QrCodeDetails(this.numberPlate, this.bookingId);
 }

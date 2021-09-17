@@ -2,10 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 import '../../../config/globals.dart' as globals;
 import '../../BackArrow.dart';
 import '../../BoxShadowWrapper.dart';
 import '../ParkingInfo.dart';
+
+/// Builds out the bottom sheet modal.
+///
+/// This modal displays all the necessary details from the QR Code.
+Future<dynamic> showBottomModal(
+    {@required BuildContext context,
+    @required BookingDetailsPopulated bookingsDetails,
+    @required String numberPlate}) {
+  return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[Text('Number Plate'), Text('$numberPlate')],
+            )
+          ],
+        );
+      });
+}
 
 /// Builds out all the parking widgets on the page.
 ///

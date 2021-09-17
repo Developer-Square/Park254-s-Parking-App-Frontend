@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -25,10 +26,9 @@ class GenerateScreenState extends State<GenerateScreen> {
   GlobalKey globalKey = new GlobalKey();
   Map<String, dynamic> _dataMap = {
     'numberPlate': 'KCB 353N',
-    'bookingId': '0x6f5262a0a0',
+    'bookingId': '6142cbfa274859002136756a',
   };
   String _inputErrorText;
-  String _inputText = 'From Ryan';
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class GenerateScreenState extends State<GenerateScreen> {
                     child: RepaintBoundary(
                       key: globalKey,
                       child: QrImage(
-                          data: _dataMap.toString(),
+                          data: jsonEncode(_dataMap),
                           size: 0.5 * bodyHeight,
                           errorStateBuilder: (context, ex) {
                             log('[QR] Error - $ex');
