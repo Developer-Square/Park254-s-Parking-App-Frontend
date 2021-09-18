@@ -7,25 +7,59 @@ import '../../../config/globals.dart' as globals;
 import '../../BackArrow.dart';
 import '../../BoxShadowWrapper.dart';
 import '../ParkingInfo.dart';
+import 'helper_functions.dart';
+
+/// Builds out the info details displayed in the modalBottomSheet.
+///
+Widget infoDetails({String key, String value}) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Text(
+          '$key',
+          style: globals.buildTextStyle(15.0, true, globals.textColor),
+        ),
+        Text('$value')
+      ],
+    ),
+  );
+}
 
 /// Builds out the bottom sheet modal.
 ///
 /// This modal displays all the necessary details from the QR Code.
-Future<dynamic> showBottomModal(
-    {@required BuildContext context,
-    @required BookingDetailsPopulated bookingsDetails,
-    @required String numberPlate}) {
+Future<dynamic> showBottomModal({
+  @required BuildContext context,
+  @required BookingDetailsPopulated bookingsDetails,
+  @required String numberPlate,
+}) {
   return showModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0))),
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[Text('Number Plate'), Text('$numberPlate')],
-            )
-          ],
+        return Padding(
+          padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              infoDetails(
+                  key: 'Parking Lot Name',
+                  value: bookingsDetails.parkingLotId.name),
+              infoDetails(key: 'Number Plate', value: numberPlate),
+              infoDetails(
+                  key: 'Time In',
+                  value: timeOfDayToString(bookingsDetails.entryTime)),
+              infoDetails(
+                  key: 'Time Out',
+                  value: timeOfDayToString(bookingsDetails.exitTime)),
+              infoDetails(
+                  key: 'Client Name', value: bookingsDetails.clientId.name)
+            ],
+          ),
         );
       });
 }

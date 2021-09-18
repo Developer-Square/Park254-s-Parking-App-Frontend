@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/pages/search page/search_page.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../CircleWithIcon.dart';
 import '../DottedHorizontalLine.dart';
@@ -40,11 +42,12 @@ class PaymentSuccessful extends StatefulWidget {
   final TimeOfDay leavingTime;
   static const routeName = '/receipt';
 
-  PaymentSuccessful(
-      {@required this.price,
-      @required this.destination,
-      @required this.arrivalTime,
-      @required this.leavingTime});
+  PaymentSuccessful({
+    @required this.price,
+    @required this.destination,
+    @required this.arrivalTime,
+    @required this.leavingTime,
+  });
 
   @override
   _PaymentSuccessfulState createState() => _PaymentSuccessfulState();
@@ -56,6 +59,12 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String transactionDay;
   String mpesaReceiptNumber;
   NavigationProvider navigationDetails;
+  GlobalKey globalKey = new GlobalKey();
+  Map<String, dynamic> _dataMap = {
+    'numberPlate': 'KCB 353N',
+    'bookingId': '6142cbfa274859002136756a',
+  };
+  String _inputErrorText;
 
   @override
   initState() {
@@ -177,7 +186,8 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
 
   Widget _receipt() {
     final double width = MediaQuery.of(context).size.width;
-
+    final bodyHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewInsets.bottom;
     return Column(
       children: <Widget>[
         Expanded(
@@ -197,9 +207,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                           builder: (context) => HomePage(
                                 activeTab: 'myparking',
                               ))),
-                      child: Image(
-                        image: AssetImage('assets/images/qrcode.png'),
-                        fit: BoxFit.cover,
+                      child: RepaintBoundary(
+                        key: globalKey,
+                        child: QrImage(
+                            data: jsonEncode(_dataMap),
+                            size: 0.5 * bodyHeight,
+                            errorStateBuilder: (context, ex) {
+                              log('[QR] Error - $ex');
+                              setState(() {
+                                _inputErrorText =
+                                    'Error! Maybe your input value is too long';
+                              });
+                            }),
                       ),
                     ),
                     flex: 7,

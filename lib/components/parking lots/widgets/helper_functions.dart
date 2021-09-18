@@ -10,6 +10,12 @@ import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dar
 
 import '../../helper_functions.dart';
 
+// Convert DateTime to TimeOfDay to be displayed in the parking history list.
+String timeOfDayToString(value) {
+  var time = TimeOfDay.fromDateTime(value).toString();
+  return time.substring(10, 15);
+}
+
 createUpdateParkingLots({
   List links,
   UserWithTokenModel storeDetails,

@@ -11,6 +11,7 @@ import 'package:park254_s_parking_app/components/parking%20lots/create_update_pa
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/generateScreen.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/scan.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/widgets/helper_functions.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
@@ -198,12 +199,6 @@ class MyParkingState extends State<MyParkingScreen> {
     }
   }
 
-  // Convert DateTime to TimeOfDay to be displayed in the parking history list.
-  String timeOfDayToString(value) {
-    var time = TimeOfDay.fromDateTime(value).toString();
-    return time.substring(10, 15);
-  }
-
   // Update the form fields then move to the page.
   _updateParking(parkingLotData) {
     setState(() {
@@ -311,9 +306,6 @@ class MyParkingState extends State<MyParkingScreen> {
 
     // Get the booking data from the store.
     if (bookingDetailsProvider != null) {
-      log(bookingDetailsProvider.bookingDetails != null
-          ? bookingDetailsProvider.bookingDetails[0].id
-          : 'not yet');
       setState(() {
         bookingDetailsList = bookingDetailsProvider.bookingDetails;
         parkingLotDetails = bookingDetailsProvider.parkingLotDetails;
@@ -334,6 +326,16 @@ class MyParkingState extends State<MyParkingScreen> {
                       TopPageStyling(
                           currentPage: 'myparking', widget: Container()),
                       SizedBox(height: 20.0),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: FloatingActionButton.extended(
+                          backgroundColor: globals.backgroundColor,
+                          heroTag: 'scanQrCode',
+                          onPressed: () => scan(),
+                          label: Text('Scan QR Code'),
+                        ),
+                      ),
+                      SizedBox(height: 15.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -423,28 +425,6 @@ class MyParkingState extends State<MyParkingScreen> {
                                     style: globals.buildTextStyle(
                                         17.0, true, Colors.grey),
                                   )),
-                        Positioned(
-                          right: 10.0,
-                          child: FloatingActionButton.extended(
-                            backgroundColor: globals.backgroundColor,
-                            heroTag: 'scanQrCode',
-                            onPressed: () => scan(),
-                            label: Text('Scan QR Code'),
-                          ),
-                        ),
-                        Positioned(
-                          top: 80.0,
-                          right: 10.0,
-                          child: FloatingActionButton.extended(
-                            backgroundColor: globals.backgroundColor,
-                            heroTag: 'generateQrCode',
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GenerateScreen())),
-                            label: Text('Generate QR Code'),
-                          ),
-                        ),
                       ]),
                       SizedBox(height: 100.0)
                     ],
@@ -456,10 +436,4 @@ class MyParkingState extends State<MyParkingScreen> {
       ),
     );
   }
-}
-
-class QrCodeDetails {
-  final String numberPlate;
-  final String bookingId;
-  QrCodeDetails(this.numberPlate, this.bookingId);
 }
