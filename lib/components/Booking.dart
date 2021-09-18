@@ -251,8 +251,10 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt(BookingProvider bookingDetails) {
+  void _generateReceipt(
+      {@required BookingProvider bookingDetails, @required String bookingId}) {
     if (bookingDetails != null) {
+      bookingDetailsProvider.setUpdate(value: true);
       bookingDetails.setBooking(
         price: amount,
         destination: widget.destination,
@@ -264,6 +266,7 @@ class _BookingState extends State<Booking> {
 
       Navigator.pushNamed(context, PaymentSuccessful.routeName,
           arguments: ReceiptArguments(
+            bookingId: bookingId,
             parkingSpace: widget.parkingLotNumber,
             price: amount,
             destination: widget.destination,
@@ -585,8 +588,10 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: (bookingDetails) =>
-                          _generateReceipt(bookingDetails),
+                      receiptGenerator: (bookingDetails, bookingId) =>
+                          _generateReceipt(
+                              bookingDetails: bookingDetails,
+                              bookingId: bookingId),
                       updateParkingTime: () => updateParkingTime(),
                       arrivalTime: arrivalTime.toString(),
                       leavingTime: leavingTime.toString(),

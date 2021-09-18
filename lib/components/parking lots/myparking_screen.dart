@@ -155,6 +155,7 @@ class MyParkingState extends State<MyParkingScreen> {
       // Set the booking details to the store to avoid needless re-fetching.
       if (bookingDetailsProvider != null) {
         if (value.bookingDetailsList.length == index) {
+          bookingDetailsProvider.setUpdate(value: false);
           bookingDetailsProvider.setBookingDetails(
               value: value.bookingDetailsList, bookings: activeBookings);
           bookingDetailsProvider.setParkingLotDetails(value: parkingLotDetails);
@@ -248,6 +249,7 @@ class MyParkingState extends State<MyParkingScreen> {
         if (storeDetails != null) {
           Map<String, dynamic> qrCodeDetaails = jsonDecode(barcode.rawContent);
           String numberPlate = qrCodeDetaails['numberPlate'];
+          String model = qrCodeDetaails['model'];
           String bookingId = qrCodeDetaails['bookingId'];
           setState(() {
             showLoader = true;
@@ -262,6 +264,7 @@ class MyParkingState extends State<MyParkingScreen> {
                 context: context,
                 bookingsDetails: value,
                 numberPlate: numberPlate,
+                model: model,
               );
             }
           }).catchError((err) {
@@ -303,6 +306,7 @@ class MyParkingState extends State<MyParkingScreen> {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
     }
+    log(activeBookings.toString());
 
     // Get the booking data from the store.
     if (bookingDetailsProvider != null) {
@@ -326,15 +330,17 @@ class MyParkingState extends State<MyParkingScreen> {
                       TopPageStyling(
                           currentPage: 'myparking', widget: Container()),
                       SizedBox(height: 20.0),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: FloatingActionButton.extended(
-                          backgroundColor: globals.backgroundColor,
-                          heroTag: 'scanQrCode',
-                          onPressed: () => scan(),
-                          label: Text('Scan QR Code'),
-                        ),
-                      ),
+                      userRole == 'vendor'
+                          ? Align(
+                              alignment: Alignment.topRight,
+                              child: FloatingActionButton.extended(
+                                backgroundColor: globals.backgroundColor,
+                                heroTag: 'scanQrCode',
+                                onPressed: () => scan(),
+                                label: Text('Scan QR Code'),
+                              ),
+                            )
+                          : Container(),
                       SizedBox(height: 15.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -12,6 +12,8 @@ import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/pages/search page/search_page.dart';
@@ -40,9 +42,11 @@ class PaymentSuccessful extends StatefulWidget {
   final String destination;
   final TimeOfDay arrivalTime;
   final TimeOfDay leavingTime;
+  final String bookingId;
   static const routeName = '/receipt';
 
   PaymentSuccessful({
+    @required this.bookingId,
     @required this.price,
     @required this.destination,
     @required this.arrivalTime,
@@ -59,12 +63,12 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String transactionDay;
   String mpesaReceiptNumber;
   NavigationProvider navigationDetails;
+  UserWithTokenModel userDetails;
   GlobalKey globalKey = new GlobalKey();
-  Map<String, dynamic> _dataMap = {
-    'numberPlate': 'KCB 353N',
-    'bookingId': '6142cbfa274859002136756a',
-  };
+  Map<String, dynamic> _dataMap;
   String _inputErrorText;
+  String numberPlate;
+  String vehicleModel;
 
   @override
   initState() {
@@ -72,17 +76,42 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     if (mounted) {
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
+      userDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+
+      if (userDetails != null) {
+        getBookingById(
+                token: userDetails.user.accessToken.token,
+                bookingId: widget.bookingId)
+            .then((value) {
+          if (value.clientId.vehicles.length > 0) {
+            numberPlate = value.clientId.vehicles[0].plate;
+            vehicleModel = value.clientId.vehicles[0].model;
+          }
+          _dataMap = {
+            'numberPlate': numberPlate ?? 'No number plate',
+            'model': vehicleModel ?? 'No model',
+            'bookingId': widget.bookingId,
+          };
+        }).catchError((err) {
+          log("In PaymentSuccessful.dart, getBookingById function");
+          log(err.toString());
+          buildNotification(err.message.toString(), 'error');
+        });
+      }
     }
   }
 
   /// Creates custom row with title and value
   Widget _messageRow(String title, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        SecondaryText(content: title),
-        TertiaryText(content: value),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          SecondaryText(content: title),
+          TertiaryText(content: value),
+        ],
+      ),
     );
   }
 
@@ -162,9 +191,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
+                        _messageRow('Booking Id',
+                            widget.bookingId.substring(0, 16) ?? ''),
                         _messageRow('Mpesa Receipt No.',
                             mpesaReceiptNumber.toString() ?? ''),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
+                        _messageRow(
+                            'Number plate',
+                            numberPlate != null
+                                ? numberPlate.toString()
+                                : 'No model'),
                         _messageRow('Date',
                             '${transactionYear ?? ''}-${transactionMonth ?? ''}-${transactionDay ?? ''}'),
                         // All this is done to be able get the exact UI we want.
@@ -173,7 +209,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                       ],
                     ),
                   ),
-                  flex: 8,
+                  flex: 10,
                 ),
               ],
             ),
@@ -233,7 +269,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
               ),
             ),
           ),
-          flex: 1,
+          flex: 2,
         ),
         Expanded(
           child: Stack(
@@ -359,7 +395,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
               children: <Widget>[
                 Expanded(
                   child: _greenCircle(transactionDetails),
-                  flex: 10,
+                  flex: 17,
                 ),
                 Expanded(
                   child: Container(),
@@ -367,7 +403,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 ),
                 Expanded(
                   child: _dottedLine(),
-                  flex: 28,
+                  flex: 29,
                 ),
               ],
             ),

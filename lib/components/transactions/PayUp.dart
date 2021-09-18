@@ -14,6 +14,7 @@ import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
+import 'package:park254_s_parking_app/models/booking.model.dart';
 import 'package:provider/provider.dart';
 
 import '../helper_functions.dart';
@@ -106,7 +107,8 @@ class _PayUpState extends State<PayUp> {
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(transactionDetails);
+        callPaymentMethod(
+            transactionDetails: transactionDetails, bookingId: value.id);
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, updateParkingLotBooking function");
@@ -140,7 +142,8 @@ class _PayUpState extends State<PayUp> {
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(transactionDetails);
+        callPaymentMethod(
+            transactionDetails: transactionDetails, bookingId: value.id);
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, createBooking function");
@@ -166,7 +169,10 @@ class _PayUpState extends State<PayUp> {
     }
   }
 
-  void callPaymentMethod(transactionDetails) async {
+  void callPaymentMethod({
+    @required TransactionModel transactionDetails,
+    @required String bookingId,
+  }) async {
     String access = storeDetails.user.accessToken.token;
     if (access != null) {
       pay(
@@ -190,11 +196,11 @@ class _PayUpState extends State<PayUp> {
               widget.updateParkingTime();
             } else {
               // Move the payment successful page.
-              widget.receiptGenerator(bookingDetails);
+              widget.receiptGenerator(bookingDetails, bookingId);
             }
           } else {
             // Move the payment successful page.
-            widget.receiptGenerator(bookingDetails);
+            widget.receiptGenerator(bookingDetails, bookingId);
           }
         }
         // If the transaction failed and the user has not retried it then show retry modal.
@@ -206,7 +212,8 @@ class _PayUpState extends State<PayUp> {
             transactionDetails: transactionDetails,
             total: widget.total,
             token: access,
-            receiptGenerator: widget.receiptGenerator,
+            receiptGenerator: () =>
+                widget.receiptGenerator(bookingDetails, bookingId),
             cancelBooking: () =>
                 cancelParkingLotBooking(access: access, bookingId: bookingId),
           );

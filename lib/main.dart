@@ -342,6 +342,7 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
+                    bookingId: args.bookingId,
                     price: args.price,
                     destination: args.destination,
                     arrivalTime: args.arrivalTime,

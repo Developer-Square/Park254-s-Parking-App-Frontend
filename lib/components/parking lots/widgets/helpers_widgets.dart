@@ -34,6 +34,7 @@ Future<dynamic> showBottomModal({
   @required BuildContext context,
   @required BookingDetailsPopulated bookingsDetails,
   @required String numberPlate,
+  @required String model,
 }) {
   return showModalBottomSheet(
       context: context,
@@ -50,6 +51,7 @@ Future<dynamic> showBottomModal({
                   key: 'Parking Lot Name',
                   value: bookingsDetails.parkingLotId.name),
               infoDetails(key: 'Number Plate', value: numberPlate),
+              infoDetails(key: 'Model', value: model),
               infoDetails(
                   key: 'Time In',
                   value: timeOfDayToString(bookingsDetails.entryTime)),
