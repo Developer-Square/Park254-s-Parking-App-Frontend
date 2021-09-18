@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
-import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import '../../config/globals.dart' as globals;
 
 /// Creates a new user
@@ -20,7 +19,6 @@ Future<User> createUser({
   String role = 'user',
   @required String password,
   @required int phone,
-  List<Vehicle> vehicles,
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
@@ -32,7 +30,6 @@ Future<User> createUser({
     'name': name,
     'password': password,
     'phone': phone,
-    'vehicles': vehicles,
   });
   final response = await http.post(
     url,

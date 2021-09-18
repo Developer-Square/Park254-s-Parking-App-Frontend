@@ -4,8 +4,13 @@ import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 
 class UserModel with ChangeNotifier {
-  User _user =
-      new User(id: null, email: null, name: null, role: null, phone: null);
+  User _user = new User(
+    id: null,
+    email: null,
+    name: null,
+    role: null,
+    phone: null,
+  );
   bool loading = false;
   // To allow tracking of whether a user is updating or creating a new parking.
   // lot.
@@ -36,8 +41,13 @@ class UserModel with ChangeNotifier {
   }
 
   void clear() {
-    _user =
-        new User(id: null, email: null, name: null, role: null, phone: null);
+    _user = new User(
+      id: null,
+      email: null,
+      name: null,
+      role: null,
+      phone: null,
+    );
     notifyListeners();
   }
 }
