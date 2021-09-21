@@ -275,7 +275,6 @@ class MyParkingState extends State<MyParkingScreen> {
           });
         }
       });
-      log(barcode.rawContent);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
         setState(() {
@@ -305,7 +304,6 @@ class MyParkingState extends State<MyParkingScreen> {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
     }
-    log(activeBookings.toString());
 
     // Get the booking data from the store.
     if (bookingDetailsProvider != null) {

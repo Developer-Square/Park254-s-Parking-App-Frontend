@@ -13,7 +13,9 @@ import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:park254_s_parking_app/pages/search page/search_page.dart';
@@ -64,6 +66,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String mpesaReceiptNumber;
   NavigationProvider navigationDetails;
   UserWithTokenModel userDetails;
+  VehicleModel vehicleDetails;
   GlobalKey globalKey = new GlobalKey();
   Map<String, dynamic> _dataMap;
   String _inputErrorText;
@@ -77,22 +80,19 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       navigationDetails =
           Provider.of<NavigationProvider>(context, listen: false);
       userDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
 
-      if (userDetails != null) {
-        getBookingById(
-                token: userDetails.user.accessToken.token,
-                bookingId: widget.bookingId)
-            .then((value) {
-          _dataMap = {
-            'numberPlate': numberPlate ?? 'No number plate',
-            'model': vehicleModel ?? 'No model',
-            'bookingId': widget.bookingId,
-          };
-        }).catchError((err) {
-          log("In PaymentSuccessful.dart, getBookingById function");
-          log(err.toString());
-          buildNotification(err.message.toString(), 'error');
-        });
+      if (vehicleDetails != null && userDetails != null) {
+        Vehicle vehicle =
+            vehicleDetails.findByOwnerId(id: userDetails.user.user.id);
+        numberPlate = vehicle.plate;
+        vehicleModel = vehicle.model;
+
+        _dataMap = {
+          'numberPlate': numberPlate ?? 'No number plate',
+          'model': vehicleModel ?? 'No model',
+          'bookingId': widget.bookingId,
+        };
       }
     }
   }

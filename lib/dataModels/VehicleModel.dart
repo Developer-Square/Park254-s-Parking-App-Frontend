@@ -56,6 +56,10 @@ class VehicleModel with ChangeNotifier {
     return _vehicleData.vehicles.firstWhere((v) => v.id == id);
   }
 
+  Vehicle findByOwnerId({@required String id}) {
+    return _vehicleData.vehicles.firstWhere((v) => v.owner == id);
+  }
+
   void updateVehicle({Vehicle vehicle}) {
     num index = _vehicleData.vehicles.indexWhere((v) => v.id == vehicle.id);
     _vehicleData.vehicles[index] = vehicle;
