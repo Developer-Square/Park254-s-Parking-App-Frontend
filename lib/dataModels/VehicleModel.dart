@@ -42,8 +42,8 @@ class VehicleModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void remove({@required Vehicle vehicle}) {
-    _vehicleData.vehicles.removeWhere((v) => v.id == vehicle.id);
+  void remove({@required String id}) {
+    _vehicleData.vehicles.removeWhere((v) => v.id == id);
     notifyListeners();
   }
 

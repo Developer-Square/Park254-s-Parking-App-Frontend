@@ -8,6 +8,8 @@ import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
+import 'package:park254_s_parking_app/functions/users/updateUser.dart';
+import 'package:park254_s_parking_app/functions/vehicles/deleteVehicle.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
@@ -57,6 +59,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     showLoader = false;
+    if (mounted) {
+      vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+
+      // Fetch the all the vehicles on load.
+      if (vehicleDetails != null && storeDetails != null) {
+        vehicleDetails.fetch(
+          token: storeDetails.user.accessToken.token,
+          owner: storeDetails.user.user.id,
+        );
+      }
+    }
   }
 
   @override
@@ -68,6 +82,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void deleteProfileDetails({@required String itemId}) {
+    log(itemId);
+    if (storeDetails != null) {
+      final String access = storeDetails.user.accessToken.token;
+
+      deleteVehicle(token: access, vehicleId: itemId).then((value) {
+        if (vehicleDetails != null) {
+          // Remove the vehicle from the store.
+          vehicleDetails.remove(id: itemId);
+        }
+        buildNotification('Vehicle deleted successfully', 'success');
+      }).catchError((err) {
+        log("In profile_screen.dart, deleteProfileDetails");
+        log(err.toString());
+        buildNotification(err.message, 'error');
+      });
+    }
   }
 
   // Make api call.
@@ -102,6 +135,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  // Redirect to the edit screen page so that a user can edit the profile.
+  pushToEditProfile() {
+    return Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => EditScreen(
+              profileImgPath: widget.profileImgPath,
+              fullName: fullNameController,
+              email: emailController,
+              phone: phoneController,
+              password: passwordController,
+              vehiclePlateController: vehiclePlateController,
+              vehicleTypeController: vehicleTypeController,
+              currentScreen: 'profile',
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
     storeDetails = Provider.of<UserWithTokenModel>(context);
@@ -127,20 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => EditScreen(
-                                  profileImgPath: widget.profileImgPath,
-                                  fullName: fullNameController,
-                                  email: emailController,
-                                  phone: phoneController,
-                                  password: passwordController,
-                                  vehiclePlateController:
-                                      vehiclePlateController,
-                                  vehicleTypeController: vehicleTypeController,
-                                  currentScreen: 'profile',
-                                )));
-                      },
+                      onTap: () => pushToEditProfile(),
                       child: TopPageStyling(
                         currentPage: 'profile',
                         widget: buildProfileTab(
@@ -215,6 +250,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     type: 'vehicles',
                                                     carModel: vehicle.model,
                                                     carPlate: vehicle.plate,
+                                                    deleteVehicles:
+                                                        deleteProfileDetails,
+                                                    id: vehicle.id,
                                                   ),
                                                   SizedBox(
                                                     height: 2.0,
@@ -227,7 +265,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           )
                         : Container(),
                     SizedBox(height: 25.0),
-                    // buildContainer('', false, 'vehicles', carPlate),
                     SizedBox(height: 20.0),
                     Center(
                       child: InkWell(

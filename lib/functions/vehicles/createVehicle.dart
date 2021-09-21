@@ -9,12 +9,14 @@ import '../../config/globals.dart' as globals;
 
 /// Creates a new vehicle
 Future<Vehicle> createVehicle({
+  @required String token,
   @required String owner,
   @required String plate,
   @required String model,
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
+    dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/vehicles');
   final Map<String, dynamic> vehicle = new Vehicle(

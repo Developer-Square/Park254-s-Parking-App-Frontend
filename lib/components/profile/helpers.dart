@@ -7,20 +7,30 @@ import '../../config/globals.dart' as globals;
 
 /// Builds out the pop-up that appears when you click on the three dots.
 /// that comes with every parking lot.
-Widget vehiclePopUpMenu({
-  @required Function deleteVehicle,
+Widget profilePopUpMenu({
+  @required String id,
+  @required Function updateVehicles,
+  @required Function deleteVehicles,
 }) {
   return PopupMenuButton<int>(
     itemBuilder: (context) => [
       PopupMenuItem(
         value: 1,
         child: Text(
+          'Update',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+      PopupMenuItem(
+        value: 2,
+        child: Text(
           'Delete',
           style: TextStyle(color: Colors.red),
         ),
       )
     ],
-    onSelected: (value) => {deleteVehicle()},
+    onSelected: (value) =>
+        {value == 1 ? updateVehicles() : deleteVehicles(itemId: id)},
     icon: Icon(
       Icons.more_vert,
       color: globals.textColor,
@@ -109,20 +119,15 @@ Widget buildWalletItem(logo) {
 }
 
 /// Builds out the vehicle section.
-Widget buildVehicleItem({String carPlate, String carModel}) {
+Widget buildVehicleItem({String carPlate}) {
   return Expanded(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(
-          carModel,
-          style: globals.buildTextStyle(16.0, true, globals.textColor),
-        ),
-        Text(
           carPlate,
           style: globals.buildTextStyle(16.0, true, globals.textColor),
         ),
-        vehiclePopUpMenu(deleteVehicle: () {})
       ],
     ),
   );
@@ -131,8 +136,15 @@ Widget buildVehicleItem({String carPlate, String carModel}) {
 /// Builds out the different containers on the page e.g. the vehicle container.
 ///
 /// Requires the [logo], [card] and [type] variables.
-Widget buildContainer(
-    {String logo, String type, String carPlate, String carModel}) {
+Widget buildContainer({
+  String logo,
+  String type,
+  String carPlate,
+  String carModel,
+  Function updateVehicles,
+  Function deleteVehicles,
+  String id,
+}) {
   return BoxShadowWrapper(
       offsetY: 0.0,
       offsetX: 0.0,
@@ -147,32 +159,17 @@ Widget buildContainer(
           children: <Widget>[
             type == 'wallet'
                 ? buildWalletItem(logo)
-                : buildVehicleItem(carModel: carModel, carPlate: carPlate),
-            // TODO: Add delete functionality.
-            popUpMenu()
+                : buildVehicleItem(carPlate: carPlate),
+            type == 'wallet'
+                ? Container()
+                : profilePopUpMenu(
+                    id: id,
+                    updateVehicles: () {},
+                    deleteVehicles: deleteVehicles,
+                  )
           ],
         ),
       ));
-}
-
-Widget popUpMenu() {
-  return PopupMenuButton<int>(
-    itemBuilder: (context) => [
-      PopupMenuItem(
-        value: 1,
-        child: Text(
-          'Delete',
-          style: TextStyle(color: Colors.red),
-        ),
-      ),
-    ],
-    onSelected: (value) => {},
-    icon: Icon(
-      Icons.more_vert,
-      color: globals.textColor,
-    ),
-    offset: Offset(0, 100),
-  );
 }
 
 /// Returns dots or numbers.

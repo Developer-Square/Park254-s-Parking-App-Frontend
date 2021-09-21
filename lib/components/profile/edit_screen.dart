@@ -83,16 +83,19 @@ class _EditScreenState extends State<EditScreen> {
         widget.vehiclePlateController != '' &&
         widget.vehicleTypeController != '') {
       createVehicle(
+              token: accessToken,
               owner: userId,
               plate: widget.vehiclePlateController.text,
-              model: widget.vehiclePlateController.text)
+              model: widget.vehicleTypeController.text)
           .then((value) {
         clearFields();
         setState(() {
           showLoader = false;
         });
         // Add the new vehicle to the store.
-        vehicleDetails.add(vehicle: value);
+        if (vehicleDetails != null) {
+          vehicleDetails.add(vehicle: value);
+        }
 
         buildNotification('Vehicle added successfully', 'success');
       }).catchError((err) {
