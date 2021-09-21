@@ -83,11 +83,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 token: userDetails.user.accessToken.token,
                 bookingId: widget.bookingId)
             .then((value) {
-          // Retrive vehicle details.
-          // if (value.clientId.vehicles.length > 0) {
-          //   numberPlate = value.clientId.vehicles[0].plate;
-          //   vehicleModel = value.clientId.vehicles[0].model;
-          // }
           _dataMap = {
             'numberPlate': numberPlate ?? 'No number plate',
             'model': vehicleModel ?? 'No model',
@@ -192,10 +187,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _messageRow('Booking Id',
-                            widget.bookingId.substring(0, 16) ?? ''),
-                        _messageRow('Mpesa Receipt No.',
-                            mpesaReceiptNumber.toString() ?? ''),
+                        _messageRow(
+                            'Booking Id',
+                            widget.bookingId != null
+                                ? widget.bookingId.substring(0, 16)
+                                : 'No bookingId'),
+                        _messageRow(
+                            'Mpesa Receipt No.',
+                            mpesaReceiptNumber != null
+                                ? mpesaReceiptNumber.toString()
+                                : ''),
                         _messageRow('Price', 'Kes ${widget.price.toString()}'),
                         _messageRow(
                             'Number plate',
@@ -239,24 +240,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HomePage(
-                                activeTab: 'myparking',
-                              ))),
-                      child: RepaintBoundary(
-                        key: globalKey,
-                        child: QrImage(
-                            data: jsonEncode(_dataMap),
-                            size: 0.5 * bodyHeight,
-                            errorStateBuilder: (context, ex) {
-                              log('[QR] Error - $ex');
-                              setState(() {
-                                _inputErrorText =
-                                    'Error! Maybe your input value is too long';
-                              });
-                            }),
-                      ),
+                    child: RepaintBoundary(
+                      key: globalKey,
+                      child: QrImage(
+                          data: jsonEncode(_dataMap),
+                          size: 0.5 * bodyHeight,
+                          errorStateBuilder: (context, ex) {
+                            log('[QR] Error - $ex');
+                            setState(() {
+                              _inputErrorText =
+                                  'Error! Maybe your input value is too long';
+                            });
+                          }),
                     ),
                     flex: 7,
                   ),
@@ -295,10 +290,13 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                   ),
                   Expanded(
                     child: InkWell(
-                      onTap: () => Navigator.of(context).pop(),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomePage(
+                                activeTab: 'myparking',
+                              ))),
                       child: Center(
                         child: CircleWithIcon(
-                          icon: Icons.close,
+                          icon: Icons.home,
                           bgColor: Colors.white,
                           iconColor: globals.textColor,
                           sizeFactor: 2,
@@ -385,28 +383,31 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
         .toString()
         .substring(6, 8);
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: globals.textColor,
-        resizeToAvoidBottomPadding: true,
-        body: DismissKeyboard(
-          child: Container(
-            padding: EdgeInsets.all(width / 20),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: _greenCircle(transactionDetails),
-                  flex: 17,
-                ),
-                Expanded(
-                  child: Container(),
-                  flex: 1,
-                ),
-                Expanded(
-                  child: _dottedLine(),
-                  flex: 29,
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: globals.textColor,
+          resizeToAvoidBottomPadding: true,
+          body: DismissKeyboard(
+            child: Container(
+              padding: EdgeInsets.all(width / 20),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: _greenCircle(transactionDetails),
+                    flex: 17,
+                  ),
+                  Expanded(
+                    child: Container(),
+                    flex: 1,
+                  ),
+                  Expanded(
+                    child: _dottedLine(),
+                    flex: 29,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
