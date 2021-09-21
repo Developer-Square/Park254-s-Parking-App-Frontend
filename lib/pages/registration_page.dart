@@ -90,14 +90,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
           text: roleError);
     } else if (_step == 4) {
       return RegistrationScreens(
-          title: 'Vehicle Details',
-          info: 'Enter your vehicle model',
-          step: _step,
-          formKey: formKey,
-          vehicleModelController: vehicleModel,
-          vehiclePlateController: vehiclePlate);
-    } else if (_step == 5) {
-      return RegistrationScreens(
           title: 'Password',
           info: 'Enter your password',
           step: _step,
@@ -115,11 +107,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     // Verify that the user has chosen a role.
     if (_step == 3 && selectedValue == null) {
       buildNotification('Kindly choose a role', 'error');
-    } else if (_step == 3 && selectedValue == 'vendor') {
-      setState(() {
-        _step += 2;
-      });
-    } else if (_step == 5) {
+    } else if (_step == 4) {
       FocusScope.of(context).unfocus();
       if (createPassword.text == confirmPassword.text) {
         setState(() {
@@ -133,29 +121,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
           role: selectedValue,
         ).then((value) {
           if (value.user.id != null) {
-            // Create the vehicle if the user added the details.
-            if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
-              createVehicle(
-                owner: value.user.id,
-                plate: vehiclePlate.text,
-                model: vehicleModel.text,
-              ).then((value) {
-                setState(() {
-                  showLoader = false;
-                  buildNotification(
-                      'You were registered successfully. Try Logging in now.',
-                      'success');
-                });
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LoginPage(message: roleError)));
-              }).catchError((err) {
-                setState(() {
-                  showLoader = false;
-                });
-                log(err.toString());
-                buildNotification(err.message, 'error');
-              });
-            }
+            setState(() {
+              showLoader = false;
+              buildNotification(
+                  'You were registered successfully. Try Logging in now.',
+                  'success');
+            });
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => LoginPage(message: roleError)));
           }
         }).catchError((err) {
           setState(() {
@@ -198,9 +171,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ? 'Verification'
                     : _step == 3
                         ? 'Role'
-                        : _step == 4
-                            ? 'Vehicle Details'
-                            : 'Password',
+                        : 'Password',
             style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
@@ -210,7 +181,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 5'),
+              _buildSteps('of 4'),
             ],
           ),
           SizedBox(height: 170.0),

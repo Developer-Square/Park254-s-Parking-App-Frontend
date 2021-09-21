@@ -73,7 +73,6 @@ Widget buildParkingLotResults({
   @required List results,
   @required String userRole,
   @required List parkingLotDetails,
-  @required Function timeOfDayToString,
   @required BuildContext context,
   @required BookingProvider bookingDetailsProvider,
   @required Function updateParking,

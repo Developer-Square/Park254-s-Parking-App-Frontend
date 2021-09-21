@@ -9,8 +9,6 @@ import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/parking%20lots/generateScreen.dart';
-import 'package:park254_s_parking_app/components/parking%20lots/scan.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/widgets/helper_functions.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
@@ -105,17 +103,18 @@ class MyParkingState extends State<MyParkingScreen> {
   void fetchParkingLotHistory({String access, String userId}) {
     getBookings(token: access, clientId: userId, sortBy: 'entryTime:desc')
         .then((value) {
-      DateTime currentDate = DateTime.now();
+      DateTime currentDate = DateTime.now().toLocal();
       TimeOfDay currentTime = TimeOfDay.now();
       int index = 0;
 
       // Get parking lot details i.e. names, ratings etc.
       value.bookingDetailsList.forEach((element) {
         // Keep track of the iterations.
+        var localExitTime = element.exitTime.toLocal();
         index += 1;
         // Check for the active bookings.
-        Duration days = element.entryTime.difference(currentDate);
-        TimeOfDay exitTime = TimeOfDay.fromDateTime(element.exitTime);
+        Duration days = localExitTime.difference(currentDate);
+        TimeOfDay exitTime = TimeOfDay.fromDateTime(localExitTime);
         double totalTime = (exitTime.hour + (exitTime.minute / 60)) -
             (currentTime.hour + (currentTime.minute / 60));
 
@@ -401,7 +400,6 @@ class MyParkingState extends State<MyParkingScreen> {
                                 child: buildParkingLotResults(
                                   parkingLotDetails: parkingLotDetails,
                                   userRole: userRole,
-                                  timeOfDayToString: timeOfDayToString,
                                   results: parkingLotsResults,
                                   updateParking: _updateParking,
                                   updateParkingTime: _updateParkingTime,
@@ -416,7 +414,6 @@ class MyParkingState extends State<MyParkingScreen> {
                                     child: buildParkingLotResults(
                                       parkingLotDetails: parkingLotDetails,
                                       userRole: userRole,
-                                      timeOfDayToString: timeOfDayToString,
                                       results: bookingDetailsList,
                                       updateParking: _updateParking,
                                       updateParkingTime: _updateParkingTime,
