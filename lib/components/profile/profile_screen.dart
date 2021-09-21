@@ -6,6 +6,7 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/profile/helpers.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   UserWithTokenModel storeDetails;
   // Pakring details from the store.
   NearbyParkingListModel nearbyParkingDetails;
+  VehicleModel vehicleDetails;
+  List vehicles = [];
 
   @override
   void initState() {
@@ -102,11 +105,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     storeDetails = Provider.of<UserWithTokenModel>(context);
+    vehicleDetails = Provider.of<VehicleModel>(context);
     if (storeDetails.user.user != null) {
       fullNameController.text = storeDetails.user.user.name;
       emailController.text = storeDetails.user.user.email;
       phoneController.text = storeDetails.user.user.phone.toString();
       userRole = storeDetails.user.user.role;
+    }
+    if (vehicleDetails.vehicleData.vehicles != null) {
+      setState(() {
+        vehicles = vehicleDetails.vehicleData.vehicles;
+      });
     }
 
     return Scaffold(
@@ -197,10 +206,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                                 SizedBox(height: 25.0),
-                                storeDetails.user.user.vehicles.length > 0
+                                vehicles.length > 0
                                     ? Column(
-                                        children: storeDetails
-                                            .user.user.vehicles
+                                        children: vehicles
                                             .map((vehicle) =>
                                                 Column(children: <Widget>[
                                                   buildContainer(

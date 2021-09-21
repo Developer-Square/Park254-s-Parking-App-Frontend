@@ -11,7 +11,7 @@ import '../../config/globals.dart' as globals;
 ///
 /// Returns [Vehicle]
 /// Requires: [token], [vehicleId]
-Future<Vehicle> updateUser({
+Future<Vehicle> updateVehicle({
   @required String token,
   @required String vehicleId,
   String owner = '',

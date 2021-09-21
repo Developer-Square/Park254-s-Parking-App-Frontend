@@ -283,6 +283,8 @@ Widget buildParkingContainer({
   );
 }
 
+/// Builds out the pop-up that appears when you click on the three dots.
+/// that comes with every parking lot.
 Widget _popUpMenu({
   @required dynamic data,
   @required dynamic bookingDetails,

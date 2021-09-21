@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
+import 'package:park254_s_parking_app/functions/vehicles/createVehicle.dart';
 import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
@@ -122,34 +125,43 @@ class _RegistrationPageState extends State<RegistrationPage> {
         setState(() {
           showLoader = true;
         });
-        List<Vehicle> vehicles = [];
-        if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
-          vehicles.add(
-              new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
-        }
         register(
-                email: email.text,
-                name: name.text,
-                password: createPassword.text,
-                phone: phone.text,
-                role: selectedValue,
-                vehicles: vehicles)
-            .then((value) {
+          email: email.text,
+          name: name.text,
+          password: createPassword.text,
+          phone: phone.text,
+          role: selectedValue,
+        ).then((value) {
           if (value.user.id != null) {
-            setState(() {
-              showLoader = false;
-              buildNotification(
-                  'You were registered successfully. Try Logging in now.',
-                  'success');
-            });
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => LoginPage(message: roleError)));
+            // Create the vehicle if the user added the details.
+            if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
+              createVehicle(
+                owner: value.user.id,
+                plate: vehiclePlate.text,
+                model: vehicleModel.text,
+              ).then((value) {
+                setState(() {
+                  showLoader = false;
+                  buildNotification(
+                      'You were registered successfully. Try Logging in now.',
+                      'success');
+                });
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => LoginPage(message: roleError)));
+              }).catchError((err) {
+                setState(() {
+                  showLoader = false;
+                });
+                log(err.toString());
+                buildNotification(err.message, 'error');
+              });
+            }
           }
         }).catchError((err) {
-          buildNotification(err.message, 'error');
           setState(() {
             showLoader = false;
           });
+          buildNotification(err.message, 'error');
         });
       } else {
         buildNotification('Passwords don\'t match', 'error');

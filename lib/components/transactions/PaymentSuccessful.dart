@@ -83,10 +83,11 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                 token: userDetails.user.accessToken.token,
                 bookingId: widget.bookingId)
             .then((value) {
-          if (value.clientId.vehicles.length > 0) {
-            numberPlate = value.clientId.vehicles[0].plate;
-            vehicleModel = value.clientId.vehicles[0].model;
-          }
+          // Retrive vehicle details.
+          // if (value.clientId.vehicles.length > 0) {
+          //   numberPlate = value.clientId.vehicles[0].plate;
+          //   vehicleModel = value.clientId.vehicles[0].model;
+          // }
           _dataMap = {
             'numberPlate': numberPlate ?? 'No number plate',
             'model': vehicleModel ?? 'No model',

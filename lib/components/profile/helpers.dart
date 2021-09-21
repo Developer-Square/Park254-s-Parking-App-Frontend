@@ -5,6 +5,30 @@ import 'package:flutter_svg/svg.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import '../../config/globals.dart' as globals;
 
+/// Builds out the pop-up that appears when you click on the three dots.
+/// that comes with every parking lot.
+Widget vehiclePopUpMenu({
+  @required Function deleteVehicle,
+}) {
+  return PopupMenuButton<int>(
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: 1,
+        child: Text(
+          'Delete',
+          style: TextStyle(color: Colors.red),
+        ),
+      )
+    ],
+    onSelected: (value) => {deleteVehicle()},
+    icon: Icon(
+      Icons.more_vert,
+      color: globals.textColor,
+    ),
+    offset: Offset(0, 100),
+  );
+}
+
 /// Builds out the profile tab at the top of the page.
 Widget buildProfileTab(context, widget, fullNameController, balance) {
   return Center(
@@ -97,7 +121,8 @@ Widget buildVehicleItem({String carPlate, String carModel}) {
         Text(
           carPlate,
           style: globals.buildTextStyle(16.0, true, globals.textColor),
-        )
+        ),
+        vehiclePopUpMenu(deleteVehicle: () {})
       ],
     ),
   );

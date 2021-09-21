@@ -20,7 +20,6 @@ Future<UserWithToken> register({
   String role = 'user',
   @required String password,
   @required String phone,
-  List<Vehicle> vehicles = const [],
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
@@ -32,12 +31,7 @@ Future<UserWithToken> register({
     'name': name,
     'password': password,
     'phone': phone,
-    'vehicles': vehicles
   };
-
-  if (vehicles.length == 0) {
-    body.remove("vehicles");
-  }
 
   final response = await http.post(
     url,

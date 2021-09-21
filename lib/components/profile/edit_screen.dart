@@ -7,7 +7,9 @@ import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
+import 'package:park254_s_parking_app/functions/vehicles/createVehicle.dart';
 import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
@@ -46,17 +48,14 @@ class _EditScreenState extends State<EditScreen> {
   String text;
   // User's details from the store.
   UserWithTokenModel storeDetails;
-  List<Vehicle> vehiclesArray;
+  VehicleModel vehicleDetails;
 
   initState() {
     super.initState();
     showLoader = false;
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
-
-      if (storeDetails != null) {
-        vehiclesArray = storeDetails.user.user.vehicles;
-      }
+      vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
     }
   }
 
@@ -83,43 +82,57 @@ class _EditScreenState extends State<EditScreen> {
     if (widget.currentScreen != 'profile' &&
         widget.vehiclePlateController != '' &&
         widget.vehicleTypeController != '') {
-      vehiclesArray.add(
-        new Vehicle(
-          model: widget.vehicleTypeController.text,
-          plate: widget.vehiclePlateController.text,
-        ),
-      );
+      createVehicle(
+              owner: userId,
+              plate: widget.vehiclePlateController.text,
+              model: widget.vehiclePlateController.text)
+          .then((value) {
+        clearFields();
+        setState(() {
+          showLoader = false;
+        });
+        // Add the new vehicle to the store.
+        vehicleDetails.add(vehicle: value);
+
+        buildNotification('Vehicle added successfully', 'success');
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
+        });
+        log('In editScreen.dart, createVehicle function');
+        log(err.toString());
+        buildNotification(err.message, 'error');
+      });
+    } else {
+      updateUser(
+        token: accessToken,
+        userId: userId,
+        name: widget.fullName.text,
+        email: widget.email.text,
+        phone: int.parse(widget.phone.text),
+      ).then((value) async {
+        storeDetails.updateUser(
+          widget.fullName.text,
+          widget.email.text,
+          int.parse(widget.phone.text),
+        );
+
+        clearFields();
+        setState(() {
+          showLoader = false;
+        });
+
+        buildNotification('Profile updated successfully.', 'success');
+        Navigator.pop(context);
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
+        });
+        log('In editScreen.dart');
+        log(err.toString());
+        buildNotification(err.message, 'error');
+      });
     }
-
-    updateUser(
-      token: accessToken,
-      userId: userId,
-      name: widget.fullName.text,
-      email: widget.email.text,
-      phone: int.parse(widget.phone.text),
-      vehicles: vehiclesArray,
-    ).then((value) async {
-      storeDetails.updateUser(
-        widget.fullName.text,
-        widget.email.text,
-        int.parse(widget.phone.text),
-      );
-
-      clearFields();
-      setState(() {
-        showLoader = false;
-      });
-
-      buildNotification('Profile updated successfully.', 'success');
-      Navigator.pop(context);
-    }).catchError((err) {
-      setState(() {
-        showLoader = false;
-      });
-      log('In editScreen.dart');
-      log(err.toString());
-      buildNotification(err.message, 'error');
-    });
   }
 
   Widget build(BuildContext context) {

@@ -17,14 +17,14 @@ Future<Vehicle> createVehicle({
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/vehicles');
-  final Map<String, String> vehicle = new Vehicle(
+  final Map<String, dynamic> vehicle = new Vehicle(
     model: model,
     plate: plate,
     owner: owner,
   ).toJson();
   final response = await http.post(
     url,
-    body: vehicle,
+    body: jsonEncode(vehicle),
     headers: headers,
   );
 
