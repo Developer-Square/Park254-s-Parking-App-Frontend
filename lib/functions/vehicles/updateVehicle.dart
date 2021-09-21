@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -27,9 +28,9 @@ Future<Vehicle> updateVehicle({
     "plate": plate,
   };
   body.removeWhere((key, value) => value == '');
+  log(body.toString());
   final url = Uri.https(globals.apiKey, '/v1/vehicles/$vehicleId');
-  final response =
-      await http.patch(url, headers: headers, body: jsonEncode(body));
+  final response = await http.patch(url, headers: headers, body: body);
 
   if (response.statusCode == 200) {
     final vehicle = Vehicle.fromJson(jsonDecode(response.body));

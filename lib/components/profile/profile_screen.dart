@@ -10,6 +10,7 @@ import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
 import 'package:park254_s_parking_app/functions/users/updateUser.dart';
 import 'package:park254_s_parking_app/functions/vehicles/deleteVehicle.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
@@ -85,7 +86,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void deleteProfileDetails({@required String itemId}) {
-    log(itemId);
     if (storeDetails != null) {
       final String access = storeDetails.user.accessToken.token;
 
@@ -100,6 +100,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
         log(err.toString());
         buildNotification(err.message, 'error');
       });
+    }
+  }
+
+  updateVehicle({@required String vehicleId}) {
+    if (vehicleDetails != null) {
+      // Find the vehicle that the user wants to edit and add its details.
+      final List<Vehicle> vehicle = vehicleDetails.vehicleData.vehicles
+          .where((element) => element.id == vehicleId)
+          .toList();
+      setState(() {
+        vehicleTypeController.text = vehicle[0].model;
+        vehiclePlateController.text = vehicle[0].plate;
+      });
+
+      return Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => EditScreen(
+                vehicleStatus: 'vehicleUpdate',
+                vehicleId: vehicleId,
+                fullName: fullNameController,
+                email: emailController,
+                phone: phoneController,
+                password: passwordController,
+                vehiclePlateController: vehiclePlateController,
+                vehicleTypeController: vehicleTypeController,
+                currentScreen: 'vehicles',
+              )));
     }
   }
 
@@ -252,6 +278,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     carPlate: vehicle.plate,
                                                     deleteVehicles:
                                                         deleteProfileDetails,
+                                                    updateVehicles:
+                                                        updateVehicle,
                                                     id: vehicle.id,
                                                   ),
                                                   SizedBox(

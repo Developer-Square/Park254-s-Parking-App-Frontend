@@ -18,7 +18,6 @@ Widget profilePopUpMenu({
         value: 1,
         child: Text(
           'Update',
-          style: TextStyle(color: Colors.red),
         ),
       ),
       PopupMenuItem(
@@ -29,8 +28,9 @@ Widget profilePopUpMenu({
         ),
       )
     ],
-    onSelected: (value) =>
-        {value == 1 ? updateVehicles() : deleteVehicles(itemId: id)},
+    onSelected: (value) => {
+      value == 1 ? updateVehicles(vehicleId: id) : deleteVehicles(itemId: id)
+    },
     icon: Icon(
       Icons.more_vert,
       color: globals.textColor,
@@ -164,7 +164,7 @@ Widget buildContainer({
                 ? Container()
                 : profilePopUpMenu(
                     id: id,
-                    updateVehicles: () {},
+                    updateVehicles: updateVehicles,
                     deleteVehicles: deleteVehicles,
                   )
           ],
