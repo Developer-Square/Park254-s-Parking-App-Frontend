@@ -142,11 +142,6 @@ class _PayUpState extends State<PayUp> {
         buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
-        // TODO: Remove this when mpesa is back.
-        // transactionDetails.setLoading(false);
-        // Navigator.of(context).push(MaterialPageRoute(
-        //     builder: (context) => HomePage(activeTab: 'myparking')));
-
         // Call the mpesa STK push.
         callPaymentMethod(
             transactionDetails: transactionDetails, bookingId: value.id);

@@ -39,12 +39,13 @@ Future<Transaction> pay({
   );
   if (response.statusCode == 200) {
     return await fetchTransaction(
-        phoneNumber: phoneNumber,
-        amount: amount,
-        token: token,
-        createdAt: createdAt,
-        setLoading: setLoading,
-        setTransaction: setTransaction);
+      phoneNumber: phoneNumber,
+      amount: amount,
+      token: token,
+      createdAt: createdAt,
+      setLoading: setLoading,
+      setTransaction: setTransaction,
+    );
   } else {
     handleError(response.body);
   }
