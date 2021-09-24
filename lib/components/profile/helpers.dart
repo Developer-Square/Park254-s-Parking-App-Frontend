@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -85,27 +87,10 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
   );
 }
 
-/// Builds out the card widget.
-///
-/// Requires a [card] variable.
-Widget buildCardDetails() {
-  return Row(
-    children: [
-      buildDots(false),
-      SizedBox(width: 10.0),
-      buildDots(false),
-      SizedBox(width: 10.0),
-      buildDots(false),
-      SizedBox(width: 10.0),
-      buildDots(true),
-    ],
-  );
-}
-
 /// Builds out the wallet section
 ///
-/// Requires [logo] and [card] variables.
-Widget buildWalletItem(logo) {
+/// Requires [logo] and [phone number] variables.
+Widget buildWalletItem({String logo, String phonenumber}) {
   return Row(children: <Widget>[
     SvgPicture.asset(
       logo,
@@ -113,7 +98,7 @@ Widget buildWalletItem(logo) {
       width: 40.0,
     ),
     SizedBox(width: 15.0),
-    buildDots(false),
+    buildDots(phonenumber: phonenumber),
     SizedBox(width: 10.0),
   ]);
 }
@@ -144,6 +129,7 @@ Widget buildContainer({
   Function updateVehicles,
   Function deleteVehicles,
   String id,
+  String phoneNumber,
 }) {
   return BoxShadowWrapper(
       offsetY: 0.0,
@@ -158,7 +144,7 @@ Widget buildContainer({
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             type == 'wallet'
-                ? buildWalletItem(logo)
+                ? buildWalletItem(logo: logo, phonenumber: phoneNumber)
                 : buildVehicleItem(carPlate: carPlate),
             type == 'wallet'
                 ? Container()
@@ -173,9 +159,10 @@ Widget buildContainer({
 }
 
 /// Returns dots or numbers.
-Widget buildDots(number) {
+Widget buildDots({String phonenumber}) {
+  int len = phonenumber.length;
   return Text(
-    '● ● ● ● ● ● 7328',
+    '● ● ● ● ● ● ${phonenumber.substring(len - 4)}',
     style: globals.buildTextStyle(16.0, true, Colors.black),
   );
 }

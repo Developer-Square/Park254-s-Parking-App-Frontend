@@ -218,7 +218,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    buildContainer(logo: widget.logo2Path, type: 'wallet'),
+                    buildContainer(
+                        logo: widget.logo2Path,
+                        type: 'wallet',
+                        phoneNumber: storeDetails != null
+                            ? storeDetails.user.user.phone.toString()
+                            : 'No Phonenumber'),
                     SizedBox(height: 50.0),
                     userRole != 'vendor'
                         ? Padding(

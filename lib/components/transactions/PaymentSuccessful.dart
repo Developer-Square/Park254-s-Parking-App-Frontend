@@ -83,16 +83,22 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
 
       if (vehicleDetails != null && userDetails != null) {
-        Vehicle vehicle =
-            vehicleDetails.findByOwnerId(id: userDetails.user.user.id);
-        numberPlate = vehicle.plate;
-        vehicleModel = vehicle.model;
+        vehicleDetails.fetch(
+            token: userDetails.user.accessToken.token,
+            owner: userDetails.user.user.id);
 
-        _dataMap = {
-          'numberPlate': numberPlate ?? 'No number plate',
-          'model': vehicleModel ?? 'No model',
-          'bookingId': widget.bookingId,
-        };
+        if (vehicleDetails.vehicleData.vehicles != null) {
+          Vehicle vehicle =
+              vehicleDetails.findByOwnerId(id: userDetails.user.user.id);
+          numberPlate = vehicle.plate;
+          vehicleModel = vehicle.model;
+
+          _dataMap = {
+            'numberPlate': numberPlate ?? 'No number plate',
+            'model': vehicleModel ?? 'No model',
+            'bookingId': widget.bookingId,
+          };
+        }
       }
     }
   }
@@ -372,16 +378,18 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final transactionDetails = Provider.of<TransactionModel>(context);
-    mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
-    transactionYear = transactionDetails.transaction.transactionDate
-        .toString()
-        .substring(0, 4);
-    transactionMonth = transactionDetails.transaction.transactionDate
-        .toString()
-        .substring(4, 6);
-    transactionDay = transactionDetails.transaction.transactionDate
-        .toString()
-        .substring(6, 8);
+    if (transactionDetails != null) {
+      mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
+      transactionYear = transactionDetails.transaction.transactionDate
+          .toString()
+          .substring(0, 4);
+      transactionMonth = transactionDetails.transaction.transactionDate
+          .toString()
+          .substring(4, 6);
+      transactionDay = transactionDetails.transaction.transactionDate
+          .toString()
+          .substring(6, 8);
+    }
 
     return WillPopScope(
       onWillPop: () async => false,

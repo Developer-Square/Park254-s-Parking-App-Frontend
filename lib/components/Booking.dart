@@ -101,6 +101,7 @@ class _BookingState extends State<Booking> {
       if (widget.entryDate != null &&
           widget.exitDate != null &&
           bookingDetailsProvider != null) {
+        // Populate the arrival and leaving date and time when updating.
         if (bookingDetailsProvider.update) {
           arrivalTime = TimeOfDay.fromDateTime(widget.entryDate);
           leavingTime = TimeOfDay.fromDateTime(widget.exitDate);
@@ -253,7 +254,7 @@ class _BookingState extends State<Booking> {
   /// Generates receipt
   void _generateReceipt(
       {@required BookingProvider bookingDetails, @required String bookingId}) {
-    if (bookingDetails != null) {
+    if (bookingDetails != null && bookingDetailsProvider != null) {
       bookingDetailsProvider.setUpdate(value: true);
       bookingDetails.setBooking(
         price: amount,
@@ -263,18 +264,18 @@ class _BookingState extends State<Booking> {
         arrivalDate: arrivalDate,
         leavingDate: leavingDate,
       );
-
-      Navigator.pushNamed(context, PaymentSuccessful.routeName,
-          arguments: ReceiptArguments(
-            bookingId: bookingId,
-            parkingSpace: widget.parkingLotNumber,
-            price: amount,
-            destination: widget.destination,
-            address: widget.address,
-            arrivalTime: arrivalTime,
-            leavingTime: leavingTime,
-          ));
     }
+
+    Navigator.pushNamed(context, PaymentSuccessful.routeName,
+        arguments: ReceiptArguments(
+          bookingId: bookingId,
+          parkingSpace: widget.parkingLotNumber,
+          price: amount,
+          destination: widget.destination,
+          address: widget.address,
+          arrivalTime: arrivalTime,
+          leavingTime: leavingTime,
+        ));
   }
 
   Widget _dropDown(
@@ -510,7 +511,9 @@ class _BookingState extends State<Booking> {
     final double finalHeight =
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
-    isLoading = transactionDetails.loader;
+    if (transactionDetails != null) {
+      isLoading = transactionDetails.loader;
+    }
 
     return SafeArea(
       child: Scaffold(

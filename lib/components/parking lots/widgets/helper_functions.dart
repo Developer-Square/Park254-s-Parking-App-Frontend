@@ -1,18 +1,75 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
 import 'package:park254_s_parking_app/functions/cloudinary/upload_images.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/createParkingLot.dart';
 import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dart';
 
 import '../../helper_functions.dart';
+import 'helpers_widgets.dart';
+
+Future scan({
+  UserWithTokenModel storeDetails,
+  BuildContext context,
+  Function showHideLoader,
+  Function setBarCode,
+}) async {
+  try {
+    ScanResult barcode = await BarcodeScanner.scan();
+    showHideLoader(false);
+
+    if (storeDetails != null) {
+      Map<String, dynamic> qrCodeDetaails = jsonDecode(barcode.rawContent);
+      String numberPlate = qrCodeDetaails['numberPlate'];
+      String model = qrCodeDetaails['model'];
+      String bookingId = qrCodeDetaails['bookingId'];
+      showHideLoader(true);
+
+      getBookingById(
+              token: storeDetails.user.accessToken.token, bookingId: bookingId)
+          .then((value) {
+        if (!value.isCancelled) {
+          showHideLoader(false);
+
+          showBottomModal(
+            context: context,
+            bookingsDetails: value,
+            numberPlate: numberPlate,
+            model: model,
+          );
+        }
+      }).catchError((err) {
+        showHideLoader(false);
+
+        log('In myparking_screen.dart, scan');
+        buildNotification(err.message, 'error');
+      });
+    }
+  } on PlatformException catch (e) {
+    if (e.code == BarcodeScanner.cameraAccessDenied) {
+      setBarCode('The user did not grant the camera permission!');
+    } else {
+      setBarCode('Unknown error: $e');
+    }
+  } on FormatException {
+    setBarCode(
+        'null (User returned using the "back" button before scanning anything)');
+  } catch (e) {
+    setBarCode('Unknown error: $e');
+  }
+}
 
 // Convert DateTime to TimeOfDay to be displayed in the parking history list.
 String timeOfDayToString(value) {
-  var time = TimeOfDay.fromDateTime(value).toString();
+  var localTime = value.toLocal();
+  var time = TimeOfDay.fromDateTime(localTime).toString();
   return time.substring(10, 15);
 }
 

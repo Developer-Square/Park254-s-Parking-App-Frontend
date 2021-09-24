@@ -13,13 +13,14 @@ import '../../config/globals.dart' as globals;
 /// Carries out MPESA transaction and returns [Transaction]
 ///
 /// Requires [phoneNumber], [amount], and [token]
-Future<Transaction> pay(
-    {@required num phoneNumber,
-    @required num amount,
-    @required String token,
-    @required Function setCreatedAt,
-    @required Function setLoading,
-    @required Function setTransaction}) async {
+Future<Transaction> pay({
+  @required num phoneNumber,
+  @required num amount,
+  @required String token,
+  @required Function setCreatedAt,
+  @required Function setLoading,
+  @required Function setTransaction,
+}) async {
   String createdAt = DateTime.now().toUtc().toIso8601String();
   setCreatedAt(createdAt);
   Map<String, String> headers = {

@@ -72,7 +72,6 @@ Future<dynamic> showBottomModal({
 Widget buildParkingLotResults({
   @required List results,
   @required String userRole,
-  @required List parkingLotDetails,
   @required BuildContext context,
   @required BookingProvider bookingDetailsProvider,
   @required Function updateParking,
@@ -90,15 +89,11 @@ Widget buildParkingLotResults({
                     bookingDetailsProvider: bookingDetailsProvider,
                     userRole: userRole,
                     context: context,
-                    parkingLotName: parkingLotDetails != null
-                        ? parkingLotDetails[index]['name']
-                        : 'Loading...',
+                    parkingLotName: results[index].parkingLotId.name,
                     parkingPrice: timeOfDayToString(results[index].entryTime),
-                    parkingLocation: parkingLotDetails != null
-                        ? parkingLotDetails[index]['address']
-                        : 'Loading...',
+                    parkingLocation: results[index].parkingLotId.address,
                     paymentStatus: timeOfDayToString(results[index].exitTime),
-                    parkingLotData: parkingLotDetails[index],
+                    parkingLotData: results[index].parkingLotId,
                     bookingDetails: results[index],
                     updateParking: updateParking,
                     updateParkingTime: updateParkingTime,

@@ -48,7 +48,6 @@ class MyParkingState extends State<MyParkingScreen> {
   ParkingLotListModel parkingLotList;
   BookingProvider bookingDetailsProvider;
   // Used when we are fetching details for individual parking lots.
-  List parkingLotDetails = [];
   List activeBookings = [];
   UserModel userModel;
   List<BookingDetailsPopulated> bookingDetailsList;
@@ -119,13 +118,11 @@ class MyParkingState extends State<MyParkingScreen> {
             (currentTime.hour + (currentTime.minute / 60));
 
         if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
-          _getParkingLotsInfo(
-              element: element, access: access, value: value, index: index);
+          _getParkingLotsInfo(value: value, index: index);
           // Add the booking id for active bookings.
           activeBookings.add(element.id);
         } else {
-          _getParkingLotsInfo(
-              element: element, access: access, value: value, index: index);
+          _getParkingLotsInfo(value: value, index: index);
         }
       });
     }).catchError((err) {
@@ -136,40 +133,28 @@ class MyParkingState extends State<MyParkingScreen> {
   }
 
   void _getParkingLotsInfo({
-    @required element,
-    @required String access,
     @required value,
     @required int index,
   }) {
-    if (element.parkingLotId != null) {
-      parkingLotDetails.add({
-        'name': element.parkingLotId.name,
-        'address': element.parkingLotId.address,
-        'image': element.parkingLotId.images.length > 0
-            ? element.parkingLotId.images[0]
-            : '',
-        'id': element.parkingLotId.id,
-      });
-
-      // Set the booking details to the store to avoid needless re-fetching.
-      if (bookingDetailsProvider != null) {
-        if (value.bookingDetailsList.length == index) {
-          bookingDetailsProvider.setUpdate(value: false);
-          bookingDetailsProvider.setBookingDetails(
-              value: value.bookingDetailsList, bookings: activeBookings);
-          bookingDetailsProvider.setParkingLotDetails(value: parkingLotDetails);
-        }
+    // Set the booking details to the store to avoid needless re-fetching.
+    if (bookingDetailsProvider != null) {
+      if (value.bookingDetailsList.length == index) {
+        bookingDetailsProvider.setUpdate(value: false);
+        bookingDetailsProvider.setBookingDetails(
+            value: value.bookingDetailsList, bookings: activeBookings);
       }
     }
   }
 
   void _updateParkingTime({dynamic bookingDetails}) {
+    final parkingLotDetails =
+        bookingDetailsProvider.bookingDetails[0].parkingLotId;
     bookingDetailsProvider.setUpdate(value: true);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => Booking(
-              destination: parkingLotDetails[0]['name'],
-              address: parkingLotDetails[0]['address'],
-              imagePath: parkingLotDetails[0]['image'],
+              destination: parkingLotDetails.name,
+              address: parkingLotDetails.address,
+              imagePath: parkingLotDetails.images[0],
               price: 1,
               bookingNumber: getRandomNumber(),
               parkingLotNumber: getRandomNumber(),
@@ -239,62 +224,16 @@ class MyParkingState extends State<MyParkingScreen> {
     });
   }
 
-  Future scan() async {
-    try {
-      ScanResult barcode = await BarcodeScanner.scan();
-      setState(() {
-        barcode = barcode;
+  showHideLoader({bool value}) {
+    setState(() {
+      showLoader = value;
+    });
+  }
 
-        if (storeDetails != null) {
-          Map<String, dynamic> qrCodeDetaails = jsonDecode(barcode.rawContent);
-          String numberPlate = qrCodeDetaails['numberPlate'];
-          String model = qrCodeDetaails['model'];
-          String bookingId = qrCodeDetaails['bookingId'];
-          setState(() {
-            showLoader = true;
-          });
-          getBookingById(token: accessToken, bookingId: bookingId)
-              .then((value) {
-            if (!value.isCancelled) {
-              setState(() {
-                showLoader = false;
-              });
-              showBottomModal(
-                context: context,
-                bookingsDetails: value,
-                numberPlate: numberPlate,
-                model: model,
-              );
-            }
-          }).catchError((err) {
-            setState(() {
-              showLoader = false;
-            });
-            log('In myparking_screen.dart, scan');
-            buildNotification(err.message, 'error');
-          });
-        }
-      });
-    } on PlatformException catch (e) {
-      if (e.code == BarcodeScanner.cameraAccessDenied) {
-        setState(() {
-          barcode = 'The user did not grant the camera permission!';
-        });
-      } else {
-        setState(() {
-          barcode = 'Unknown error: $e';
-        });
-      }
-    } on FormatException {
-      setState(() {
-        barcode =
-            'null (User returned using the "back" button before scanning anything)';
-      });
-    } catch (e) {
-      setState(() {
-        barcode = 'Unknown error: $e';
-      });
-    }
+  setBarCode({String value}) {
+    setState(() {
+      barcode = value;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -309,7 +248,6 @@ class MyParkingState extends State<MyParkingScreen> {
     if (bookingDetailsProvider != null) {
       setState(() {
         bookingDetailsList = bookingDetailsProvider.bookingDetails;
-        parkingLotDetails = bookingDetailsProvider.parkingLotDetails;
       });
     }
     return SafeArea(
@@ -333,7 +271,12 @@ class MyParkingState extends State<MyParkingScreen> {
                               child: FloatingActionButton.extended(
                                 backgroundColor: globals.backgroundColor,
                                 heroTag: 'scanQrCode',
-                                onPressed: () => scan(),
+                                onPressed: () => scan(
+                                  storeDetails: storeDetails,
+                                  context: context,
+                                  showHideLoader: showHideLoader,
+                                  setBarCode: setBarCode,
+                                ),
                                 label: Text('Scan QR Code'),
                               ),
                             )
@@ -396,7 +339,6 @@ class MyParkingState extends State<MyParkingScreen> {
                             ? SizedBox(
                                 height: MediaQuery.of(context).size.height,
                                 child: buildParkingLotResults(
-                                  parkingLotDetails: parkingLotDetails,
                                   userRole: userRole,
                                   results: parkingLotsResults,
                                   updateParking: _updateParking,
@@ -410,7 +352,6 @@ class MyParkingState extends State<MyParkingScreen> {
                                 ? SizedBox(
                                     height: MediaQuery.of(context).size.height,
                                     child: buildParkingLotResults(
-                                      parkingLotDetails: parkingLotDetails,
                                       userRole: userRole,
                                       results: bookingDetailsList,
                                       updateParking: _updateParking,

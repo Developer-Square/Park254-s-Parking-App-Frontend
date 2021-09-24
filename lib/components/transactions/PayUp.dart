@@ -15,6 +15,7 @@ import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 import '../helper_functions.dart';
@@ -141,6 +142,11 @@ class _PayUpState extends State<PayUp> {
         buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
+        // TODO: Remove this when mpesa is back.
+        // transactionDetails.setLoading(false);
+        // Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) => HomePage(activeTab: 'myparking')));
+
         // Call the mpesa STK push.
         callPaymentMethod(
             transactionDetails: transactionDetails, bookingId: value.id);
@@ -174,15 +180,18 @@ class _PayUpState extends State<PayUp> {
     @required String bookingId,
   }) async {
     String access = storeDetails.user.accessToken.token;
+    String internationalNumber = '254';
+    String phonenumber = storeDetails.user.user.phone.toString();
+
     if (access != null) {
       pay(
-              phoneNumber: 254796867328,
-              amount: widget.total,
-              token: access,
-              setCreatedAt: transactionDetails.setCreatedAt,
-              setTransaction: transactionDetails.setTransaction,
-              setLoading: transactionDetails.setLoading)
-          .then((value) {
+        phoneNumber: 254796867328,
+        amount: widget.total,
+        token: access,
+        setCreatedAt: transactionDetails.setCreatedAt,
+        setTransaction: transactionDetails.setTransaction,
+        setLoading: transactionDetails.setLoading,
+      ).then((value) {
         // If resultCode is equal to 0 then the transcation other than that.
         // then it failed.
         if (value.resultCode == 0) {
