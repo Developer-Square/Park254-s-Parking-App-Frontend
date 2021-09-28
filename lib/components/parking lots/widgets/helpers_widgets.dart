@@ -32,10 +32,12 @@ Widget infoDetails({String key, String value}) {
 /// This modal displays all the necessary details from the QR Code.
 Future<dynamic> showBottomModal({
   @required BuildContext context,
-  @required BookingDetailsPopulated bookingsDetails,
-  @required String numberPlate,
-  @required String model,
+  BookingDetailsPopulated bookingsDetails,
+  String numberPlate,
+  String model,
+  String type,
 }) {
+  print('scanning');
   return showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -47,19 +49,27 @@ Future<dynamic> showBottomModal({
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              infoDetails(
-                  key: 'Parking Lot Name',
-                  value: bookingsDetails.parkingLotId.name),
-              infoDetails(key: 'Number Plate', value: numberPlate),
-              infoDetails(key: 'Model', value: model),
-              infoDetails(
-                  key: 'Time In',
-                  value: timeOfDayToString(bookingsDetails.entryTime)),
-              infoDetails(
-                  key: 'Time Out',
-                  value: timeOfDayToString(bookingsDetails.exitTime)),
-              infoDetails(
-                  key: 'Client Name', value: bookingsDetails.clientId.name)
+              type == 'contact'
+                  ? infoDetails(
+                      key: 'Contact Us',
+                      value: 'park42963@gmail.com',
+                    )
+                  : new Column(children: <Widget>[
+                      infoDetails(
+                          key: 'Parking Lot Name',
+                          value: bookingsDetails.parkingLotId.name),
+                      infoDetails(key: 'Number Plate', value: numberPlate),
+                      infoDetails(key: 'Model', value: model),
+                      infoDetails(
+                          key: 'Time In',
+                          value: timeOfDayToString(bookingsDetails.entryTime)),
+                      infoDetails(
+                          key: 'Time Out',
+                          value: timeOfDayToString(bookingsDetails.exitTime)),
+                      infoDetails(
+                          key: 'Client Name',
+                          value: bookingsDetails.clientId.name)
+                    ])
             ],
           ),
         );

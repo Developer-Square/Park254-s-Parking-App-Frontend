@@ -13,9 +13,11 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
+import './SecondaryText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 
@@ -73,7 +75,7 @@ class _BookingState extends State<Booking> {
   TimeOfDay leavingTime = TimeOfDay.now();
   String vehicle = 'prius';
   String numberPlate = 'BBAGAAFAF';
-  String driver = "linus";
+  String driver = "No name set";
   String paymentMethod = 'MPESA';
   int amount = 0;
   bool showPayUp = false;
@@ -88,6 +90,7 @@ class _BookingState extends State<Booking> {
   final List<String> driverList = <String>['Linus', 'Ryan'];
   TransactionModel transactionDetails;
   BookingProvider bookingDetailsProvider;
+  UserWithTokenModel userDetails;
 
   @override
   void initState() {
@@ -97,6 +100,7 @@ class _BookingState extends State<Booking> {
     if (mounted) {
       bookingDetailsProvider =
           Provider.of<BookingProvider>(context, listen: false);
+      userDetails = Provider.of<UserWithTokenModel>(context, listen: false);
 
       if (widget.entryDate != null &&
           widget.exitDate != null &&
@@ -426,11 +430,16 @@ class _BookingState extends State<Booking> {
   }
 
   Widget _driverInfo() {
+    String name = 'No Name';
+    if (userDetails != null) {
+      name = userDetails.user.user.name;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         PrimaryText(content: 'Driver Info'),
-        _dropDown(driver, driverList, globals.textColor, FontWeight.normal),
+        SecondaryText(content: name),
       ],
     );
   }
@@ -558,12 +567,6 @@ class _BookingState extends State<Booking> {
                         Expanded(
                           child: _timeDatePicker(),
                           flex: 1,
-                        ),
-                        Expanded(
-                          child: BorderContainer(
-                            content: _vehicle(),
-                          ),
-                          flex: 2,
                         ),
                         Expanded(
                           child: BorderContainer(content: _driverInfo()),

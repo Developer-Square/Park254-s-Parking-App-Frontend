@@ -106,12 +106,14 @@ class _PayUpState extends State<PayUp> {
         entryTime: entryTime,
         exitTime: exitTime,
       ).then((value) {
-        buildNotification('Parking lot updated successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
         callPaymentMethod(
-            transactionDetails: transactionDetails, bookingId: value.id);
+          transactionDetails: transactionDetails,
+          bookingId: value.id,
+          type: 'update',
+        );
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, updateParkingLotBooking function");
@@ -141,20 +143,14 @@ class _PayUpState extends State<PayUp> {
         entryTime: entryTime,
         exitTime: exitTime,
       ).then((value) {
-        buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
-        if (bookingDetails != null) {
-          transactionDetails.setLoading(false);
-          bookingDetails.setUpdate(value: true);
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => HomePage(
-                    activeTab: 'myParking',
-                  )));
-        }
         // Call the mpesa STK push.
-        // callPaymentMethod(
-        //     transactionDetails: transactionDetails, bookingId: value.id);
+        callPaymentMethod(
+          transactionDetails: transactionDetails,
+          bookingId: value.id,
+          type: 'create',
+        );
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, createBooking function");
@@ -183,6 +179,7 @@ class _PayUpState extends State<PayUp> {
   void callPaymentMethod({
     @required TransactionModel transactionDetails,
     @required String bookingId,
+    String type,
   }) async {
     String access = storeDetails.user.accessToken.token;
     String internationalNumber = '254';
@@ -202,6 +199,11 @@ class _PayUpState extends State<PayUp> {
         if (value.resultCode == 0) {
           transactionDetails.setLoading(false);
           buildNotification('Payment Successful', 'success');
+          if (type == 'update') {
+            buildNotification('Parking lot updated successfully', 'success');
+          } else {
+            buildNotification('Parking lot booked successfully', 'success');
+          }
 
           // When a user is updating, redirect them to the myParkingScreen after.
           // payment is complete.

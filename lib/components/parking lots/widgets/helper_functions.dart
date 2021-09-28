@@ -21,6 +21,7 @@ Future scan({
   Function showHideLoader,
   Function setBarCode,
 }) async {
+  print('here');
   try {
     ScanResult barcode = await BarcodeScanner.scan();
     showHideLoader(false);
@@ -30,6 +31,7 @@ Future scan({
       String numberPlate = qrCodeDetaails['numberPlate'];
       String model = qrCodeDetaails['model'];
       String bookingId = qrCodeDetaails['bookingId'];
+      print(bookingId);
       showHideLoader(true);
 
       getBookingById(
