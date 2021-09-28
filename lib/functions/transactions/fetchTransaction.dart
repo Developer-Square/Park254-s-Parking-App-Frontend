@@ -30,11 +30,11 @@ Future<Transaction> fetchTransaction({
     'Amount': amount.toString(),
     'createdAt': createdAt,
   };
+  log(queryParameters.toString());
 
   final url = Uri.https(globals.apiKey, '/v1/mpesaWebHook', queryParameters);
 
   final response = await http.get(url, headers: headers);
-  log(response.statusCode.toString());
   if (response.statusCode == 200) {
     final transaction = Transaction.fromJson(jsonDecode(response.body));
     setLoading(false);

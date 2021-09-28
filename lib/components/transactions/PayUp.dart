@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
@@ -142,9 +144,17 @@ class _PayUpState extends State<PayUp> {
         buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
+        if (bookingDetails != null) {
+          transactionDetails.setLoading(false);
+          bookingDetails.setUpdate(value: true);
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => HomePage(
+                    activeTab: 'myParking',
+                  )));
+        }
         // Call the mpesa STK push.
-        callPaymentMethod(
-            transactionDetails: transactionDetails, bookingId: value.id);
+        // callPaymentMethod(
+        //     transactionDetails: transactionDetails, bookingId: value.id);
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, createBooking function");

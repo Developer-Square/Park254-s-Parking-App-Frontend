@@ -83,10 +83,6 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
 
       if (vehicleDetails != null && userDetails != null) {
-        vehicleDetails.fetch(
-            token: userDetails.user.accessToken.token,
-            owner: userDetails.user.user.id);
-
         if (vehicleDetails.vehicleData.vehicles != null) {
           Vehicle vehicle =
               vehicleDetails.findByOwnerId(id: userDetails.user.user.id);
