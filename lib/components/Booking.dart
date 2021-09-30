@@ -534,13 +534,6 @@ class _BookingState extends State<Booking> {
                 PrimaryText(
                   content: 'Booking',
                 ),
-                Text(
-                  'BookingID: ${widget.bookingNumber}',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                  ),
-                ),
               ],
             ),
             centerTitle: true,

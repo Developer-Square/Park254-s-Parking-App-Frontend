@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/BorderContainer.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
@@ -171,26 +172,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
             Column(
               children: <Widget>[
                 Expanded(
-                  child: BorderContainer(
-                    content: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        PrimaryText(content: 'Payment Successful'),
-                      ],
-                    ),
-                  ),
-                  flex: 5,
-                ),
-                Expanded(
                   child: Container(
                     padding:
                         EdgeInsets.only(left: width / 20, right: width / 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
+                        SizedBox(height: 20.0),
+                        _messageRow('Parking Lot Name', widget.destination),
                         _messageRow(
-                            'Booking Id',
+                            'Booking ID',
                             widget.bookingId != null
                                 ? widget.bookingId.substring(0, 16)
                                 : 'No bookingId'),
@@ -206,7 +197,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                                 ? numberPlate.toString()
                                 : 'No model'),
                         _messageRow('Date',
-                            '${transactionYear ?? ''}-${transactionMonth ?? ''}-${transactionDay ?? ''}'),
+                            '${transactionDay ?? ''}-${transactionMonth ?? ''}-${transactionYear ?? ''}'),
                         // All this is done to be able get the exact UI we want.
                         _messageRow('Time',
                             '${widget.arrivalTime.minute > 9 ? ' ' + '${widget.arrivalTime.hour.toString()}:${widget.arrivalTime.minute.toString()}' : ' ' + '${widget.arrivalTime.hour.toString()}:0${widget.arrivalTime.minute.toString()}'} - ${widget.leavingTime.minute > 9 ? ' ' + '${widget.leavingTime.hour.toString()}:${widget.leavingTime.minute.toString()}' : ' ' + '${widget.leavingTime.hour.toString()}:0${widget.leavingTime.minute.toString()}'}'),
@@ -283,12 +274,16 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Expanded(
-                                child: PrimaryText(content: widget.destination))
+                              child: SvgPicture.asset(
+                                'assets/images/Logo/PARK_254_1000x400-01.svg',
+                                height: 320,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-                    flex: 1,
+                    flex: 4,
                   ),
                   Expanded(
                     child: InkWell(
@@ -305,16 +300,19 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
                         ),
                       ),
                     ),
-                    flex: 1,
+                    flex: 2,
                   ),
                 ],
               ),
-              Center(
-                child: _icons(),
+              Padding(
+                padding: const EdgeInsets.only(top: 65.0),
+                child: Center(
+                  child: _icons(),
+                ),
               ),
             ],
           ),
-          flex: 1,
+          flex: 2,
         ),
       ],
     );
@@ -388,29 +386,37 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     }
 
     return WillPopScope(
+      // This prevents a user from going back to the booking page since we don't want.
+      // them to book again.
       onWillPop: () async => false,
       child: SafeArea(
         child: Scaffold(
           backgroundColor: globals.textColor,
           resizeToAvoidBottomPadding: true,
-          body: DismissKeyboard(
+          body: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(width / 20),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: _greenCircle(transactionDetails),
-                    flex: 17,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: DismissKeyboard(
+                child: Container(
+                  padding: EdgeInsets.all(width / 20),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: _greenCircle(transactionDetails),
+                        flex: 17,
+                      ),
+                      Expanded(
+                        child: Container(),
+                        flex: 1,
+                      ),
+                      Expanded(
+                        child: _dottedLine(),
+                        flex: 29,
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Container(),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: _dottedLine(),
-                    flex: 29,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
