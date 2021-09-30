@@ -12,6 +12,7 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/widgets/helper_functions.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
@@ -47,6 +48,7 @@ class MyParkingState extends State<MyParkingScreen> {
   // Parking lots from the store.
   ParkingLotListModel parkingLotList;
   BookingProvider bookingDetailsProvider;
+  NavigationProvider navigationDetails;
   // Used when we are fetching details for individual parking lots.
   List activeBookings = [];
   UserModel userModel;
@@ -72,6 +74,12 @@ class MyParkingState extends State<MyParkingScreen> {
       userModel = Provider.of<UserModel>(context, listen: false);
       bookingDetailsProvider =
           Provider.of<BookingProvider>(context, listen: false);
+      navigationDetails =
+          Provider.of<NavigationProvider>(context, listen: false);
+      // Reset the navigation details when moving back to the home and parking pages.
+      if (navigationDetails != null) {
+        navigationDetails.clear();
+      }
       userRole = storeDetails.user.user.role;
       accessToken = storeDetails.user.accessToken.token;
       userId = storeDetails.user.user.id;

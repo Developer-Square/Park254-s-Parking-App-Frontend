@@ -21,6 +21,7 @@ class NavigationProvider with ChangeNotifier {
 
   void clear() {
     _isNavigating = false;
+    _currentPosition = null;
     notifyListeners();
   }
 }

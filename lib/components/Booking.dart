@@ -12,8 +12,10 @@ import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/checkSpaces.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
@@ -91,6 +93,7 @@ class _BookingState extends State<Booking> {
   TransactionModel transactionDetails;
   BookingProvider bookingDetailsProvider;
   UserWithTokenModel userDetails;
+  NearbyParkingListModel nearbyParkingListDetails;
 
   @override
   void initState() {
@@ -101,6 +104,8 @@ class _BookingState extends State<Booking> {
       bookingDetailsProvider =
           Provider.of<BookingProvider>(context, listen: false);
       userDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
 
       if (widget.entryDate != null &&
           widget.exitDate != null &&
@@ -429,6 +434,58 @@ class _BookingState extends State<Booking> {
     );
   }
 
+  Widget _checkSpacesButton() {
+    return InkWell(
+      onTap: () {
+        transactionDetails.setLoading(true);
+
+        // Change the TimeOfDay to DateTime.
+        final now = new DateTime.now();
+        final DateTime entryTime = new DateTime(
+            now.year, now.month, now.day, arrivalTime.hour, arrivalTime.minute);
+        final DateTime exitTime = new DateTime(
+            now.year, now.month, now.day, leavingTime.hour, leavingTime.minute);
+        if (nearbyParkingListDetails != null && userDetails != null) {
+          checkSpaces(
+                  token: userDetails.user.accessToken.token,
+                  parkingLots: [nearbyParkingListDetails.nearbyParkingLot.id],
+                  entryTime: entryTime,
+                  exitTime: exitTime)
+              .then((value) {
+            if (value.spaceList[0].available) {
+              buildNotification(
+                  'Parking space has ${value.spaceList[0].availableSpaces} available spaces',
+                  'success');
+            }
+            transactionDetails.setLoading(false);
+          }).catchError((err) {
+            transactionDetails.setLoading(false);
+
+            log("In Booking.dart, checkSpacesButton function");
+            log(err.toString());
+            buildNotification(err.message.toString(), 'error');
+          });
+        }
+      },
+      child: Center(
+        child: Container(
+          padding: EdgeInsets.only(left: 7.0, right: 7.0),
+          height: 45.0,
+          width: 135.0,
+          decoration: BoxDecoration(
+              color: globals.backgroundColor,
+              borderRadius: BorderRadius.circular(24.0)),
+          child: Center(
+            child: Text(
+              'Check Availability',
+              style: globals.buildTextStyle(14.0, true, Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _driverInfo() {
     String name = 'No Name';
     if (userDetails != null) {
@@ -559,6 +616,10 @@ class _BookingState extends State<Booking> {
                         ),
                         Expanded(
                           child: _timeDatePicker(),
+                          flex: 1,
+                        ),
+                        Expanded(
+                          child: BorderContainer(content: _checkSpacesButton()),
                           flex: 1,
                         ),
                         Expanded(
