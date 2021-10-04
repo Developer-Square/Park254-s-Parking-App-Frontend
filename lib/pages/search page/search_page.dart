@@ -269,7 +269,6 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget build(BuildContext context) {
     nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
-    log(_recentSearchesList.toString());
     return SafeArea(
       child: Scaffold(
           //Hide the appbar when showing the rating tab
@@ -284,13 +283,16 @@ class _SearchPageState extends State<SearchPage> {
             // A pop-up that show the distance and time when a user is navigating.
             nearbyParkingDetails != null
                 ? nearbyParkingDetails.directionsInfo != null
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: NavigationInfo(
-                            totalDistance: nearbyParkingDetails
-                                .directionsInfo.totalDistance,
-                            totalDuration: nearbyParkingDetails
-                                .directionsInfo.totalDuration),
+                    ? Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: NavigationInfo(
+                              totalDistance: nearbyParkingDetails
+                                  .directionsInfo.totalDistance,
+                              totalDuration: nearbyParkingDetails
+                                  .directionsInfo.totalDuration),
+                        ),
                       )
                     : Container()
                 : Container(),
@@ -391,10 +393,11 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Add CustomInfoWindow as next child to float this on top GoogleMap.
             CustomInfoWindow(
-                controller: _customInfoWindowController,
-                height: 50,
-                width: 150,
-                offset: 32),
+              controller: _customInfoWindowController,
+              height: 50,
+              width: 150,
+              offset: 32,
+            ),
           ])),
     );
   }
