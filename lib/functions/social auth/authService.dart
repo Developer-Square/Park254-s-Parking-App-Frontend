@@ -5,7 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
+import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/functions/auth/register.dart';
+import 'package:park254_s_parking_app/functions/users/createUser.dart';
+import 'package:park254_s_parking_app/functions/utils/checkPermissions.dart';
+import 'package:park254_s_parking_app/functions/utils/passwordGenerator.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
+import 'package:park254_s_parking_app/pages/vendor_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../pages/login_screen.dart';
 import '../../pages/home_page.dart';
 
@@ -49,16 +57,31 @@ class AuthService {
 
         // Get profile data from facebook for use in the app.
         final profile = await fb.getUserProfile();
-        log('Hello, ${profile.name}! Your ID: ${profile.userId}');
 
         // fetch user email.
         final email = await fb.getUserEmail();
 
         // But user can decline permission.
         if (email != null) {
-          log('And your email is $email');
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => HomePage()));
+          // Check if its a recurring user.
+          var result = await getDetailsFromMemory(currentUserEmail: email);
+          // If the result is a list with details then login the user.
+          // else create a new user.
+          if (result.length == 2) {
+            // Login user, check permissions.
+            loginUser(email: result[0], password: result[1], context: context);
+          } else {
+            // Generate random password.
+            var password = passwordGenerator(8);
+            var passwordWithNumber = password + '4';
+
+            createNewUser(
+              email: email,
+              name: profile.name,
+              password: passwordWithNumber,
+              context: context,
+            );
+          }
         }
 
         break;
@@ -95,6 +118,111 @@ class AuthService {
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<List> getDetailsFromMemory({@required String currentUserEmail}) async {
+    var userDetails = [];
+    await SharedPreferences.getInstance().then((prefs) async {
+      var email = prefs.getString('email');
+      var password = prefs.getString('password');
+
+      // Decrypt the email.
+      if (email != null) {
+        var decryptedEmail =
+            await encryptDecryptData('email', email, 'decrypt');
+        var decryptedPassword =
+            await encryptDecryptData('password', password, 'decrypt');
+
+        // Compare the stored email with the new one to s
+        if (decryptedEmail != null && decryptedEmail == currentUserEmail) {
+          userDetails.add(decryptedEmail);
+          userDetails.add(decryptedPassword);
+        }
+      }
+    });
+    return userDetails;
+  }
+
+  // Login user.
+  loginUser({
+    @required String email,
+    @required String password,
+    @required BuildContext context,
+  }) {
+    login(email: email, password: password).then((value) {
+      // Only proceed to the HomePage when permissions are granted.
+      checkPermissions().then((permissionValue) {
+        if (value.user.id != null) {
+          buildNotification('Logged in successfully', 'success');
+          // Store the refresh and access userDetails.
+          storeLoginDetails(details: value);
+          // Choose how to redirect the user based on the role.
+          if (value.user.role == 'user') {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => HomePage(
+                      userDetails: value.user,
+                      accessToken: value.accessToken,
+                      refreshToken: value.refreshToken,
+                    )));
+          } else if (value.user.role == 'vendor') {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => VendorPage(
+                      userDetails: value.user,
+                      accessToken: value.accessToken,
+                      refreshToken: value.refreshToken,
+                    )));
+          }
+        }
+      });
+    }).catchError((err) {
+      log("In authService.dart, loginUser function");
+      log(err);
+      buildNotification(err.message, 'error');
+    });
+  }
+
+  // Create user.
+  createNewUser({
+    @required String email,
+    @required String name,
+    @required String password,
+    @required BuildContext context,
+  }) {
+    register(
+      email: email,
+      name: name,
+      password: password,
+    ).then((value) {
+      // Store the email and password.
+      var encryptedEmail = encryptDecryptData('email', email, 'encrypt');
+      var encryptedPassword =
+          encryptDecryptData('password', password, 'encrypt');
+      storeDetailsInMemory('email', encryptedEmail);
+      storeDetailsInMemory('password', encryptedPassword);
+
+      // Choose how to redirect the user based on the role.
+      if (value.user.role == 'user') {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HomePage(
+                  userDetails: value.user,
+                  accessToken: value.accessToken,
+                  refreshToken: value.refreshToken,
+                )));
+      } else if (value.user.role == 'vendor') {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => VendorPage(
+                  userDetails: value.user,
+                  accessToken: value.accessToken,
+                  refreshToken: value.refreshToken,
+                )));
+      }
+      // Store the other user details.
+      storeLoginDetails(details: value);
+    }).catchError((err) {
+      log("In authService.dart, createNewUser function");
+      log(err);
+      buildNotification(err.message, 'error');
+    });
   }
 
   // log out the user.
