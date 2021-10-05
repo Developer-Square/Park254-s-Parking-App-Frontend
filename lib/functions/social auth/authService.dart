@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:park254_s_parking_app/pages/onboarding_page.dart';
@@ -25,7 +26,7 @@ class AuthService {
     );
   }
 
-  signInWithFacebook() async {
+  signInWithFacebook({BuildContext context}) async {
     final fb = FacebookLogin();
 
     // Log in.
@@ -54,7 +55,11 @@ class AuthService {
         final email = await fb.getUserEmail();
 
         // But user can decline permission.
-        if (email != null) log('And your email is $email');
+        if (email != null) {
+          log('And your email is $email');
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => HomePage()));
+        }
 
         break;
 
@@ -68,7 +73,7 @@ class AuthService {
     }
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<UserCredential> signInWithGoogle({BuildContext context}) async {
     // Initiate the auth procedure.
     final GoogleSignInAccount googleUser =
         await GoogleSignIn(scopes: <String>["email"]).signIn();
@@ -82,6 +87,14 @@ class AuthService {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
+
+    if (googleAuth.idToken != null) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
+    }
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   // log out the user.

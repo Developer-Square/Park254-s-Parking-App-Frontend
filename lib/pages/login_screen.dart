@@ -23,8 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return InkWell(
       onTap: type == 'google'
-          ? AuthService().signInWithGoogle()
-          : AuthService().signInWithFacebook(),
+          ? () {
+              AuthService().signInWithGoogle(context: context);
+            }
+          : () {
+              AuthService().signInWithFacebook(context: context);
+            },
       child: Container(
         width: (MediaQuery.of(context).size.width / 2) - 35,
         height: 50.0,

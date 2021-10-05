@@ -102,6 +102,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     // log out the current user from the social authentication upon pressing the logoun button.
     AuthService().signOut();
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   @override
