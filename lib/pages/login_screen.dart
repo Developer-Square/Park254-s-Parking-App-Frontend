@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
 
@@ -14,19 +15,29 @@ class LoginScreen extends StatefulWidget {
 /// Returns a [Widget].
 class _LoginScreenState extends State<LoginScreen> {
   /// Builds out the social logins at the bottom
-  Widget _buildSocials(String title, int buttonColor, bool opacity) {
-    return Container(
-      width: (MediaQuery.of(context).size.width / 2) - 35,
-      height: 50.0,
-      decoration: BoxDecoration(
-          color: opacity ? Colors.blue.withOpacity(0.7) : Color(buttonColor),
-          borderRadius: BorderRadius.all(Radius.circular(25.0))),
-      child: Center(
-        child: Text(title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.0,
-            )),
+  Widget _buildSocials({
+    String title,
+    int buttonColor,
+    bool opacity,
+    String type,
+  }) {
+    return InkWell(
+      onTap: type == 'google'
+          ? AuthService().signInWithGoogle()
+          : AuthService().signInWithFacebook(),
+      child: Container(
+        width: (MediaQuery.of(context).size.width / 2) - 35,
+        height: 50.0,
+        decoration: BoxDecoration(
+            color: opacity ? Colors.blue.withOpacity(0.7) : Color(buttonColor),
+            borderRadius: BorderRadius.all(Radius.circular(25.0))),
+        child: Center(
+          child: Text(title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              )),
+        ),
       ),
     );
   }
@@ -92,9 +103,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              _buildSocials('Facebook', 0xFF3C5898, false),
+                              _buildSocials(
+                                title: 'Facebook',
+                                buttonColor: 0xFF3C5898,
+                                opacity: false,
+                                type: 'facebook',
+                              ),
                               SizedBox(width: 10.0),
-                              _buildSocials('Google', 0, true),
+                              _buildSocials(
+                                title: 'Google',
+                                buttonColor: 0,
+                                opacity: true,
+                                type: 'google',
+                              ),
                             ],
                           ))
                     ]),

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
@@ -21,6 +21,7 @@ import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
+import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
@@ -46,12 +47,15 @@ import 'config/search_page_arguments.dart';
 import 'models/token.model.dart';
 import 'models/user.model.dart';
 import 'pages/login_screen.dart';
-import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
 import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -207,7 +211,9 @@ class _MyAppState extends State<MyApp> {
                             accessToken: accessToken,
                             refreshToken: refreshToken)
                     : Loader()
-                : OnBoardingPage(),
+                // Check if a user is logged in to google or facebook before redirecting them.
+                // to the onboarding page.
+                : AuthService().handleAuthState(),
             routes: {
               '/login_screen': (context) => LoginScreen(),
             },
