@@ -17,6 +17,7 @@ import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../pages/login_screen.dart';
 import '../../pages/home_page.dart';
+import 'package:encrypt/encrypt.dart' as encryptionPackage;
 
 class AuthService {
   // Determine if the user is authenticated and redirect accordingly
@@ -73,7 +74,7 @@ class AuthService {
             loginUser(email: result[0], password: result[1], context: context);
           } else {
             // Generate random password.
-            var password = passwordGenerator(8);
+            var password = passwordGenerator(16);
             var passwordWithNumber = password + '4';
 
             createNewUser(
@@ -128,13 +129,12 @@ class AuthService {
     await SharedPreferences.getInstance().then((prefs) async {
       var email = prefs.getString('email');
       var password = prefs.getString('password');
-
       // Decrypt the email.
-      if (email != null) {
+      if (email != null && password != null) {
         var decryptedEmail =
-            await encryptDecryptData('email', email, 'decrypt');
+            await encryptDecryptData('storedUserEmails', email, 'decrypt');
         var decryptedPassword =
-            await encryptDecryptData('password', password, 'decrypt');
+            await encryptDecryptData('storedPasswordss', password, 'decrypt');
 
         // Compare the stored email with the new one to s
         if (decryptedEmail != null && decryptedEmail == currentUserEmail) {
@@ -197,10 +197,12 @@ class AuthService {
       password: password,
     ).then((value) async {
       // Store the email and password.
+      // NOTE: THE ENCRYPTIONKEYS HAVE TO BE 16 CHARACTERS IN LENGTH.
+      // DON'T TOUCH THEM.
       var encryptedEmail =
-          await encryptDecryptData('encryptedEmail', email, 'encrypt');
+          encryptDecryptData('storedUserEmails', email, 'encrypt');
       var encryptedPassword =
-          await encryptDecryptData('encryptedPassword', password, 'encrypt');
+          encryptDecryptData('storedPasswordss', password, 'encrypt');
       storeDetailsInMemory('email', encryptedEmail.base64);
       storeDetailsInMemory('password', encryptedPassword.base64);
 
