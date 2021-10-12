@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
@@ -36,7 +37,8 @@ class AuthService {
     );
   }
 
-  signInWithFacebook({BuildContext context}) async {
+  signInWithFacebook({BuildContext context, Function showLoader}) async {
+    showLoader(state: true);
     final fb = FacebookLogin();
 
     // Log in.
@@ -71,7 +73,12 @@ class AuthService {
           // else create a new user.
           if (result.length == 2) {
             // Login user, check permissions.
-            loginUser(email: result[0], password: result[1], context: context);
+            loginUser(
+              email: result[0],
+              password: result[1],
+              context: context,
+              showLoader: showLoader,
+            );
           } else {
             // Generate random password.
             var password = passwordGenerator(16);
@@ -82,6 +89,7 @@ class AuthService {
               name: profile.name,
               password: passwordWithNumber,
               context: context,
+              showLoader: showLoader,
             );
           }
         }
@@ -89,16 +97,20 @@ class AuthService {
         break;
 
       case FacebookLoginStatus.cancel:
+        showLoader(state: false);
         // In case the user cancels the login success.
         break;
       case FacebookLoginStatus.error:
+        showLoader(state: false);
         // Login procedure failed.
         log('Error while facebook log in: ${res.error}');
         break;
     }
   }
 
-  Future<UserCredential> signInWithGoogle({BuildContext context}) async {
+  Future<UserCredential> signInWithGoogle(
+      {BuildContext context, Function showLoader}) async {
+    showLoader(state: true);
     FirebaseApp firebaseApp = await Firebase.initializeApp();
     FirebaseAuth auth = FirebaseAuth.instance;
     // Initiate the auth procedure.
@@ -116,8 +128,39 @@ class AuthService {
     );
 
     if (googleAuth.idToken != null) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomePage()));
+      // Decode the idToken.
+      Map<String, dynamic> payload = Jwt.parseJwt(googleAuth.idToken);
+      String email = payload['email'];
+      String name = payload['name'];
+
+      // Login or Create new user.
+      if (email != null) {
+        // Check if its a recurring user.
+        var result = await getDetailsFromMemory(currentUserEmail: email);
+        // If the result is a list with details then login the user.
+        // else create a new user.
+        if (result.length == 2) {
+          // Login user, check permissions.
+          loginUser(
+            email: result[0],
+            password: result[1],
+            context: context,
+            showLoader: showLoader,
+          );
+        } else {
+          // Generate random password.
+          var password = passwordGenerator(16);
+          var passwordWithNumber = password + '4';
+
+          createNewUser(
+            email: email,
+            name: name,
+            password: passwordWithNumber,
+            context: context,
+            showLoader: showLoader,
+          );
+        }
+      }
     }
 
     // Once signed in, return the UserCredential
@@ -136,7 +179,7 @@ class AuthService {
         var decryptedPassword =
             await encryptDecryptData('storedPasswordss', password, 'decrypt');
 
-        // Compare the stored email with the new one to s
+        // Compare the stored email with the new one.
         if (decryptedEmail != null && decryptedEmail == currentUserEmail) {
           userDetails.add(decryptedEmail);
           userDetails.add(decryptedPassword);
@@ -151,12 +194,14 @@ class AuthService {
     @required String email,
     @required String password,
     @required BuildContext context,
+    Function showLoader,
   }) {
     login(email: email, password: password).then((value) {
       // Only proceed to the HomePage when permissions are granted.
       checkPermissions().then((permissionValue) {
         if (value.user.id != null) {
           buildNotification('Logged in successfully', 'success');
+          showLoader(state: false);
           // Store the refresh and access userDetails.
           storeLoginDetails(details: value);
           // Choose how to redirect the user based on the role.
@@ -178,6 +223,7 @@ class AuthService {
         }
       });
     }).catchError((err) {
+      showLoader(state: false);
       log("In authService.dart, loginUser function");
       log(err);
       buildNotification(err.message, 'error');
@@ -190,6 +236,7 @@ class AuthService {
     @required String name,
     @required String password,
     @required BuildContext context,
+    Function showLoader,
   }) {
     register(
       email: email,
@@ -205,6 +252,7 @@ class AuthService {
           encryptDecryptData('storedPasswordss', password, 'encrypt');
       storeDetailsInMemory('email', encryptedEmail.base64);
       storeDetailsInMemory('password', encryptedPassword.base64);
+      showLoader(state: false);
 
       // Choose how to redirect the user based on the role.
       if (value.user.role == 'user') {
@@ -225,6 +273,7 @@ class AuthService {
       // Store the other user details.
       storeLoginDetails(details: value);
     }).catchError((err) {
+      showLoader(state: false);
       log("In authService.dart, createNewUser function");
       log(err.toString());
       buildNotification(err.message, 'error');
