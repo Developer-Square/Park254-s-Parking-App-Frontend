@@ -55,9 +55,10 @@ storeLoginDetails({dynamic details}) async {
 // Clears the details when a user logouts.
 clearStorage() async {
   await SharedPreferences.getInstance().then((prefs) {
-    prefs.remove('accessToken');
-    prefs.remove('refreshToken');
-    prefs.remove('userId');
+    prefs.clear();
+    // prefs.remove('accessToken');
+    // prefs.remove('refreshToken');
+    // prefs.remove('userId');
   });
 }
 

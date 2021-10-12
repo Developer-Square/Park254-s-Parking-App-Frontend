@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
@@ -97,6 +98,8 @@ class AuthService {
   }
 
   Future<UserCredential> signInWithGoogle({BuildContext context}) async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    FirebaseAuth auth = FirebaseAuth.instance;
     // Initiate the auth procedure.
     final GoogleSignInAccount googleUser =
         await GoogleSignIn(scopes: <String>["email"]).signIn();
@@ -117,7 +120,7 @@ class AuthService {
     }
 
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await auth.signInWithCredential(credential);
   }
 
   Future<List> getDetailsFromMemory({@required String currentUserEmail}) async {
@@ -192,13 +195,14 @@ class AuthService {
       email: email,
       name: name,
       password: password,
-    ).then((value) {
+    ).then((value) async {
       // Store the email and password.
-      var encryptedEmail = encryptDecryptData('email', email, 'encrypt');
+      var encryptedEmail =
+          await encryptDecryptData('encryptedEmail', email, 'encrypt');
       var encryptedPassword =
-          encryptDecryptData('password', password, 'encrypt');
-      storeDetailsInMemory('email', encryptedEmail);
-      storeDetailsInMemory('password', encryptedPassword);
+          await encryptDecryptData('encryptedPassword', password, 'encrypt');
+      storeDetailsInMemory('email', encryptedEmail.base64);
+      storeDetailsInMemory('password', encryptedPassword.base64);
 
       // Choose how to redirect the user based on the role.
       if (value.user.role == 'user') {
@@ -220,13 +224,20 @@ class AuthService {
       storeLoginDetails(details: value);
     }).catchError((err) {
       log("In authService.dart, createNewUser function");
-      log(err);
+      log(err.toString());
       buildNotification(err.message, 'error');
     });
   }
 
   // log out the user.
-  signOut() {
-    FirebaseAuth.instance.signOut();
+  signOut() async {
+    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+    final GoogleSignIn googleUser =
+        await GoogleSignIn(scopes: <String>["email"]);
+    // Sign out of firebase.
+    await _firebaseAuth.signOut();
+
+    // Sign out of google
+    googleUser.signOut();
   }
 }

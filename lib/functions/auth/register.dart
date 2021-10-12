@@ -19,7 +19,7 @@ Future<UserWithToken> register({
   @required String name,
   String role = 'user',
   @required String password,
-  String phone,
+  String phone = '0',
   List<Vehicle> vehicles = const [],
 }) async {
   Map<String, String> headers = {

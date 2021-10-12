@@ -205,11 +205,13 @@ class _MyAppState extends State<MyApp> {
                         ? HomePage(
                             userDetails: userDetails,
                             accessToken: accessToken,
-                            refreshToken: refreshToken)
+                            refreshToken: refreshToken,
+                          )
                         : VendorPage(
                             userDetails: userDetails,
                             accessToken: accessToken,
-                            refreshToken: refreshToken)
+                            refreshToken: refreshToken,
+                          )
                     : Loader()
                 // Check if a user is logged in to google or facebook before redirecting them.
                 // to the onboarding page.
