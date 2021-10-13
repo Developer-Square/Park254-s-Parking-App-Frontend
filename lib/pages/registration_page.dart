@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
@@ -23,6 +27,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String verification;
   bool showLoader;
   String roleError;
+  String verificationID;
   var details = [];
   final formKey = GlobalKey<FormState>();
   TextEditingController name = new TextEditingController();
@@ -107,8 +112,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   // Make api call to register a user.
   void sendRegisterDetails() async {
-    // ToDo: Add a way to verify the verification code
-    //
     // Verify that the user has chosen a role.
     if (_step == 3 && selectedValue == null) {
       buildNotification('Kindly choose a role', 'error');
@@ -123,18 +126,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
           showLoader = true;
         });
         List<Vehicle> vehicles = [];
-        if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
-          vehicles.add(
-              new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
-        }
+        // if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
+        //   vehicles.add(
+        //       // new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
+        // }
         register(
-                email: email.text,
-                name: name.text,
-                password: createPassword.text,
-                phone: phone.text,
-                role: selectedValue,
-                vehicles: vehicles)
-            .then((value) {
+          email: email.text,
+          name: name.text,
+          password: createPassword.text,
+          phone: phone.text,
+          role: selectedValue,
+          vehicles: vehicles,
+        ).then((value) {
           if (value.user.id != null) {
             setState(() {
               showLoader = false;
@@ -154,11 +157,83 @@ class _RegistrationPageState extends State<RegistrationPage> {
       } else {
         buildNotification('Passwords don\'t match', 'error');
       }
+    }
+    // Start the firebase phone number verification
+    else if (_step == 1) {
+      firebaseVerification();
+    } else if (_step == 2) {
+      verifyCode();
     } else {
       setState(() {
         _step += 1;
       });
     }
+  }
+
+  // Verify the user's code.
+  void verifyCode() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    if (verification != null) {
+      String smsCode = verification.trim();
+
+      // Create a PhoneAuthCredential with the code
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationID, smsCode: smsCode);
+
+      try {
+        // Sign the user in (or link) with the credential
+        var firebaseUser = await auth.signInWithCredential(credential);
+        if (firebaseUser.user.phoneNumber != null) {
+          buildNotification('Verification complete', 'success');
+          setState(() {
+            _step += 1;
+          });
+        } else {
+          buildNotification(
+              'Verification code failed, Kindly try again', 'error');
+        }
+      } catch (e) {
+        log(e.toString());
+        buildNotification(e.toString().substring(32), 'error');
+      }
+    }
+  }
+
+  // Verify a user's phone number.
+  void firebaseVerification() async {
+    setState(() {
+      _step += 1;
+    });
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await auth.verifyPhoneNumber(
+      // Add a plus to make the phone number valid.
+      phoneNumber: '+' + phone.text,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // ANDROID ONLY.
+        log('No automatic code verification');
+      },
+      verificationFailed: (FirebaseAuthException error) {
+        if (error.code == 'invalid-phone-number') {
+          buildNotification('The provided number is not valid', 'error');
+        } else {
+          log(error.toString());
+          buildNotification('Something went wrong, kindly try again', 'error');
+        }
+      },
+      codeSent: (String verificationId, int resendToken) async {
+        setState(() {
+          verificationID = verificationId;
+        });
+        // Update the UI - wait for the user to enter the SMS code
+        buildNotification('Check for the code and add it manually', 'info');
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        log('no automatic code verification');
+      },
+    );
   }
 
   @override

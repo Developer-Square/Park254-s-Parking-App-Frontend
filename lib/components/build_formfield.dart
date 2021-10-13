@@ -26,23 +26,24 @@ class BuildFormField extends StatefulWidget {
   TextEditingController createPassword;
   TextEditingController confirmPassword;
 
-  BuildFormField(
-      {this.text,
-      this.label,
-      this.context,
-      this.placeholder,
-      this.controller,
-      this.selectedValue,
-      this.validateFn,
-      this.formKey,
-      this.name,
-      this.email,
-      this.phone,
-      this.verification,
-      this.vehicleModel,
-      this.vehiclePlate,
-      this.createPassword,
-      this.confirmPassword});
+  BuildFormField({
+    this.text,
+    this.label,
+    this.context,
+    this.placeholder,
+    this.controller,
+    this.selectedValue,
+    this.validateFn,
+    this.formKey,
+    this.name,
+    this.email,
+    this.phone,
+    this.verification,
+    this.vehicleModel,
+    this.vehiclePlate,
+    this.createPassword,
+    this.confirmPassword,
+  });
   @override
   BuildFormFieldState createState() => BuildFormFieldState();
 }
@@ -131,6 +132,12 @@ class BuildFormFieldState extends State<BuildFormField> {
                                               if (value == '' ||
                                                   value.isEmpty) {
                                                 return 'Please enter your ${widget.text == 'Phone number' ? 'phone number' : 'vehicle plate number'}';
+                                              }
+                                              // Ensure the user enters a valid phone number.
+                                              if (widget.text ==
+                                                      'Phone number' &&
+                                                  value.length < 10) {
+                                                return 'Your phone number should be 10 digits or more';
                                               }
                                             },
                                             decoration: InputDecoration(

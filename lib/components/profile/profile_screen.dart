@@ -197,23 +197,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                                 SizedBox(height: 25.0),
-                                storeDetails.user.user.vehicles.length > 0
-                                    ? Column(
-                                        children: storeDetails
-                                            .user.user.vehicles
-                                            .map((vehicle) =>
-                                                Column(children: <Widget>[
-                                                  buildContainer(
-                                                    type: 'vehicles',
-                                                    carModel: vehicle.model,
-                                                    carPlate: vehicle.plate,
-                                                  ),
-                                                  SizedBox(
-                                                    height: 2.0,
-                                                  )
-                                                ]))
-                                            .toList())
-                                    : Container()
+                                // storeDetails.user.user.vehicles.length > 0
+                                // ? Column(
+                                //     children: storeDetails
+                                //         .user.user.vehicles
+                                //         .map((vehicle) =>
+                                //             Column(children: <Widget>[
+                                //               buildContainer(
+                                //                 type: 'vehicles',
+                                //                 carModel: vehicle.model,
+                                //                 carPlate: vehicle.plate,
+                                //               ),
+                                //               SizedBox(
+                                //                 height: 2.0,
+                                //               )
+                                //             ]))
+                                //         .toList())
+                                // : Container()
                               ],
                             ),
                           )

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -51,7 +52,12 @@ import 'package:park254_s_parking_app/config/bookingArguments.dart';
 import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
