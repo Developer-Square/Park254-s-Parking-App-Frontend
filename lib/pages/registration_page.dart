@@ -200,6 +200,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  // Change the number to international format because that's what.
+  // firebase is expecting.
+  String refinePhoneNumber({String phone}) {
+    if (phone.substring(0, 1) == '0') {
+      return '+254' + phone.substring(1);
+    } else if (phone.substring(0, 1) == '2') {
+      return '+' + phone;
+    } else if (phone.substring(0, 1) == '+') {
+      return phone;
+    }
+  }
+
   // Verify a user's phone number.
   void firebaseVerification() async {
     setState(() {
@@ -209,7 +221,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
     await auth.verifyPhoneNumber(
       // Add a plus to make the phone number valid.
-      phoneNumber: '+' + phone.text,
+      phoneNumber: refinePhoneNumber(phone: phone.text),
       timeout: const Duration(seconds: 60),
       verificationCompleted: (PhoneAuthCredential credential) {
         // ANDROID ONLY.
