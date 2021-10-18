@@ -40,7 +40,7 @@ storeDetailsInMemory(String key, value) async {
 }
 
 /// Stores all the login details
-storeLoginDetails(details) async {
+storeLoginDetails({dynamic details}) async {
   final accessToken = details.accessToken.token;
   final refreshToken = details.refreshToken.token;
   // First encrypt both tokens.
@@ -55,7 +55,10 @@ storeLoginDetails(details) async {
 // Clears the details when a user logouts.
 clearStorage() async {
   await SharedPreferences.getInstance().then((prefs) {
-    prefs.clear();
+    // prefs.clear();
+    prefs.remove('accessToken');
+    prefs.remove('refreshToken');
+    prefs.remove('userId');
   });
 }
 

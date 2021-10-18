@@ -53,10 +53,6 @@ class _EditScreenState extends State<EditScreen> {
     showLoader = false;
     if (mounted) {
       storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
-
-      if (storeDetails != null) {
-        vehiclesArray = storeDetails.user.user.vehicles;
-      }
     }
   }
 
@@ -78,18 +74,18 @@ class _EditScreenState extends State<EditScreen> {
     var accessToken = storeDetails.user.accessToken.token;
     var userId = storeDetails.user.user.id;
 
-    // Add the new vehicle to the vehicles array, then send all the vehicles in the
-    // update request.
-    if (widget.currentScreen != 'profile' &&
-        widget.vehiclePlateController != '' &&
-        widget.vehicleTypeController != '') {
-      vehiclesArray.add(
-        new Vehicle(
-          model: widget.vehicleTypeController.text,
-          plate: widget.vehiclePlateController.text,
-        ),
-      );
-    }
+    // // Add the new vehicle to the vehicles array, then send all the vehicles in the
+    // // update request.
+    // if (widget.currentScreen != 'profile' &&
+    //     widget.vehiclePlateController != '' &&
+    //     widget.vehicleTypeController != '') {
+    //   vehiclesArray.add(
+    //     new Vehicle(
+    //       model: widget.vehicleTypeController.text,
+    //       plate: widget.vehiclePlateController.text,
+    //     ),
+    //   );
+    // }
 
     updateUser(
       token: accessToken,
@@ -97,7 +93,6 @@ class _EditScreenState extends State<EditScreen> {
       name: widget.fullName.text,
       email: widget.email.text,
       phone: int.parse(widget.phone.text),
-      vehicles: vehiclesArray,
     ).then((value) async {
       storeDetails.updateUser(
         widget.fullName.text,
