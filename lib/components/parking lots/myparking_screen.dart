@@ -299,15 +299,15 @@ class MyParkingState extends State<MyParkingScreen> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   CreateUpdateParkingLot(
-                                                      currentScreen: 'create',
-                                                      name: fullNameController,
-                                                      spaces: spacesController,
-                                                      prices: pricesController,
-                                                      address:
-                                                          addressController,
-                                                      city: cityController,
-                                                      getParkingDetails:
-                                                          getParkingDetails)));
+                                                    currentScreen: 'create',
+                                                    name: fullNameController,
+                                                    spaces: spacesController,
+                                                    prices: pricesController,
+                                                    address: addressController,
+                                                    city: cityController,
+                                                    getParkingDetails:
+                                                        getParkingDetails,
+                                                  )));
                                     },
                                     child: Container(
                                       width: 37.0,
@@ -471,7 +471,9 @@ class MyParkingState extends State<MyParkingScreen> {
                             ? bookingLabel(active: true)
                             : bookingLabel(active: false)
                         : bookingLabel(active: false)
-                    : parkingPrice ?? '',
+                    : Text(parkingPrice ?? '',
+                        style: globals.buildTextStyle(
+                            15.5, true, globals.textColor)),
               ],
             ),
           ),
