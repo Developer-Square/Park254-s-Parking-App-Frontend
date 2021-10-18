@@ -123,10 +123,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
           showLoader = true;
         });
         List<Vehicle> vehicles = [];
-        if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
-          vehicles.add(
-              new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
-        }
+        // if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
+        //   vehicles.add(
+        //       new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
+        // }
         register(
                 email: email.text,
                 name: name.text,
