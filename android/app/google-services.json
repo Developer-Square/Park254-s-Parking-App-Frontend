@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "942781615744-grsq6nstlpf2uiomjkan85u87admf6i0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.park254_s_parking_app",
+            "certificate_hash": "adde301c3752eb59ff79a6fb93e75cde7a10ca63"
+          }
+        },
+        {
           "client_id": "942781615744-vv5495c6jlo8ol8vvvc3u4ril9le1hjg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "942781615744-vv5495c6jlo8ol8vvvc3u4ril9le1hjg.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "942781615744-jpthmqa7l93fjj8lbimpts2rqcm19eo4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.park254SParkingApp"
+              }
             }
           ]
         }
