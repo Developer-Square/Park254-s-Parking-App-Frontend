@@ -6,9 +6,12 @@ class TermsAndConditions extends StatelessWidget {
   Widget singleBlock({@required String title, @required String content}) {
     return Column(
       children: [
-        Text(
-          title,
-          style: globals.buildTextStyle(14.5, true, globals.textColor),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            title,
+            style: globals.buildTextStyle(14.5, true, globals.textColor),
+          ),
         ),
         SizedBox(
           height: 10.0,

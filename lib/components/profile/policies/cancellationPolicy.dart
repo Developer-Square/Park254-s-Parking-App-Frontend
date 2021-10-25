@@ -41,9 +41,13 @@ class CancellationPolicy extends StatelessWidget {
                 SizedBox(
                   height: 20.0,
                 ),
-                Text(
-                  'How long does it take to get a refund?',
-                  style: globals.buildTextStyle(14.5, true, globals.textColor),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    'How long does it take to get a refund?',
+                    style:
+                        globals.buildTextStyle(14.5, true, globals.textColor),
+                  ),
                 ),
                 SizedBox(
                   height: 10.0,

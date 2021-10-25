@@ -14,6 +14,7 @@ import '../helper_functions.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
 import '../profile/policies/cancellationPolicy.dart';
+import '../profile/policies/privacyPolicy.dart';
 import '../profile/policies/termsAndConditions.dart';
 
 /// Creates a profile screen.
@@ -245,7 +246,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Center(
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicy())),
                         child: Text(
                           'Privacy Policy',
                           style: globals.buildTextStyle(
