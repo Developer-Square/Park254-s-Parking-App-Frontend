@@ -27,7 +27,7 @@ class LoginPage extends StatefulWidget {
 /// Has an option at the bottom, where a user can choose to signup.
 /// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController email = new TextEditingController();
+  TextEditingController emailOrPhone = new TextEditingController();
   TextEditingController password = new TextEditingController();
   bool showLoader;
   bool keyboardVisible;
@@ -39,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    email.text = 'ryantest4@gmail.com';
+    // email.text = 'ryantest4@gmail.com';
+    emailOrPhone.text = '0796867328';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
@@ -65,7 +66,8 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         showLoader = true;
       });
-      login(email: email.text, password: password.text).then((value) {
+      login(emailOrPhone: emailOrPhone.text, password: password.text)
+          .then((value) {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
           if (value.user.id != null) {
@@ -98,12 +100,12 @@ class _LoginPageState extends State<LoginPage> {
           }
         });
       }).catchError((err) {
-        log("In login_page");
-        log(err);
-        buildNotification(err.message, 'error');
         setState(() {
           showLoader = false;
         });
+        log("In login_page");
+        log(err.toString());
+        buildNotification(err.message, 'error');
       });
     }
   }
@@ -228,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                 return 'Please enter your ${text.toLowerCase()}';
               }
             },
-            controller: text == 'Password' ? password : email,
+            controller: text == 'Password' ? password : emailOrPhone,
             obscureText: text == 'Password' ? true : false,
             obscuringCharacter: '*',
             decoration: InputDecoration(
