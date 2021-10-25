@@ -13,6 +13,9 @@ import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
+import '../profile/policies/cancellationPolicy.dart';
+import '../profile/policies/privacyPolicy.dart';
+import '../profile/policies/termsAndConditions.dart';
 
 /// Creates a profile screen.
 ///
@@ -225,9 +228,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           )
                         : Container(),
-                    SizedBox(height: 25.0),
-                    // buildContainer('', false, 'vehicles', carPlate),
-                    SizedBox(height: 20.0),
+                    SizedBox(height: 40.0),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => CancellationPolicy())),
+                        child: Text(
+                          'Cancellation Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicy())),
+                        child: Text(
+                          'Privacy Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => TermsAndConditions())),
+                        child: Text(
+                          'Terms and Conditions',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30.0),
                     Center(
                       child: InkWell(
                         onTap: () {
