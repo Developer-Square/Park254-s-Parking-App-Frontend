@@ -17,6 +17,10 @@ import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import '../parking lots/widgets/helpers_widgets.dart';
+import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
+import '../profile/policies/cancellationPolicy.dart';
+import '../profile/policies/privacyPolicy.dart';
+import '../profile/policies/termsAndConditions.dart';
 
 /// Creates a profile screen.
 ///
@@ -132,34 +136,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Make api call.
   logoutUser() async {
-    setState(() {
-      showLoader = true;
-    });
-    var token = storeDetails.user.refreshToken.token;
-    logout(refreshToken: token).then((value) {
-      if (value == 'success') {
-        buildNotification('Logged out successfully', 'success');
+    if (storeDetails.user.refreshToken != null) {
+      setState(() {
+        showLoader = true;
+      });
+      var token = storeDetails.user.refreshToken.token;
+      logout(refreshToken: token).then((value) {
+        if (value == 'success') {
+          buildNotification('Logged out successfully', 'success');
+          setState(() {
+            showLoader = false;
+          });
+          if (storeDetails != null && nearbyParkingDetails != null) {
+            // Clear all the details in the store.
+            storeDetails.clear();
+            // Clear the details in shared preferences.
+            clearStorage();
+            nearbyParkingDetails.clear();
+          }
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
+      }).catchError((err) {
         setState(() {
           showLoader = false;
+          print("In profile_screen");
+          print(err);
+          buildNotification(err.message, 'error');
         });
-        if (storeDetails != null && nearbyParkingDetails != null) {
-          // Clear all the details in the store.
-          storeDetails.clear();
-          // Clear the details in shared preferences.
-          clearStorage();
-          nearbyParkingDetails.clear();
-        }
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-      }
-    }).catchError((err) {
-      setState(() {
-        showLoader = false;
-        print("In profile_screen");
-        print(err);
-        buildNotification(err.message, 'error');
       });
-    });
+    }
+    // log out the current user from the social authentication upon pressing the logout button.
+    AuthService().signOut();
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   // Redirect to the edit screen page so that a user can edit the profile.
@@ -298,8 +308,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           )
                         : Container(),
-                    SizedBox(height: 25.0),
-                    SizedBox(height: 20.0),
+                    SizedBox(height: 40.0),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => CancellationPolicy())),
+                        child: Text(
+                          'Cancellation Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicy())),
+                        child: Text(
+                          'Privacy Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => TermsAndConditions())),
+                        child: Text(
+                          'Terms and Conditions',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30.0),
                     Center(
                       child: InkWell(
                         onTap: () {
