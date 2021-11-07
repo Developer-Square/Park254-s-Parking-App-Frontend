@@ -23,11 +23,6 @@ Future<User> updateUser({
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
   };
 
-  // final vehiclesList = vehicles
-  //     .map((vehicle) =>
-  //         Vehicle(model: vehicle.model, plate: vehicle.plate).toJson())
-  //     .toList();
-
   // Removed role as it was bringing back an error.
   Map<String, dynamic> body = {
     "name": name,

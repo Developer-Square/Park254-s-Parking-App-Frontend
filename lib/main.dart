@@ -31,6 +31,7 @@ import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
+import 'package:park254_s_parking_app/functions/vehicles/getVehicles.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -140,6 +141,7 @@ class _MyAppState extends State<MyApp> {
               refreshToken = null;
             });
           });
+
           var access = encryptDecryptData(
               'userAccessTokens', value.accessToken.token, 'encrypt');
           var refresh = encryptDecryptData(
@@ -353,6 +355,7 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
+                    bookingId: args.bookingId,
                     price: args.price,
                     destination: args.destination,
                     arrivalTime: args.arrivalTime,

@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
+import 'package:park254_s_parking_app/functions/vehicles/createVehicle.dart';
 import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
@@ -87,14 +90,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
           text: roleError);
     } else if (_step == 4) {
       return RegistrationScreens(
-          title: 'Vehicle Details',
-          info: 'Enter your vehicle model',
-          step: _step,
-          formKey: formKey,
-          vehicleModelController: vehicleModel,
-          vehiclePlateController: vehiclePlate);
-    } else if (_step == 5) {
-      return RegistrationScreens(
           title: 'Password',
           info: 'Enter your password',
           step: _step,
@@ -112,29 +107,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
     // Verify that the user has chosen a role.
     if (_step == 3 && selectedValue == null) {
       buildNotification('Kindly choose a role', 'error');
-    } else if (_step == 3 && selectedValue == 'vendor') {
-      setState(() {
-        _step += 2;
-      });
-    } else if (_step == 5) {
+    } else if (_step == 4) {
       FocusScope.of(context).unfocus();
       if (createPassword.text == confirmPassword.text) {
         setState(() {
           showLoader = true;
         });
-        List<Vehicle> vehicles = [];
-        // if (vehicleModel.text.length > 1 && vehiclePlate.text.length > 1) {
-        //   vehicles.add(
-        //       new Vehicle(model: vehicleModel.text, plate: vehiclePlate.text));
-        // }
         register(
-                email: email.text,
-                name: name.text,
-                password: createPassword.text,
-                phone: phone.text,
-                role: selectedValue,
-                vehicles: vehicles)
-            .then((value) {
+          email: email.text,
+          name: name.text,
+          password: createPassword.text,
+          phone: phone.text,
+          role: selectedValue,
+        ).then((value) {
           if (value.user.id != null) {
             setState(() {
               showLoader = false;
@@ -146,10 +131,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 builder: (context) => LoginPage(message: roleError)));
           }
         }).catchError((err) {
-          buildNotification(err.message, 'error');
           setState(() {
             showLoader = false;
           });
+          buildNotification(err.message, 'error');
         });
       } else {
         buildNotification('Passwords don\'t match', 'error');
@@ -186,9 +171,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ? 'Verification'
                     : _step == 3
                         ? 'Role'
-                        : _step == 4
-                            ? 'Vehicle Details'
-                            : 'Password',
+                        : 'Password',
             style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
@@ -198,7 +181,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 5'),
+              _buildSteps('of 4'),
             ],
           ),
           SizedBox(height: 170.0),
