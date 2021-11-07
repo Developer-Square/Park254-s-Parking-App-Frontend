@@ -21,26 +21,19 @@ Future scan({
   Function showHideLoader,
   Function setBarCode,
 }) async {
-  print('here');
   try {
     ScanResult barcode = await BarcodeScanner.scan();
-    showHideLoader(false);
-
     if (storeDetails != null) {
       Map<String, dynamic> qrCodeDetaails = jsonDecode(barcode.rawContent);
       String numberPlate = qrCodeDetaails['numberPlate'];
       String model = qrCodeDetaails['model'];
       String bookingId = qrCodeDetaails['bookingId'];
-      print(bookingId);
-      showHideLoader(true);
 
       getBookingById(
               token: storeDetails.user.accessToken.token, bookingId: bookingId)
           .then((value) {
         if (!value.isCancelled) {
-          showHideLoader(false);
-
-          showBottomModal(
+          return showBottomModal(
             context: context,
             bookingsDetails: value,
             numberPlate: numberPlate,

@@ -300,31 +300,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         : Container(),
                     SizedBox(height: 25.0),
                     SizedBox(height: 20.0),
-                    userRole == 'user'
-                        ? Center(
-                            child: InkWell(
-                              onTap: () {
-                                showBottomModal(
-                                  type: 'contact',
-                                  context: context,
-                                );
-                              },
-                              child: Container(
-                                  width: MediaQuery.of(context).size.width / 2,
-                                  height: 50.0,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(6.0)),
-                                      color: globals.backgroundColor),
-                                  child: Center(
-                                      child: Text(
-                                    'Contact Us',
-                                    style: globals.buildTextStyle(
-                                        15.0, true, Colors.white),
-                                  ))),
-                            ),
-                          )
-                        : Container(),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          showBottomModal(
+                            type: 'contact',
+                            context: context,
+                          );
+                        },
+                        child: Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6.0)),
+                                color: globals.backgroundColor),
+                            child: Center(
+                                child: Text(
+                              'Contact Us',
+                              style: globals.buildTextStyle(
+                                  15.0, true, Colors.white),
+                            ))),
+                      ),
+                    ),
                     SizedBox(
                       height: 20.0,
                     ),

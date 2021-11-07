@@ -19,6 +19,8 @@
 	<string>This app needs access to the microphone to record sound when taking a video.</string>
 	<key>NSCameraUsageDescription</key>
     <string>This app needs access to camera to take and store user images.</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Camera permission is required for barcode scanning.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
