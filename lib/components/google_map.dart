@@ -191,14 +191,19 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         onMapCreated: widget.mapCreated,
         polylines: {
           nearbyParkingListDetails.directionsInfo != null
-              ? Polyline(
-                  polylineId: PolylineId('overview_polyline'),
-                  color: Colors.blue,
-                  width: 5,
-                  points: nearbyParkingListDetails.directionsInfo.polylinePoints
-                      .map((e) => LatLng(e.latitude, e.longitude))
-                      .toList(),
-                )
+              // This is so that the polylines meant to show directions don't show up.
+              // on the homepage.
+              ? widget.currentPage != 'home'
+                  ? Polyline(
+                      polylineId: PolylineId('overview_polyline'),
+                      color: Colors.blue,
+                      width: 5,
+                      points: nearbyParkingListDetails
+                          .directionsInfo.polylinePoints
+                          .map((e) => LatLng(e.latitude, e.longitude))
+                          .toList(),
+                    )
+                  : Polyline(polylineId: PolylineId('none'))
               : Polyline(polylineId: PolylineId('none'))
         },
         padding:

@@ -196,7 +196,7 @@ class AuthService {
     @required BuildContext context,
     Function showLoader,
   }) {
-    login(email: email, password: password).then((value) {
+    login(emailOrPhone: email, password: password).then((value) {
       // Only proceed to the HomePage when permissions are granted.
       checkPermissions().then((permissionValue) {
         if (value.user.id != null) {
