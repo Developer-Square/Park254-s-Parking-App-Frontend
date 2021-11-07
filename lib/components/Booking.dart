@@ -447,11 +447,11 @@ class _BookingState extends State<Booking> {
             now.year, now.month, now.day, leavingTime.hour, leavingTime.minute);
         if (nearbyParkingListDetails != null && userDetails != null) {
           checkSpaces(
-                  token: userDetails.user.accessToken.token,
-                  parkingLots: [nearbyParkingListDetails.nearbyParkingLot.id],
-                  entryTime: entryTime,
-                  exitTime: exitTime)
-              .then((value) {
+            token: userDetails.user.accessToken.token,
+            parkingLots: [nearbyParkingListDetails.nearbyParkingLot.id],
+            entryTime: entryTime,
+            exitTime: exitTime,
+          ).then((value) {
             if (value.spaceList[0].available) {
               buildNotification(
                   'Parking space has ${value.spaceList[0].availableSpaces} available spaces',
