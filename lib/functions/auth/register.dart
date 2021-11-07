@@ -19,7 +19,7 @@ Future<UserWithToken> register({
   @required String name,
   String role = 'user',
   @required String password,
-  @required String phone,
+  String phone,
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.contentTypeHeader: "application/json",
