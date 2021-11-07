@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 
 class BookingProvider with ChangeNotifier {
   int _price;
@@ -9,7 +10,7 @@ class BookingProvider with ChangeNotifier {
   DateTime _leavingDate;
   TimeOfDay _arrivalTime;
   TimeOfDay _leavingTime;
-  List<BookingDetails> _bookingDetails;
+  List<BookingDetailsPopulated> _bookingDetails;
   List _parkingLotDetails = [];
   List _activeBookings = [];
   bool _update = false;
@@ -23,7 +24,7 @@ class BookingProvider with ChangeNotifier {
   DateTime get leavingDate => _leavingDate;
   TimeOfDay get arrivalTime => _arrivalTime;
   TimeOfDay get leavingTime => _leavingTime;
-  List<BookingDetails> get bookingDetails => _bookingDetails;
+  List<BookingDetailsPopulated> get bookingDetails => _bookingDetails;
   List get parkingLotDetails => _parkingLotDetails;
   List get activeBookings => _activeBookings;
   bool get update => _update;
@@ -36,7 +37,7 @@ class BookingProvider with ChangeNotifier {
   }
 
   void setBookingDetails(
-      {@required List<BookingDetails> value, List bookings}) {
+      {@required List<BookingDetailsPopulated> value, List bookings}) {
     _bookingDetails = value;
     _activeBookings = bookings;
     notifyListeners();

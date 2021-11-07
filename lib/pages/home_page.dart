@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/home_screen.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/profile/profile_screen.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/models/token.model.dart';
 import 'package:park254_s_parking_app/models/user.model.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
@@ -52,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     showBottomNavigation = true;
     final storeDetails =
         Provider.of<UserWithTokenModel>(context, listen: false);
+    final vehicleModel = Provider.of<VehicleModel>(context, listen: false);
 
     if (storeDetails != null && widget.userDetails != null) {
       // Store the user, access and refresh token in state.
@@ -60,6 +63,12 @@ class _HomePageState extends State<HomePage> {
           accessToken: widget.accessToken,
           refreshToken: widget.refreshToken);
       storeDetails.setUser(userWithTokenDetails);
+    }
+
+    // Get the user's vehicle details to be used when a user is booking for a parking lot.
+    if (vehicleModel != null && widget.accessToken != null) {
+      vehicleModel.fetch(
+          token: widget.accessToken.token, owner: widget.userDetails.id);
     }
   }
 

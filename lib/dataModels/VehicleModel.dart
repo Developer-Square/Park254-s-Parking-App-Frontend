@@ -42,8 +42,8 @@ class VehicleModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void remove({@required Vehicle vehicle}) {
-    _vehicleData.vehicles.removeWhere((v) => v.id == vehicle.id);
+  void remove({@required String id}) {
+    _vehicleData.vehicles.removeWhere((v) => v.id == id);
     notifyListeners();
   }
 
@@ -56,7 +56,11 @@ class VehicleModel with ChangeNotifier {
     return _vehicleData.vehicles.firstWhere((v) => v.id == id);
   }
 
-  void updateVehicle(Vehicle vehicle) {
+  Vehicle findByOwnerId({@required String id}) {
+    return _vehicleData.vehicles.firstWhere((v) => v.owner == id);
+  }
+
+  void updateVehicle({Vehicle vehicle}) {
     num index = _vehicleData.vehicles.indexWhere((v) => v.id == vehicle.id);
     _vehicleData.vehicles[index] = vehicle;
     notifyListeners();

@@ -18,7 +18,7 @@ Future<String> deleteVehicle({
   final url = Uri.https(globals.apiKey, '/v1/vehicles/$vehicleId');
   final response = await http.delete(url, headers: headers);
 
-  if (response.statusCode == 200) {
+  if (response.statusCode == 204) {
     return 'success';
   } else {
     handleError(response.body);

@@ -26,23 +26,24 @@ class BuildFormField extends StatefulWidget {
   TextEditingController createPassword;
   TextEditingController confirmPassword;
 
-  BuildFormField(
-      {this.text,
-      this.label,
-      this.context,
-      this.placeholder,
-      this.controller,
-      this.selectedValue,
-      this.validateFn,
-      this.formKey,
-      this.name,
-      this.email,
-      this.phone,
-      this.verification,
-      this.vehicleModel,
-      this.vehiclePlate,
-      this.createPassword,
-      this.confirmPassword});
+  BuildFormField({
+    this.text,
+    this.label,
+    this.context,
+    this.placeholder,
+    this.controller,
+    this.selectedValue,
+    this.validateFn,
+    this.formKey,
+    this.name,
+    this.email,
+    this.phone,
+    this.verification,
+    this.vehicleModel,
+    this.vehiclePlate,
+    this.createPassword,
+    this.confirmPassword,
+  });
   @override
   BuildFormFieldState createState() => BuildFormFieldState();
 }

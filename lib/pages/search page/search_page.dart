@@ -55,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
   String _sessionToken = new Uuid().toString();
   List<dynamic> _placeList = [];
   List<dynamic> _recentSearchesList = [];
-  String recentSearchesKey = 'recentSearchesKey';
+  String sharedPreferenceKey = 'recentSearchesList';
   bool showSuggestion;
   BitmapDescriptor customIcon;
   CustomInfoWindowController _customInfoWindowController =
@@ -83,7 +83,6 @@ class _SearchPageState extends State<SearchPage> {
     showSuggestion = true;
     searchBarController.text = _searchText;
     addedSearch = false;
-
     // Start listening to changes.
     searchBarController.addListener(changeSearchText);
     if (mounted) {
@@ -105,8 +104,20 @@ class _SearchPageState extends State<SearchPage> {
           nearbyParkingDetails.setCurrentPage('search');
         }
       }
-      getSavedRecentSearches();
+
+      getSavedRecentSearches(
+        recentSearchesKey: sharedPreferenceKey,
+        recentSearchesList: setRecentSearches,
+        clearRecentSearchList: clearRecentSearchList,
+      );
     }
+  }
+
+  // Set the stored searches to be displayed.
+  void setRecentSearches({List storedSearches}) {
+    setState(() {
+      _recentSearchesList = storedSearches;
+    });
   }
 
 // Hides the recent searches when one of them is clicked and.
@@ -272,13 +283,16 @@ class _SearchPageState extends State<SearchPage> {
             // A pop-up that show the distance and time when a user is navigating.
             nearbyParkingDetails != null
                 ? nearbyParkingDetails.directionsInfo != null
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: NavigationInfo(
-                            totalDistance: nearbyParkingDetails
-                                .directionsInfo.totalDistance,
-                            totalDuration: nearbyParkingDetails
-                                .directionsInfo.totalDuration),
+                    ? Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: NavigationInfo(
+                              totalDistance: nearbyParkingDetails
+                                  .directionsInfo.totalDistance,
+                              totalDuration: nearbyParkingDetails
+                                  .directionsInfo.totalDuration),
+                        ),
                       )
                     : Container()
                 : Container(),
@@ -296,7 +310,7 @@ class _SearchPageState extends State<SearchPage> {
                 ? SingleChildScrollView(
                     child: Container(
                       // Hides all the recent searches if one of them are clicked.
-                      height: showRecentSearches
+                      height: _recentSearchesList.length > 0
                           ? MediaQuery.of(context).size.height / 2
                           : _placeList.length > 0
                               ? MediaQuery.of(context).size.height / 1.85
@@ -324,32 +338,33 @@ class _SearchPageState extends State<SearchPage> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 35.0, top: 25.0),
-                              child: showRecentSearches &&
-                                      _recentSearchesList.length > 0
-                                  ? showRecentSearchesWidget(
-                                      addSearchToList: addSearchToList,
-                                      recentSearchesList: _recentSearchesList,
-                                      setShowRecentSearches:
-                                          _setShowRecentSearches,
-                                      mapController: mapController,
-                                      customInfoWindowController:
-                                          _customInfoWindowController,
+                              child: _placeList.length > 0
+                                  ? showSuggestions(
+                                      placeList: _placeList,
                                       storeDetails: storeDetails,
+                                      context: context,
+                                      clearPlaceList: clearPlaceList,
+                                      addSearchToList: addSearchToList,
+                                      mapController: mapController,
+                                      recentSearchesList: _recentSearchesList,
                                       hideSuggestions: hideSuggestions,
-                                      addedSearchFn: addSearchFn)
+                                      addedSearchFn: addSearchFn,
+                                    )
                                   // Display suggestions available.
-                                  : _placeList.length > 0
-                                      ? showSuggestions(
-                                          placeList: _placeList,
-                                          storeDetails: storeDetails,
-                                          context: context,
-                                          clearPlaceList: clearPlaceList,
+                                  : _recentSearchesList.length > 0
+                                      ? showRecentSearchesWidget(
                                           addSearchToList: addSearchToList,
-                                          mapController: mapController,
                                           recentSearchesList:
                                               _recentSearchesList,
+                                          setShowRecentSearches:
+                                              _setShowRecentSearches,
+                                          mapController: mapController,
+                                          customInfoWindowController:
+                                              _customInfoWindowController,
+                                          storeDetails: storeDetails,
                                           hideSuggestions: hideSuggestions,
-                                          addedSearchFn: addSearchFn)
+                                          addedSearchFn: addSearchFn,
+                                        )
                                       : Padding(
                                           padding:
                                               EdgeInsets.only(bottom: 20.0),
@@ -361,7 +376,7 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Helper: To inform the user that they can scroll down to see more.
             // suggestions.
-            showRecentSearches || _placeList.length > 0
+            _placeList.length > 0
                 // Hide the suggestions helper when the user is navigating
                 ? !navigationDetails.isNavigating
                     ? buildScrollHelper(
@@ -378,10 +393,11 @@ class _SearchPageState extends State<SearchPage> {
                 : Container(),
             // Add CustomInfoWindow as next child to float this on top GoogleMap.
             CustomInfoWindow(
-                controller: _customInfoWindowController,
-                height: 50,
-                width: 150,
-                offset: 32),
+              controller: _customInfoWindowController,
+              height: 50,
+              width: 150,
+              offset: 32,
+            ),
           ])),
     );
   }

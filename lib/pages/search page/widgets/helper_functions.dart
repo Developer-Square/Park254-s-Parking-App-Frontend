@@ -86,14 +86,15 @@ void addSearchToList({
       recentSearchesList.add(location);
     }
   }
-  saveRecentSearches();
+  saveRecentSearches(recentSearchesList: recentSearchesList);
 }
 
 // Save five of the user's recent searches in a list.
 void saveRecentSearches({
-  String recentSearchesKey,
   List recentSearchesList,
 }) async {
+  String recentSearchesKey = 'recentSearchesList';
+  log(recentSearchesList.toString());
   SharedPreferences.getInstance().then((prefs) {
     prefs.setString(recentSearchesKey, json.encode(recentSearchesList));
   }).catchError((err) {
@@ -103,15 +104,14 @@ void saveRecentSearches({
 
 // Retrieve the saved recent searches to display them.
 void getSavedRecentSearches({
-  List recentSearchesList,
-  String recentSearchesKey,
-  Function clearRecentSearchList,
+  @required Function recentSearchesList,
+  @required String recentSearchesKey,
+  @required Function clearRecentSearchList,
 }) async {
   await SharedPreferences.getInstance().then((prefs) {
-    recentSearchesList = json.decode(prefs.getString(recentSearchesKey));
-
-    if (recentSearchesList == null) {
-      clearRecentSearchList();
-    }
+    recentSearchesList(
+        storedSearches: json.decode(prefs.getString(recentSearchesKey)));
+    log('getSaved');
+    log(recentSearchesList.toString());
   });
 }
