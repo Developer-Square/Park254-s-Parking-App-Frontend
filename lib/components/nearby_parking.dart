@@ -227,7 +227,7 @@ class _NearByParkingState extends State<NearByParking>
                     lots[index].images.length > 0 ? lots[index].images[0] : '',
                 parkingPrice: lots[index].price,
                 parkingPlaceName: lots[index].name,
-                rating: lots[index].rating,
+                rating: lots[index].ratingValue,
                 distance: lots[index].distance,
                 parkingSlots: lots[index].spaces,
                 mapController: widget.mapController,
