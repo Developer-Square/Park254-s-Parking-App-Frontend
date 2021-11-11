@@ -15,7 +15,12 @@ class LoginScreen extends StatefulWidget {
 /// Options include login with [Facebook] and [Google].
 /// Returns a [Widget].
 class _LoginScreenState extends State<LoginScreen> {
-  bool showLoader = false;
+  bool showLoader;
+  @override
+  initState() {
+    super.initState();
+    showLoader = false;
+  }
 
   setLoader({bool state}) {
     setState(() {
@@ -23,28 +28,32 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  @override
+  dispose() {
+    showLoader = false;
+    super.dispose();
+  }
+
   /// Builds out the social logins at the bottom
   Widget _buildSocials({
     String title,
     int buttonColor,
     bool opacity,
-    String type,
   }) {
     return InkWell(
-      onTap: type == 'google'
-          ? () {
-              AuthService()
-                  .signInWithGoogle(context: context, showLoader: setLoader);
-            }
+      onTap: showLoader
+          ? () {}
           : () {
               AuthService()
-                  .signInWithFacebook(context: context, showLoader: setLoader);
+                  .signInWithGoogle(context: context, showLoader: setLoader);
             },
       child: Container(
         width: (MediaQuery.of(context).size.width / 2) - 35,
         height: 50.0,
         decoration: BoxDecoration(
-            color: opacity ? Colors.blue.withOpacity(0.7) : Color(buttonColor),
+            color: !showLoader
+                ? Colors.blue.withOpacity(0.7)
+                : Colors.grey.withOpacity(0.8),
             borderRadius: BorderRadius.all(Radius.circular(25.0))),
         child: Center(
           child: Text(title,
@@ -99,10 +108,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
-                              },
+                              onTap: showLoader
+                                  ? () {}
+                                  : () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginPage()));
+                                    },
                               child: Container(
                                 height: 50.0,
                                 width: MediaQuery.of(context).size.width - 50,
@@ -113,27 +126,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Center(
                                     child: Text('Login with phone number',
                                         style: globals.buildTextStyle(
-                                            16.0, true, globals.textColor))),
+                                            16.0,
+                                            true,
+                                            showLoader
+                                                ? Colors.grey.withOpacity(0.8)
+                                                : globals.textColor))),
                               ),
                             ),
-                            SizedBox(height: 15.0),
+                            SizedBox(height: 8.0),
+                            Text('Or'),
+                            SizedBox(height: 8.0),
                             InkWell(
                                 onTap: () {},
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     _buildSocials(
-                                      title: 'Facebook',
-                                      buttonColor: 0xFF3C5898,
-                                      opacity: false,
-                                      type: 'facebook',
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    _buildSocials(
                                       title: 'Google',
                                       buttonColor: 0,
                                       opacity: true,
-                                      type: 'google',
                                     ),
                                   ],
                                 ))
