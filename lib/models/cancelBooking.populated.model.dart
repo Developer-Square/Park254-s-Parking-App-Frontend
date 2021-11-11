@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/models/parkingLot.model.dart';
-import 'package:park254_s_parking_app/models/user.model.dart';
+import './cancelBookingUser.model.dart';
 
-class BookingDetailsPopulated {
+class CancelBookingDetailsPopulated {
   final String id;
   final ParkingLot parkingLotId;
-  final User clientId;
+  final CancelBookingUser clientId;
   final num spaces;
   final DateTime entryTime;
   final DateTime exitTime;
   final bool isCancelled;
 
-  BookingDetailsPopulated({
+  CancelBookingDetailsPopulated({
     @required this.id,
     @required this.parkingLotId,
     @required this.clientId,
@@ -21,11 +21,11 @@ class BookingDetailsPopulated {
     @required this.isCancelled,
   });
 
-  factory BookingDetailsPopulated.fromJson(Map<String, dynamic> json) {
-    return BookingDetailsPopulated(
+  factory CancelBookingDetailsPopulated.fromJson(Map<String, dynamic> json) {
+    return CancelBookingDetailsPopulated(
       id: json['id'],
       parkingLotId: ParkingLot.fromJson(json['parkingLotId']),
-      clientId: User.fromJson(json['clientId']),
+      clientId: CancelBookingUser.fromJson(json['clientId']),
       spaces: json['spaces'],
       entryTime: DateTime.parse(json['entryTime']),
       exitTime: DateTime.parse(json['exitTime']),

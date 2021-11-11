@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Park254 Test App</string>
+    <string name="facebook_app_id">4534296626629271</string>
+    <string name="fb_login_protocol_scheme">fb4534296626629271</string>
+</resources>

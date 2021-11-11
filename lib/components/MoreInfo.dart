@@ -254,7 +254,7 @@ class _MoreInfoState extends State<MoreInfo> {
                   ),
                 ),
                 TextSpan(
-                  text: "lots available, don't forget to select before booking",
+                  text: "lots available.",
                   style: TextStyle(color: globals.textColor),
                 ),
               ])),

@@ -4,16 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
+import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
 import 'package:park254_s_parking_app/functions/transactions/pay.dart';
+import 'package:park254_s_parking_app/models/booking.model.dart';
+import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 import '../helper_functions.dart';
@@ -102,11 +106,14 @@ class _PayUpState extends State<PayUp> {
         entryTime: entryTime,
         exitTime: exitTime,
       ).then((value) {
-        buildNotification('Parking lot updated successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(transactionDetails);
+        callPaymentMethod(
+          transactionDetails: transactionDetails,
+          bookingId: value.id,
+          type: 'update',
+        );
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, updateParkingLotBooking function");
@@ -136,11 +143,14 @@ class _PayUpState extends State<PayUp> {
         entryTime: entryTime,
         exitTime: exitTime,
       ).then((value) {
-        buildNotification('Parking lot booked successfully', 'success');
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(transactionDetails);
+        callPaymentMethod(
+          transactionDetails: transactionDetails,
+          bookingId: value.id,
+          type: 'create',
+        );
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, createBooking function");
@@ -166,22 +176,34 @@ class _PayUpState extends State<PayUp> {
     }
   }
 
-  void callPaymentMethod(transactionDetails) async {
+  void callPaymentMethod({
+    @required TransactionModel transactionDetails,
+    @required String bookingId,
+    String type,
+  }) async {
     String access = storeDetails.user.accessToken.token;
+    String internationalNumber = '254';
+    String phonenumber = storeDetails.user.user.phone.toString();
+
     if (access != null) {
       pay(
-              phoneNumber: 254796867328,
-              amount: widget.total,
-              token: access,
-              setCreatedAt: transactionDetails.setCreatedAt,
-              setTransaction: transactionDetails.setTransaction,
-              setLoading: transactionDetails.setLoading)
-          .then((value) {
+        phoneNumber: 254796867328,
+        amount: widget.total,
+        token: access,
+        setCreatedAt: transactionDetails.setCreatedAt,
+        setTransaction: transactionDetails.setTransaction,
+        setLoading: transactionDetails.setLoading,
+      ).then((value) {
         // If resultCode is equal to 0 then the transcation other than that.
         // then it failed.
         if (value.resultCode == 0) {
           transactionDetails.setLoading(false);
           buildNotification('Payment Successful', 'success');
+          if (type == 'update') {
+            buildNotification('Parking lot updated successfully', 'success');
+          } else {
+            buildNotification('Parking lot booked successfully', 'success');
+          }
 
           // When a user is updating, redirect them to the myParkingScreen after.
           // payment is complete.
@@ -190,11 +212,11 @@ class _PayUpState extends State<PayUp> {
               widget.updateParkingTime();
             } else {
               // Move the payment successful page.
-              widget.receiptGenerator(bookingDetails);
+              widget.receiptGenerator(bookingDetails, bookingId);
             }
           } else {
             // Move the payment successful page.
-            widget.receiptGenerator(bookingDetails);
+            widget.receiptGenerator(bookingDetails, bookingId);
           }
         }
         // If the transaction failed and the user has not retried it then show retry modal.
@@ -206,7 +228,8 @@ class _PayUpState extends State<PayUp> {
             transactionDetails: transactionDetails,
             total: widget.total,
             token: access,
-            receiptGenerator: widget.receiptGenerator,
+            receiptGenerator: () =>
+                widget.receiptGenerator(bookingDetails, bookingId),
             cancelBooking: () =>
                 cancelParkingLotBooking(access: access, bookingId: bookingId),
           );

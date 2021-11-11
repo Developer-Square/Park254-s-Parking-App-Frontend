@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/login.dart';
+import 'package:park254_s_parking_app/functions/utils/checkPermissions.dart';
 import 'package:park254_s_parking_app/pages/forgot_password.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/pages/registration_page.dart';
@@ -24,7 +27,7 @@ class LoginPage extends StatefulWidget {
 /// Has an option at the bottom, where a user can choose to signup.
 /// Returns a [Widget].
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController email = new TextEditingController();
+  TextEditingController emailOrPhone = new TextEditingController();
   TextEditingController password = new TextEditingController();
   bool showLoader;
   bool keyboardVisible;
@@ -36,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    email.text = 'ryantest4@gmail.com';
+    // email.text = 'ryantest4@gmail.com';
+    emailOrPhone.text = '0796867328';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
@@ -53,23 +57,6 @@ class _LoginPageState extends State<LoginPage> {
   /// Determine the current position of the device.
   ///
   /// When the location services are not enabled or permissions
-  /// are denied the function will request for permission.
-  Future checkPermissions() async {
-    bool serviceEnabled;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      return Future.value('true');
-    }
-
-    return Future.value('true');
-  }
 
   // Make the api call.
   void sendLoginDetails() async {
@@ -79,7 +66,8 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         showLoader = true;
       });
-      login(email: email.text, password: password.text).then((value) {
+      login(emailOrPhone: emailOrPhone.text, password: password.text)
+          .then((value) {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
           if (value.user.id != null) {
@@ -91,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (loginDetails != null) {
               // Store the refresh and access userDetails.
-              storeLoginDetails(loginDetails);
+              storeLoginDetails(details: loginDetails);
               // Choose how to redirect the user based on the role.
               if (value.user.role == 'user') {
                 Navigator.of(context).push(MaterialPageRoute(
@@ -112,12 +100,12 @@ class _LoginPageState extends State<LoginPage> {
           }
         });
       }).catchError((err) {
-        buildNotification(err.message, 'error');
-        print("In login_page");
-        print(err);
         setState(() {
           showLoader = false;
         });
+        log("In login_page");
+        log(err.toString());
+        buildNotification(err.message, 'error');
       });
     }
   }
@@ -242,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                 return 'Please enter your ${text.toLowerCase()}';
               }
             },
-            controller: text == 'Password' ? password : email,
+            controller: text == 'Password' ? password : emailOrPhone,
             obscureText: text == 'Password' ? true : false,
             obscuringCharacter: '*',
             decoration: InputDecoration(

@@ -139,6 +139,7 @@ class _BookingTabState extends State<BookingTab> {
                         : MainAxisAlignment.spaceAround
                     : MainAxisAlignment.spaceAround,
                 children: [
+                  _buildButtons('More Info', Colors.white),
                   navigationDetails != null
                       // If the user is navigating, hide the book now button for the book now tab.
                       ? navigationDetails.isNavigating
@@ -146,7 +147,6 @@ class _BookingTabState extends State<BookingTab> {
                               'Show QR Code', globals.backgroundColor)
                           : _buildButtons('Book Now', globals.backgroundColor)
                       : _buildButtons('Book Now', globals.backgroundColor),
-                  _buildButtons('More Info', Colors.white),
                 ],
               )
             ],

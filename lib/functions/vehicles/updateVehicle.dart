@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +12,7 @@ import '../../config/globals.dart' as globals;
 ///
 /// Returns [Vehicle]
 /// Requires: [token], [vehicleId]
-Future<Vehicle> updateUser({
+Future<Vehicle> updateVehicle({
   @required String token,
   @required String vehicleId,
   String owner = '',

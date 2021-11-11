@@ -1,8 +1,349 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
+import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/models/booking.populated.model.dart';
 import '../../../config/globals.dart' as globals;
 import '../../BackArrow.dart';
+import '../../BoxShadowWrapper.dart';
+import '../ParkingInfo.dart';
+import 'helper_functions.dart';
+
+/// Builds out the info details displayed in the modalBottomSheet.
+///
+Widget infoDetails({String key, String value}) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Text(
+          '$key',
+          style: globals.buildTextStyle(15.0, true, globals.textColor),
+        ),
+        Text('$value')
+      ],
+    ),
+  );
+}
+
+/// Builds out the bottom sheet modal.
+///
+/// This modal displays all the necessary details from the QR Code.
+Future<dynamic> showBottomModal({
+  @required BuildContext context,
+  BookingDetailsPopulated bookingsDetails,
+  String numberPlate,
+  String model,
+  String type,
+}) {
+  print('scanning');
+  return showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              type == 'contact'
+                  ? infoDetails(
+                      key: 'Contact Us',
+                      value: 'park42963@gmail.com',
+                    )
+                  : new Column(children: <Widget>[
+                      infoDetails(
+                          key: 'Parking Lot Name',
+                          value: bookingsDetails.parkingLotId.name),
+                      infoDetails(key: 'Number Plate', value: numberPlate),
+                      infoDetails(key: 'Model', value: model),
+                      infoDetails(
+                          key: 'Time In',
+                          value: timeOfDayToString(bookingsDetails.entryTime)),
+                      infoDetails(
+                          key: 'Time Out',
+                          value: timeOfDayToString(bookingsDetails.exitTime)),
+                      infoDetails(
+                          key: 'Client Name',
+                          value: bookingsDetails.clientId.name)
+                    ])
+            ],
+          ),
+        );
+      });
+}
+
+/// Builds out all the parking widgets on the page.
+///
+/// This happens after the parking lots are fetched from the backend.
+Widget buildParkingLotResults({
+  @required List results,
+  @required String userRole,
+  @required BuildContext context,
+  @required BookingProvider bookingDetailsProvider,
+  @required Function updateParking,
+  @required Function deleteParkingLot,
+  @required Function updateParkingTime,
+}) {
+  return ListView.builder(
+    itemCount: results.length,
+    itemBuilder: (context, index) {
+      return Column(
+        children: [
+          InkWell(
+            child: userRole == 'user'
+                ? buildParkingContainer(
+                    bookingDetailsProvider: bookingDetailsProvider,
+                    userRole: userRole,
+                    context: context,
+                    parkingLotName: results[index].parkingLotId.name,
+                    parkingPrice: timeOfDayToString(results[index].entryTime),
+                    parkingLocation: results[index].parkingLotId.address,
+                    paymentStatus: timeOfDayToString(results[index].exitTime),
+                    parkingLotData: results[index].parkingLotId,
+                    bookingDetails: results[index],
+                    updateParking: updateParking,
+                    updateParkingTime: updateParkingTime,
+                    deleteParkingLot: deleteParkingLot,
+                  )
+                : buildParkingContainer(
+                    bookingDetailsProvider: bookingDetailsProvider,
+                    userRole: userRole,
+                    context: context,
+                    parkingLotName: results[index].name,
+                    parkingPrice: 'Ksh ${results[index].price} / hr',
+                    parkingLocation: results[index].address,
+                    paymentStatus: 'Parking Slots: ${results[index].spaces}',
+                    paymentColor: Colors.white,
+                    parkingLotData: results[index],
+                    updateParking: updateParking,
+                    updateParkingTime: updateParkingTime,
+                    deleteParkingLot: deleteParkingLot,
+                  ),
+            onTap: userRole == 'vendor'
+                ? () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ParkingInfo(
+                          images: results[index].images,
+                          name: results[index].name,
+                          accessibleParking:
+                              results[index].features.accessibleParking,
+                          cctv: results[index].features.cctv,
+                          carWash: results[index].features.carWash,
+                          evCharging: results[index].features.evCharging,
+                          valetParking: results[index].features.valetParking,
+                          rating: results[index].rating,
+                        ),
+                      ),
+                    );
+                  }
+                : () {},
+          ),
+          SizedBox(height: results.length - 1 == index ? 480.0 : 15.0)
+        ],
+      );
+    },
+  );
+}
+
+/// Builds out a text followed by an icon to be used as a label.
+/// for an active or expired booking.
+Widget bookingLabel({@required bool active}) {
+  return Container(
+      child: Row(children: <Widget>[
+    Text(active ? 'Active' : 'Expired',
+        style: globals.buildTextStyle(16.0, true, globals.textColor)),
+    SizedBox(width: 5.0),
+    Container(
+      width: 14.0,
+      height: 14.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.0),
+          color: active ? globals.backgroundColor : Colors.red),
+    )
+  ]));
+}
+
+/// Builds out the different containers on the page
+///
+/// Requires [parkingLotNumber], [parkingPrice], [parkingLocation], [paymentStatus], [paymentColor] and [parkingLotData].
+/// The parkingLotData will be used when updating and deleting parking lots.
+Widget buildParkingContainer({
+  @required String parkingLotName,
+  @required String parkingPrice,
+  @required String parkingLocation,
+  @required String paymentStatus,
+  Color paymentColor,
+  @required dynamic parkingLotData,
+  dynamic bookingDetails,
+  @required BuildContext context,
+  @required BookingProvider bookingDetailsProvider,
+  @required String userRole,
+  @required Function updateParking,
+  @required Function deleteParkingLot,
+  @required Function updateParkingTime,
+}) {
+  return BoxShadowWrapper(
+    offsetY: 0.0,
+    offsetX: 0.0,
+    blurRadius: 4.0,
+    opacity: 0.6,
+    height: 150.0,
+    content: Container(
+      height: 150.0,
+      width: MediaQuery.of(context).size.width - 40.0,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+          Widget>[
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                parkingLotName ?? '',
+                style: globals.buildTextStyle(15.5, true, Colors.blue[400]),
+              ),
+              userRole == 'user'
+                  ? bookingDetailsProvider != null
+                      ? bookingDetailsProvider.activeBookings
+                              .contains(bookingDetails.id)
+                          ? bookingLabel(active: true)
+                          : bookingLabel(active: false)
+                      : bookingLabel(active: false)
+                  : Text(
+                      parkingPrice ?? '',
+                      style:
+                          globals.buildTextStyle(15.5, true, globals.textColor),
+                    ),
+            ],
+          ),
+        ),
+        SizedBox(height: 7.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Text(
+            parkingLocation ?? '',
+            style: globals.buildTextStyle(17.0, true, globals.textColor),
+          ),
+        ),
+        SizedBox(
+            height: 25.0,
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom:
+                          BorderSide(color: Colors.black54.withOpacity(0.1)))),
+            )),
+        Padding(
+          padding: EdgeInsets.only(top: 6.0, left: 20.0, right: 20.0),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    userRole == 'vendor'
+                        ? Container(
+                            height: 20.0,
+                            width: 20,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(100.0)),
+                                color: paymentColor))
+                        : Container(),
+                    userRole == 'vendor'
+                        ? SizedBox(width: 10.0)
+                        : SizedBox(width: 0.0),
+                    Text(
+                      userRole == 'user'
+                          ? int.parse(parkingPrice.substring(0, 2)) > 11
+                              ? '$parkingPrice pm - $paymentStatus pm'
+                              : '$parkingPrice am - $paymentStatus am'
+                          : paymentStatus,
+                      style:
+                          globals.buildTextStyle(15.0, true, globals.textColor),
+                    ),
+                  ],
+                ),
+                _popUpMenu(
+                  data: parkingLotData,
+                  bookingDetails: bookingDetails,
+                  bookingDetailsProvider: bookingDetailsProvider,
+                  userRole: userRole,
+                  updateParking: updateParking,
+                  updateParkingTime: updateParkingTime,
+                  deleteParkingLot: deleteParkingLot,
+                )
+              ]),
+        )
+      ]),
+    ),
+  );
+}
+
+/// Builds out the pop-up that appears when you click on the three dots.
+/// that comes with every parking lot.
+Widget _popUpMenu({
+  @required dynamic data,
+  @required dynamic bookingDetails,
+  @required BookingProvider bookingDetailsProvider,
+  @required String userRole,
+  @required Function updateParking,
+  @required Function deleteParkingLot,
+  @required Function updateParkingTime,
+}) {
+  return PopupMenuButton<int>(
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        value: 1,
+        child: Text(userRole == 'vendor'
+            ? 'Update'
+            : bookingDetailsProvider != null
+                ? bookingDetailsProvider.activeBookings
+                        .contains(bookingDetails.id)
+                    ? 'Update Time'
+                    : 'Share Spot'
+                : 'Share Spot'),
+      ),
+      PopupMenuItem(
+        value: 2,
+        child: Text(
+          userRole == 'vendor'
+              ? 'Delete'
+              : bookingDetailsProvider != null
+                  ? bookingDetailsProvider.activeBookings
+                          .contains(bookingDetails.id)
+                      ? 'Report an issue'
+                      : 'Delete'
+                  : 'Delete',
+          style: TextStyle(color: Colors.red),
+        ),
+      )
+    ],
+    onSelected: (value) => {
+      userRole == 'vendor'
+          ? value == 1
+              ? updateParking(data)
+              : deleteParkingLot(data)
+          : value == 1 &&
+                  bookingDetailsProvider.activeBookings
+                      .contains(bookingDetails.id)
+              ? updateParkingTime(bookingDetails: bookingDetails)
+              : () {}
+    },
+    icon: Icon(
+      Icons.more_vert,
+      color: globals.textColor,
+    ),
+    offset: Offset(0, 100),
+  );
+}
 
 /// Builds the appbar for the page.
 Widget appBar({Function clearFields, String currentScreen}) {

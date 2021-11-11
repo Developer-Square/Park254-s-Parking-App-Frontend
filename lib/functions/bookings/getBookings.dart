@@ -29,6 +29,7 @@ Future<BookingsList> getBookings({
     "parkingLotId": parkingLotId,
     "isCancelled": isCancelled.toString(),
     "sortBy": sortBy,
+    "populate": "clientId, parkingLotId",
     "limit": limit.toString(),
     "page": page.toString(),
   };

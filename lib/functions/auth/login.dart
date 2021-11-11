@@ -12,14 +12,25 @@ import '../../models/userWithToken.model.dart';
 ///
 /// Returns the user with their access and refresh tokens
 Future<UserWithToken> login({
-  @required String email,
+  @required String emailOrPhone,
   @required String password,
+  String phone,
 }) async {
+  String body;
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: "application/json",
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/auth/login');
-  final String body = jsonEncode({'email': email, 'password': password});
+  bool emailValid = RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      .hasMatch(emailOrPhone);
+
+  // This so as we know whether the user is logging through their email or phone number.
+  if (emailValid) {
+    body = jsonEncode({'email': emailOrPhone, 'password': password});
+  } else {
+    body = jsonEncode({'phone': emailOrPhone, 'password': password});
+  }
   final response = await http.post(
     url,
     body: body,

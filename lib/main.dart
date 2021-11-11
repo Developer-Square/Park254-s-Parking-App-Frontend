@@ -3,7 +3,6 @@ import 'dart:core';
 import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
@@ -22,6 +21,7 @@ import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/refreshTokens.dart';
+import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
 import 'package:park254_s_parking_app/functions/users/getUserById.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
@@ -31,6 +31,7 @@ import 'package:park254_s_parking_app/dataModels/UserModel.dart';
 import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/dataModels/UsersListModel.dart';
+import 'package:park254_s_parking_app/functions/vehicles/getVehicles.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
@@ -47,7 +48,6 @@ import 'config/search_page_arguments.dart';
 import 'models/token.model.dart';
 import 'models/user.model.dart';
 import 'pages/login_screen.dart';
-import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/config/bookingArguments.dart';
 import 'package:park254_s_parking_app/config/moreInfoArguments.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +55,6 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(MyApp());
 }
 
@@ -142,6 +141,7 @@ class _MyAppState extends State<MyApp> {
               refreshToken = null;
             });
           });
+
           var access = encryptDecryptData(
               'userAccessTokens', value.accessToken.token, 'encrypt');
           var refresh = encryptDecryptData(
@@ -207,13 +207,17 @@ class _MyAppState extends State<MyApp> {
                         ? HomePage(
                             userDetails: userDetails,
                             accessToken: accessToken,
-                            refreshToken: refreshToken)
+                            refreshToken: refreshToken,
+                          )
                         : VendorPage(
                             userDetails: userDetails,
                             accessToken: accessToken,
-                            refreshToken: refreshToken)
+                            refreshToken: refreshToken,
+                          )
                     : Loader()
-                : OnBoardingPage(),
+                // Check if a user is logged in to google or facebook before redirecting them.
+                // to the onboarding page.
+                : AuthService().handleAuthState(),
             routes: {
               '/login_screen': (context) => LoginScreen(),
             },
@@ -351,6 +355,7 @@ class _MyAppState extends State<MyApp> {
                 final ReceiptArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return PaymentSuccessful(
+                    bookingId: args.bookingId,
                     price: args.price,
                     destination: args.destination,
                     arrivalTime: args.arrivalTime,

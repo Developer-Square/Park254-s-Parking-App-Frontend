@@ -28,24 +28,25 @@ class RegistrationScreens extends StatelessWidget {
   TextEditingController createPasswordController;
   TextEditingController confirmPasswordController;
 
-  RegistrationScreens(
-      {@required this.title,
-      @required this.info,
-      @required this.step,
-      this.selectedValue,
-      this.validateFn,
-      this.formKey,
-      this.nameController,
-      this.emailController,
-      this.phoneController,
-      this.verificationController,
-      this.vehicleModelController,
-      this.vehiclePlateController,
-      this.createPasswordController,
-      this.confirmPasswordController,
-      this.showToolTip,
-      this.hideToolTip,
-      this.text});
+  RegistrationScreens({
+    @required this.title,
+    @required this.info,
+    @required this.step,
+    this.selectedValue,
+    this.validateFn,
+    this.formKey,
+    this.nameController,
+    this.emailController,
+    this.phoneController,
+    this.verificationController,
+    this.vehicleModelController,
+    this.vehiclePlateController,
+    this.createPasswordController,
+    this.confirmPasswordController,
+    this.showToolTip,
+    this.hideToolTip,
+    this.text,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -6,12 +6,21 @@ import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/components/profile/helpers.dart';
 import 'package:park254_s_parking_app/components/top_page_styling.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/auth/logout.dart';
+import 'package:park254_s_parking_app/functions/users/updateUser.dart';
+import 'package:park254_s_parking_app/functions/vehicles/deleteVehicle.dart';
+import 'package:park254_s_parking_app/models/vehicle.model.dart';
 import 'package:park254_s_parking_app/pages/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
+import '../parking lots/widgets/helpers_widgets.dart';
+import 'package:park254_s_parking_app/functions/social%20auth/authService.dart';
+import '../profile/policies/cancellationPolicy.dart';
+import '../profile/policies/privacyPolicy.dart';
+import '../profile/policies/termsAndConditions.dart';
 
 /// Creates a profile screen.
 ///
@@ -49,11 +58,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   UserWithTokenModel storeDetails;
   // Pakring details from the store.
   NearbyParkingListModel nearbyParkingDetails;
+  VehicleModel vehicleDetails;
+  List vehicles = [];
 
   @override
   void initState() {
     super.initState();
     showLoader = false;
+    if (mounted) {
+      vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
+      storeDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+
+      // Fetch the all the vehicles on load.
+      if (vehicleDetails != null && storeDetails != null) {
+        vehicleDetails.fetch(
+          token: storeDetails.user.accessToken.token,
+          owner: storeDetails.user.user.id,
+        );
+      }
+    }
   }
 
   @override
@@ -67,46 +90,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  // Make api call.
-  logoutUser() async {
-    setState(() {
-      showLoader = true;
-    });
-    var token = storeDetails.user.refreshToken.token;
-    logout(refreshToken: token).then((value) {
-      if (value == 'success') {
-        buildNotification('Logged out successfully', 'success');
-        setState(() {
-          showLoader = false;
-        });
-        if (storeDetails != null && nearbyParkingDetails != null) {
-          // Clear all the details in the store.
-          storeDetails.clear();
-          // Clear the details in shared preferences.
-          clearStorage();
-          nearbyParkingDetails.clear();
+  void deleteProfileDetails({@required String itemId}) {
+    if (storeDetails != null) {
+      final String access = storeDetails.user.accessToken.token;
+
+      deleteVehicle(token: access, vehicleId: itemId).then((value) {
+        if (vehicleDetails != null) {
+          // Remove the vehicle from the store.
+          vehicleDetails.remove(id: itemId);
         }
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
-      }
-    }).catchError((err) {
-      setState(() {
-        showLoader = false;
-        print("In profile_screen");
-        print(err);
+        buildNotification('Vehicle deleted successfully', 'success');
+      }).catchError((err) {
+        log("In profile_screen.dart, deleteProfileDetails");
+        log(err.toString());
         buildNotification(err.message, 'error');
       });
-    });
+    }
+  }
+
+  updateVehicle({@required String vehicleId}) {
+    if (vehicleDetails != null) {
+      // Find the vehicle that the user wants to edit and add its details.
+      final List<Vehicle> vehicle = vehicleDetails.vehicleData.vehicles
+          .where((element) => element.id == vehicleId)
+          .toList();
+      setState(() {
+        vehicleTypeController.text = vehicle[0].model;
+        vehiclePlateController.text = vehicle[0].plate;
+      });
+
+      return Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => EditScreen(
+                vehicleStatus: 'vehicleUpdate',
+                vehicleId: vehicleId,
+                fullName: fullNameController,
+                email: emailController,
+                phone: phoneController,
+                password: passwordController,
+                vehiclePlateController: vehiclePlateController,
+                vehicleTypeController: vehicleTypeController,
+                currentScreen: 'vehicles',
+              )));
+    }
+  }
+
+  // Make api call.
+  logoutUser() async {
+    if (storeDetails.user.refreshToken != null) {
+      setState(() {
+        showLoader = true;
+      });
+      var token = storeDetails.user.refreshToken.token;
+      logout(refreshToken: token).then((value) {
+        if (value == 'success') {
+          buildNotification('Logged out successfully', 'success');
+          setState(() {
+            showLoader = false;
+          });
+          if (storeDetails != null && nearbyParkingDetails != null) {
+            // Clear all the details in the store.
+            storeDetails.clear();
+            // Clear the details in shared preferences.
+            clearStorage();
+            nearbyParkingDetails.clear();
+          }
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
+          print("In profile_screen");
+          print(err);
+          buildNotification(err.message, 'error');
+        });
+      });
+    }
+    // log out the current user from the social authentication upon pressing the logout button.
+    AuthService().signOut();
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+  }
+
+  // Redirect to the edit screen page so that a user can edit the profile.
+  pushToEditProfile() {
+    return Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => EditScreen(
+              profileImgPath: widget.profileImgPath,
+              fullName: fullNameController,
+              email: emailController,
+              phone: phoneController,
+              password: passwordController,
+              vehiclePlateController: vehiclePlateController,
+              vehicleTypeController: vehicleTypeController,
+              currentScreen: 'profile',
+            )));
   }
 
   @override
   Widget build(BuildContext context) {
     storeDetails = Provider.of<UserWithTokenModel>(context);
+    vehicleDetails = Provider.of<VehicleModel>(context);
     if (storeDetails.user.user != null) {
       fullNameController.text = storeDetails.user.user.name;
       emailController.text = storeDetails.user.user.email;
       phoneController.text = storeDetails.user.user.phone.toString();
       userRole = storeDetails.user.user.role;
+    }
+    if (vehicleDetails.vehicleData.vehicles != null) {
+      setState(() {
+        vehicles = vehicleDetails.vehicleData.vehicles;
+      });
     }
 
     return Scaffold(
@@ -118,20 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => EditScreen(
-                                  profileImgPath: widget.profileImgPath,
-                                  fullName: fullNameController,
-                                  email: emailController,
-                                  phone: phoneController,
-                                  password: passwordController,
-                                  vehiclePlateController:
-                                      vehiclePlateController,
-                                  vehicleTypeController: vehicleTypeController,
-                                  currentScreen: 'profile',
-                                )));
-                      },
+                      onTap: () => pushToEditProfile(),
                       child: TopPageStyling(
                         currentPage: 'profile',
                         widget: buildProfileTab(
@@ -148,7 +229,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 25.0),
-                    buildContainer(logo: widget.logo2Path, type: 'wallet'),
+                    buildContainer(
+                        logo: widget.logo2Path,
+                        type: 'wallet',
+                        phoneNumber: storeDetails != null
+                            ? storeDetails.user.user.phone.toString()
+                            : 'No Phonenumber'),
                     SizedBox(height: 50.0),
                     userRole != 'vendor'
                         ? Padding(
@@ -197,30 +283,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                                 SizedBox(height: 25.0),
-                                // storeDetails.user.user.vehicles.length > 0
-                                // ? Column(
-                                //     children: storeDetails
-                                //         .user.user.vehicles
-                                //         .map((vehicle) =>
-                                //             Column(children: <Widget>[
-                                //               buildContainer(
-                                //                 type: 'vehicles',
-                                //                 carModel: vehicle.model,
-                                //                 carPlate: vehicle.plate,
-                                //               ),
-                                //               SizedBox(
-                                //                 height: 2.0,
-                                //               )
-                                //             ]))
-                                //         .toList())
-                                // : Container()
+                                vehicles.length > 0
+                                    ? Column(
+                                        children: vehicles
+                                            .map((vehicle) =>
+                                                Column(children: <Widget>[
+                                                  buildContainer(
+                                                    type: 'vehicles',
+                                                    carModel: vehicle.model,
+                                                    carPlate: vehicle.plate,
+                                                    deleteVehicles:
+                                                        deleteProfileDetails,
+                                                    updateVehicles:
+                                                        updateVehicle,
+                                                    id: vehicle.id,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 2.0,
+                                                  )
+                                                ]))
+                                            .toList())
+                                    : Container()
                               ],
                             ),
                           )
                         : Container(),
-                    SizedBox(height: 25.0),
-                    // buildContainer('', false, 'vehicles', carPlate),
-                    SizedBox(height: 20.0),
+                    SizedBox(height: 40.0),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => CancellationPolicy())),
+                        child: Text(
+                          'Cancellation Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicy())),
+                        child: Text(
+                          'Privacy Policy',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 13.0,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => TermsAndConditions())),
+                        child: Text(
+                          'Terms and Conditions',
+                          style: globals.buildTextStyle(
+                              14.0, false, globals.textColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30.0),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          showBottomModal(
+                            type: 'contact',
+                            context: context,
+                          );
+                        },
+                        child: Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6.0)),
+                                color: globals.backgroundColor),
+                            child: Center(
+                                child: Text(
+                              'Contact Us',
+                              style: globals.buildTextStyle(
+                                  15.0, true, Colors.white),
+                            ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
                     Center(
                       child: InkWell(
                         onTap: () {

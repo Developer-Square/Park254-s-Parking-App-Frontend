@@ -12,10 +12,14 @@ import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/config/receiptArguments.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
+import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
+import 'package:park254_s_parking_app/functions/bookings/checkSpaces.dart';
 import 'package:provider/provider.dart';
 import '../config/globals.dart' as globals;
 import './PrimaryText.dart';
+import './SecondaryText.dart';
 import './BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 
@@ -73,7 +77,7 @@ class _BookingState extends State<Booking> {
   TimeOfDay leavingTime = TimeOfDay.now();
   String vehicle = 'prius';
   String numberPlate = 'BBAGAAFAF';
-  String driver = "linus";
+  String driver = "No name set";
   String paymentMethod = 'MPESA';
   int amount = 0;
   bool showPayUp = false;
@@ -88,6 +92,8 @@ class _BookingState extends State<Booking> {
   final List<String> driverList = <String>['Linus', 'Ryan'];
   TransactionModel transactionDetails;
   BookingProvider bookingDetailsProvider;
+  UserWithTokenModel userDetails;
+  NearbyParkingListModel nearbyParkingListDetails;
 
   @override
   void initState() {
@@ -97,10 +103,14 @@ class _BookingState extends State<Booking> {
     if (mounted) {
       bookingDetailsProvider =
           Provider.of<BookingProvider>(context, listen: false);
+      userDetails = Provider.of<UserWithTokenModel>(context, listen: false);
+      nearbyParkingListDetails =
+          Provider.of<NearbyParkingListModel>(context, listen: false);
 
       if (widget.entryDate != null &&
           widget.exitDate != null &&
           bookingDetailsProvider != null) {
+        // Populate the arrival and leaving date and time when updating.
         if (bookingDetailsProvider.update) {
           arrivalTime = TimeOfDay.fromDateTime(widget.entryDate);
           leavingTime = TimeOfDay.fromDateTime(widget.exitDate);
@@ -251,8 +261,10 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt(BookingProvider bookingDetails) {
-    if (bookingDetails != null) {
+  void _generateReceipt(
+      {@required BookingProvider bookingDetails, @required String bookingId}) {
+    if (bookingDetails != null && bookingDetailsProvider != null) {
+      bookingDetailsProvider.setUpdate(value: true);
       bookingDetails.setBooking(
         price: amount,
         destination: widget.destination,
@@ -261,17 +273,18 @@ class _BookingState extends State<Booking> {
         arrivalDate: arrivalDate,
         leavingDate: leavingDate,
       );
-
-      Navigator.pushNamed(context, PaymentSuccessful.routeName,
-          arguments: ReceiptArguments(
-            parkingSpace: widget.parkingLotNumber,
-            price: amount,
-            destination: widget.destination,
-            address: widget.address,
-            arrivalTime: arrivalTime,
-            leavingTime: leavingTime,
-          ));
     }
+
+    Navigator.pushNamed(context, PaymentSuccessful.routeName,
+        arguments: ReceiptArguments(
+          bookingId: bookingId,
+          parkingSpace: widget.parkingLotNumber,
+          price: amount,
+          destination: widget.destination,
+          address: widget.address,
+          arrivalTime: arrivalTime,
+          leavingTime: leavingTime,
+        ));
   }
 
   Widget _dropDown(
@@ -421,12 +434,69 @@ class _BookingState extends State<Booking> {
     );
   }
 
+  Widget _checkSpacesButton() {
+    return InkWell(
+      onTap: () {
+        transactionDetails.setLoading(true);
+
+        // Change the TimeOfDay to DateTime.
+        final now = new DateTime.now();
+        final DateTime entryTime = new DateTime(
+            now.year, now.month, now.day, arrivalTime.hour, arrivalTime.minute);
+        final DateTime exitTime = new DateTime(
+            now.year, now.month, now.day, leavingTime.hour, leavingTime.minute);
+        if (nearbyParkingListDetails != null && userDetails != null) {
+          checkSpaces(
+            token: userDetails.user.accessToken.token,
+            parkingLots: [nearbyParkingListDetails.nearbyParkingLot.id],
+            entryTime: entryTime,
+            exitTime: exitTime,
+          ).then((value) {
+            if (value.spaceList[0].available) {
+              buildNotification(
+                  'Parking space has ${value.spaceList[0].availableSpaces} available spaces',
+                  'success');
+            }
+            transactionDetails.setLoading(false);
+          }).catchError((err) {
+            transactionDetails.setLoading(false);
+
+            log("In Booking.dart, checkSpacesButton function");
+            log(err.toString());
+            buildNotification(err.message.toString(), 'error');
+          });
+        }
+      },
+      child: Center(
+        child: Container(
+          padding: EdgeInsets.only(left: 7.0, right: 7.0),
+          height: 45.0,
+          width: 135.0,
+          decoration: BoxDecoration(
+              color: globals.backgroundColor,
+              borderRadius: BorderRadius.circular(24.0)),
+          child: Center(
+            child: Text(
+              'Check Availability',
+              style: globals.buildTextStyle(14.0, true, Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _driverInfo() {
+    String name = 'No Name';
+    if (userDetails != null) {
+      name = userDetails.user.user.name;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         PrimaryText(content: 'Driver Info'),
-        _dropDown(driver, driverList, globals.textColor, FontWeight.normal),
+        SecondaryText(content: name),
       ],
     );
   }
@@ -507,7 +577,9 @@ class _BookingState extends State<Booking> {
     final double finalHeight =
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
-    isLoading = transactionDetails.loader;
+    if (transactionDetails != null) {
+      isLoading = transactionDetails.loader;
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -518,13 +590,6 @@ class _BookingState extends State<Booking> {
               children: <Widget>[
                 PrimaryText(
                   content: 'Booking',
-                ),
-                Text(
-                  'BookingID: ${widget.bookingNumber}',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                  ),
                 ),
               ],
             ),
@@ -554,10 +619,8 @@ class _BookingState extends State<Booking> {
                           flex: 1,
                         ),
                         Expanded(
-                          child: BorderContainer(
-                            content: _vehicle(),
-                          ),
-                          flex: 2,
+                          child: BorderContainer(content: _checkSpacesButton()),
+                          flex: 1,
                         ),
                         Expanded(
                           child: BorderContainer(content: _driverInfo()),
@@ -585,8 +648,10 @@ class _BookingState extends State<Booking> {
                       total: amount,
                       timeDatePicker: _timeDatePicker(),
                       toggleDisplay: () => _togglePayUp(),
-                      receiptGenerator: (bookingDetails) =>
-                          _generateReceipt(bookingDetails),
+                      receiptGenerator: (bookingDetails, bookingId) =>
+                          _generateReceipt(
+                              bookingDetails: bookingDetails,
+                              bookingId: bookingId),
                       updateParkingTime: () => updateParkingTime(),
                       arrivalTime: arrivalTime.toString(),
                       leavingTime: leavingTime.toString(),

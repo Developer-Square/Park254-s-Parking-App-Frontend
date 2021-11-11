@@ -12,14 +12,15 @@ import '../../config/globals.dart' as globals;
 ///
 /// IMPORTANT: Call from [pay]
 /// Requires [phoneNumber], [amount], [token], and [createdAt]
-Future<Transaction> fetchTransaction(
-    {@required num phoneNumber,
-    @required num amount,
-    @required String token,
-    @required String createdAt,
-    @required Function setTransaction,
-    @required Function setLoading,
-    Function increaseErrors}) async {
+Future<Transaction> fetchTransaction({
+  @required num phoneNumber,
+  @required num amount,
+  @required String token,
+  @required String createdAt,
+  @required Function setTransaction,
+  @required Function setLoading,
+  Function increaseErrors,
+}) async {
   Map<String, String> headers = {
     HttpHeaders.authorizationHeader: "Bearer $token",
     HttpHeaders.contentTypeHeader: "application/json",
@@ -29,6 +30,7 @@ Future<Transaction> fetchTransaction(
     'Amount': amount.toString(),
     'createdAt': createdAt,
   };
+  log(queryParameters.toString());
 
   final url = Uri.https(globals.apiKey, '/v1/mpesaWebHook', queryParameters);
 
