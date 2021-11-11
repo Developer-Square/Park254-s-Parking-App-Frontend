@@ -247,6 +247,7 @@ class MyParkingState extends State<MyParkingScreen> {
   Widget build(BuildContext context) {
     parkingLotList = Provider.of<ParkingLotListModel>(context);
     bookingDetailsProvider = Provider.of<BookingProvider>(context);
+    log(bookingDetailsProvider.bookingDetails.toString());
     if (parkingLotList.parkingLotList.parkingLots != null) {
       var availableParkingLots = parkingLotList.parkingLotList.parkingLots;
       parkingLotsResults = availableParkingLots;
