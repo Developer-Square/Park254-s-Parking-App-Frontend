@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/SimpleTextField.dart';
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/forgotPassword.dart';
+import 'package:park254_s_parking_app/pages/reset_password.dart';
 import '../config/globals.dart' as globals;
 
 class ForgotResetPassword extends StatefulWidget {
@@ -19,46 +21,38 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
   // Helps in validation of the form.
   final formKey = GlobalKey<FormState>();
   TextEditingController forgotEmail = new TextEditingController();
-  bool showToolTip;
   bool showLoader;
-  bool requestVerificationCode;
-  String text;
 
   @override
   void initState() {
     super.initState();
-    showToolTip = false;
     showLoader = false;
-    requestVerificationCode = false;
-    text = '';
-  }
-
-  void hideToolTip() {
-    setState(() {
-      showToolTip = false;
-    });
   }
 
   // Make api.
   sendForgotEmail() {
     if (formKey.currentState.validate()) {
-      setState(() {
-        showLoader = true;
-      });
-      forgotPassword(email: forgotEmail.text).then((value) {
-        if (value == 'success') {
-          setState(() {
-            requestVerificationCode = true;
-            showLoader = false;
-          });
-        }
-      }).catchError((err) {
-        setState(() {
-          showLoader = false;
-          showToolTip = true;
-          text = err;
-        });
-      });
+      // setState(() {
+      //   showLoader = true;
+      // });
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => ResetPassword()));
+      // forgotPassword(email: forgotEmail.text).then((value) {
+      //   if (value == 'success') {
+      //     buildNotification(
+      //         'Check your email for the token we\'ve sent', 'success');
+      //     Navigator.of(context)
+      //         .push(MaterialPageRoute(builder: (context) => ResetPassword()));
+      //     setState(() {
+      //       showLoader = false;
+      //     });
+      //   }
+      // }).catchError((err) {
+      //   buildNotification(err.message, 'error');
+      //   setState(() {
+      //     showLoader = false;
+      //   });
+      // });
     }
   }
 
