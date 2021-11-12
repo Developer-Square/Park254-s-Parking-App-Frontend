@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -20,10 +21,12 @@ Future<String> resetPassword({
     globals.apiKey,
     '/v1/auth/reset-password?token=$token',
   );
+  log(url.toString());
   final String body = jsonEncode({'password': password});
   final response = await http.post(
     url,
     body: body,
+    headers: headers,
   );
 
   if (response.statusCode == 204) {

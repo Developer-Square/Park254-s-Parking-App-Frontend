@@ -147,7 +147,33 @@ class BuildFormFieldState extends State<BuildFormField> {
                                           widget.text == 'Phone number'
                                               ? buildSingleTextField(
                                                   '', 'Email', '', widget.email)
-                                              : Container()
+                                              : Container(),
+                                          SizedBox(height: 35.0),
+                                          Text(
+                                            'Choose your role',
+                                            style: globals.buildTextStyle(
+                                                16.0, true, globals.textColor),
+                                          ),
+                                          SizedBox(height: 15.0),
+                                          buildRoleRadioButtons(),
+                                          SizedBox(height: 25.0),
+                                          Text(
+                                            'Add your password',
+                                            style: globals.buildTextStyle(
+                                                16.0, true, globals.textColor),
+                                          ),
+                                          buildSingleTextField(
+                                              'Create Password',
+                                              'Password',
+                                              '',
+                                              widget.createPassword),
+                                          SizedBox(height: 15.0),
+                                          buildSingleTextField(
+                                              'Confirm Password',
+                                              'Password',
+                                              '',
+                                              widget.confirmPassword),
+                                          SizedBox(height: 35.0),
                                         ])
                                       : TextFormField(
                                           validator: (value) {

@@ -32,27 +32,27 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
   // Make api.
   sendForgotEmail() {
     if (formKey.currentState.validate()) {
-      // setState(() {
-      //   showLoader = true;
-      // });
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => ResetPassword()));
-      // forgotPassword(email: forgotEmail.text).then((value) {
-      //   if (value == 'success') {
-      //     buildNotification(
-      //         'Check your email for the token we\'ve sent', 'success');
-      //     Navigator.of(context)
-      //         .push(MaterialPageRoute(builder: (context) => ResetPassword()));
-      //     setState(() {
-      //       showLoader = false;
-      //     });
-      //   }
-      // }).catchError((err) {
-      //   buildNotification(err.message, 'error');
-      //   setState(() {
-      //     showLoader = false;
-      //   });
-      // });
+      setState(() {
+        showLoader = true;
+      });
+      // Navigator.of(context)
+      //     .push(MaterialPageRoute(builder: (context) => ResetPassword()));
+      forgotPassword(email: forgotEmail.text).then((value) {
+        if (value == 'success') {
+          buildNotification(
+              'Check your email for the token we\'ve sent', 'success');
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => ResetPassword()));
+          setState(() {
+            showLoader = false;
+          });
+        }
+      }).catchError((err) {
+        buildNotification(err.message, 'error');
+        setState(() {
+          showLoader = false;
+        });
+      });
     }
   }
 

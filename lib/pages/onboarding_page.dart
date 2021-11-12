@@ -54,7 +54,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           iconName: Icons.near_me,
           iconSemanticLabel: 'find in page icon',
           heading: 'Find the Perfect Parking Lot',
-          description: 'We can"t find perfect parking if we can"t find you');
+          description: 'We can\'t find perfect parking if we can\'t find you');
     } else if (_start > 5 && _start < 11) {
       return OnBoardingScreen(
           iconName: Icons.notifications,
