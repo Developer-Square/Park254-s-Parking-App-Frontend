@@ -217,14 +217,17 @@ class _NearByParkingState extends State<NearByParking>
   /// by parking model.
   Widget buildParkingPlacesList({String title, List<NearbyParkingLot> lots}) {
     return ListView.builder(
-        itemCount: lots.length,
+        itemCount: lots != null ? lots.length : 0,
         itemBuilder: (context, index) {
           return Column(
             children: [
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
-                imgPath:
-                    lots[index].images.length > 0 ? lots[index].images[0] : '',
+                imgPath: lots[index].images != null
+                    ? lots[index].images.length > 0
+                        ? lots[index].images[0]
+                        : ''
+                    : '',
                 parkingPrice: lots[index].price,
                 parkingPlaceName: lots[index].name,
                 rating: lots[index].ratingValue,
