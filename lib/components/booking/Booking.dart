@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
 import 'package:park254_s_parking_app/components/DismissKeyboard.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
+import 'package:park254_s_parking_app/components/booking/widgets/helper_widgets.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
 import 'package:park254_s_parking_app/components/transactions/PayUp.dart';
@@ -17,13 +19,13 @@ import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/checkSpaces.dart';
 import 'package:provider/provider.dart';
-import '../config/globals.dart' as globals;
-import './PrimaryText.dart';
-import './SecondaryText.dart';
-import './BorderContainer.dart';
+import '../../config/globals.dart' as globals;
+import '../PrimaryText.dart';
+import '../SecondaryText.dart';
+import '../BorderContainer.dart';
 import 'package:park254_s_parking_app/components/TimeDatePicker.dart';
 
-import 'SecondaryText.dart';
+import '../SecondaryText.dart';
 
 ///Creates a booking page
 ///
@@ -283,35 +285,16 @@ class _BookingState extends State<Booking> {
           destination: widget.destination,
           address: widget.address,
           arrivalTime: arrivalTime,
+          arrivalDate: arrivalDate,
           leavingTime: leavingTime,
+          leavingDate: leavingDate,
         ));
   }
 
-  Widget _dropDown(
-    String value,
-    List<String> valueList,
-    Color textColor,
-    FontWeight fontWeight,
-  ) {
-    return DropdownButton(
-      value: valueList[0],
-      items: valueList.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Align(
-            child: Text(value),
-            alignment: Alignment.centerLeft,
-          ),
-        );
-      }).toList(),
-      onChanged: (String newValue) {
-        setState(() {
-          value = newValue;
-        });
-      },
-      underline: Container(height: 0),
-      style: TextStyle(color: textColor, fontWeight: fontWeight, fontSize: 16),
-    );
+  void changeValue({String newValue, String value}) {
+    setState(() {
+      value = newValue;
+    });
   }
 
   Widget _destination() {
@@ -416,17 +399,27 @@ class _BookingState extends State<Booking> {
         Flexible(
           child: _vehicleRow(
             'Type',
-            _dropDown(vehicle, vehicleList, Colors.blue[400], FontWeight.bold),
+            dropDown(
+              value: vehicle,
+              valueList: vehicleList,
+              textColor: Colors.blue[400],
+              fontWeight: FontWeight.bold,
+              changeValue: changeValue,
+            ),
           ),
           flex: 1,
           fit: FlexFit.loose,
         ),
         Flexible(
           child: _vehicleRow(
-            'Plate Number',
-            _dropDown(numberPlate, numberPlateList, globals.textColor,
-                FontWeight.normal),
-          ),
+              'Plate Number',
+              dropDown(
+                value: numberPlate,
+                valueList: numberPlateList,
+                textColor: globals.textColor,
+                fontWeight: FontWeight.normal,
+                changeValue: changeValue,
+              )),
           flex: 1,
           fit: FlexFit.loose,
         ),
@@ -452,11 +445,14 @@ class _BookingState extends State<Booking> {
             entryTime: entryTime,
             exitTime: exitTime,
           ).then((value) {
-            if (value.spaceList[0].available) {
-              buildNotification(
-                  'Parking space has ${value.spaceList[0].availableSpaces} available spaces',
-                  'success');
+            if (value != null) {
+              if (value.spaceList[0].available) {
+                buildNotification(
+                    'Parking space has ${value.spaceList[0].availableSpaces} available spaces',
+                    'success');
+              }
             }
+
             transactionDetails.setLoading(false);
           }).catchError((err) {
             transactionDetails.setLoading(false);
@@ -506,8 +502,13 @@ class _BookingState extends State<Booking> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         PrimaryText(content: 'Payment Method'),
-        _dropDown(paymentMethod, paymentMethodList, Colors.blue[400],
-            FontWeight.bold),
+        dropDown(
+          value: paymentMethod,
+          valueList: paymentMethodList,
+          textColor: Colors.blue[400],
+          fontWeight: FontWeight.bold,
+          changeValue: changeValue,
+        )
       ],
     );
   }
@@ -525,7 +526,20 @@ class _BookingState extends State<Booking> {
   Widget _paymentButton() {
     return Container(
       padding: EdgeInsets.only(left: 20, right: 20, top: 20),
-      child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
+      // child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
+      // TODO: Remove this test code.
+      child: GoButton(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => PaymentSuccessful(
+                    bookingId: widget.bookingNumber,
+                    price: widget.price,
+                    destination: widget.destination,
+                    arrivalTime: arrivalTime,
+                    arrivalDate: arrivalDate,
+                    leavingTime: leavingTime,
+                    leavingDate: leavingDate,
+                  ))),
+          title: 'Pay now'),
     );
   }
 

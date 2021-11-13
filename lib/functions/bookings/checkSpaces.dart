@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:io' as dartIO;
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/functions/utils/handleError.dart';
 import 'package:park254_s_parking_app/models/spaceList.model.dart';
 import '../../config/globals.dart' as globals;
+import 'package:park254_s_parking_app/models/error.model.dart';
 
 /// Check occupied spaces
 Future<SpaceList> checkSpaces({
@@ -36,6 +38,13 @@ Future<SpaceList> checkSpaces({
     final spaces = SpaceList.fromJson(jsonDecode(response.body));
     return spaces;
   } else {
-    handleError(response.body);
+    final error = Error.fromJson(jsonDecode(response.body));
+    // When the parking lot is empty the request returns a 'Not Found error'.
+    // we don't want to show this to the user.
+    if (response.statusCode == 404) {
+      buildNotification('The Parking lot is empty.', 'success');
+    } else {
+      throw error;
+    }
   }
 }

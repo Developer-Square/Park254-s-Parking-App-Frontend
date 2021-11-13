@@ -7,7 +7,9 @@ class ReceiptArguments {
   final String destination;
   final String address;
   final TimeOfDay arrivalTime;
+  final DateTime arrivalDate;
   final TimeOfDay leavingTime;
+  final DateTime leavingDate;
 
   ReceiptArguments({
     @required this.bookingId,
@@ -16,6 +18,8 @@ class ReceiptArguments {
     @required this.destination,
     @required this.address,
     @required this.arrivalTime,
+    @required this.arrivalDate,
     @required this.leavingTime,
+    @required this.leavingDate,
   });
 }

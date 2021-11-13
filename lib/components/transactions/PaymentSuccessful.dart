@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -44,7 +45,9 @@ class PaymentSuccessful extends StatefulWidget {
   final int price;
   final String destination;
   final TimeOfDay arrivalTime;
+  final DateTime arrivalDate;
   final TimeOfDay leavingTime;
+  final DateTime leavingDate;
   final String bookingId;
   static const routeName = '/receipt';
 
@@ -53,7 +56,9 @@ class PaymentSuccessful extends StatefulWidget {
     @required this.price,
     @required this.destination,
     @required this.arrivalTime,
+    @required this.arrivalDate,
     @required this.leavingTime,
+    @required this.leavingDate,
   });
 
   @override
@@ -73,6 +78,11 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   String _inputErrorText;
   String numberPlate;
   String vehicleModel;
+  Timer timer;
+  // This helps to know when to stop the timer.
+  int _start;
+  // This helps to know if a user's parking time has started.
+  bool _waiting;
 
   @override
   initState() {
@@ -97,7 +107,75 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
           };
         }
       }
+      // Check the timer
+      checkTimer();
     }
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  void checkTimer() {
+    var now = new DateTime.now();
+    var userArrivalTime = new DateTime(
+        widget.arrivalDate.year,
+        widget.arrivalDate.month,
+        widget.arrivalDate.day,
+        widget.arrivalTime.hour,
+        widget.arrivalTime.minute);
+    var userLeavingTime = new DateTime(
+        widget.arrivalDate.year,
+        widget.arrivalDate.month,
+        widget.arrivalDate.day,
+        widget.arrivalTime.hour,
+        widget.arrivalTime.minute);
+
+    final duration = userLeavingTime.difference(userArrivalTime).inSeconds;
+
+    // Check if the user's parking time has started so that we can start the timer.
+    if (now.compareTo(userArrivalTime) >= 0) {
+      setState(() {
+        _start = duration;
+        _waiting = false;
+      });
+      startTimer(duration: duration);
+    } else {
+      // Sometimes a user may book a parking lot ahead of time so we need to calculate.
+      // how long till their parking time starts.
+      // Time left before a user's parking time starts.
+      var timeLeft = userArrivalTime.difference(now).inSeconds;
+      if (timeLeft > 0) {
+        setState(() {
+          _start = duration;
+          _waiting = true;
+        });
+        startTimer(duration: timeLeft);
+      }
+    }
+  }
+
+  void startTimer({@required int duration}) {
+    var parkingDuration = Duration(seconds: duration);
+
+    timer = new Timer.periodic(
+        parkingDuration,
+        (Timer timer) => setState(() {
+              if (_start < 1) {
+                // If the user's parking time had not started, call checkTimer to start the timer again.
+                if (_waiting) {
+                  checkTimer();
+                } else {
+                  buildNotification('Your Time is up!', 'info');
+                  timer.cancel();
+                }
+              } else {
+                log(_start.toString());
+                _start = _start - 1;
+              }
+            }));
   }
 
   /// Creates custom row with title and value

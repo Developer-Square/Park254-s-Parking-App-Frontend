@@ -35,7 +35,7 @@ import 'package:park254_s_parking_app/functions/vehicles/getVehicles.dart';
 import 'package:park254_s_parking_app/models/userWithToken.model.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
-import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/components/booking/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
 import 'package:park254_s_parking_app/pages/search%20page/search_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
@@ -359,7 +359,9 @@ class _MyAppState extends State<MyApp> {
                     price: args.price,
                     destination: args.destination,
                     arrivalTime: args.arrivalTime,
+                    arrivalDate: args.arrivalDate,
                     leavingTime: args.leavingTime,
+                    leavingDate: args.leavingDate,
                   );
                 });
               } else if (settings.name == ParkingInfo.routeName) {

@@ -4,7 +4,7 @@ import 'dart:math' as dartMath;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/components/booking/Booking.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
