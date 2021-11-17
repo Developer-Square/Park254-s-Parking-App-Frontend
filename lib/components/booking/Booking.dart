@@ -547,12 +547,12 @@ class _BookingState extends State<Booking> {
     return TimeDatePicker(
         // If the user is updating time, they're not allowed to update the arrival time.
         pickArrivalDate: bookingDetailsProvider != null
-            ? bookingDetailsProvider.update
+            ? !bookingDetailsProvider.update
                 ? () => _selectArrivalDate(context)
                 : () {}
             : () {},
         pickArrivalTime: bookingDetailsProvider != null
-            ? bookingDetailsProvider.update
+            ? !bookingDetailsProvider.update
                 ? () => _selectArrivalTime(context)
                 : () {}
             : () {},

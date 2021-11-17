@@ -118,50 +118,80 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     super.dispose();
   }
 
+  // Calculates the difference between two datetimes.
+  int difference({
+    DateTime arrival,
+    DateTime leaving,
+    TimeOfDay arrivalTime,
+    TimeOfDay leavingTime,
+  }) {
+    final parkingDays = leaving.difference(arrival).inHours;
+    final parkingHours = (leavingTime.hour + (leavingTime.minute / 60)) -
+        (arrivalTime.hour + (arrivalTime.minute / 60)) +
+        parkingDays;
+    final totalParkingSeconds = (parkingHours * 3600).ceil();
+    return totalParkingSeconds;
+  }
+
   void checkTimer() {
     var now = new DateTime.now();
-    var userArrivalTime = new DateTime(
+    // We need to make a new DateTime because in the previous page, when a user.
+    // selects a new time for their arrival or leaving time, those changes are reflected.
+    // in the arrivalTime and leavingTime objects and not in the arrivalDate and leavingDate
+    // objects.
+    final userArrivalDate = new DateTime(
         widget.arrivalDate.year,
         widget.arrivalDate.month,
         widget.arrivalDate.day,
         widget.arrivalTime.hour,
         widget.arrivalTime.minute);
-    var userLeavingTime = new DateTime(
-        widget.arrivalDate.year,
-        widget.arrivalDate.month,
-        widget.arrivalDate.day,
-        widget.arrivalTime.hour,
-        widget.arrivalTime.minute);
+    final userLeavingDate = new DateTime(
+        widget.leavingDate.year,
+        widget.leavingDate.month,
+        widget.leavingDate.day,
+        widget.leavingTime.hour,
+        widget.leavingTime.minute);
 
-    final duration = userLeavingTime.difference(userArrivalTime).inSeconds;
+    final totalParkingSeconds = difference(
+      arrival: userArrivalDate,
+      leaving: userLeavingDate,
+      arrivalTime: widget.arrivalTime,
+      leavingTime: widget.leavingTime,
+    );
 
     // Check if the user's parking time has started so that we can start the timer.
-    if (now.compareTo(userArrivalTime) >= 0) {
+    if (userArrivalDate.compareTo(now) >= 0) {
       setState(() {
-        _start = duration;
+        _start = totalParkingSeconds;
         _waiting = false;
       });
-      startTimer(duration: duration);
+      // startTimer(duration: totalParkingSeconds);
     } else {
       // Sometimes a user may book a parking lot ahead of time so we need to calculate.
       // how long till their parking time starts.
       // Time left before a user's parking time starts.
-      var timeLeft = userArrivalTime.difference(now).inSeconds;
+      var timeLeft = difference(
+        arrival: now,
+        leaving: userArrivalDate,
+        arrivalTime: TimeOfDay.fromDateTime(now),
+        leavingTime: widget.arrivalTime,
+      );
+      log('timeLeft $timeLeft');
       if (timeLeft > 0) {
         setState(() {
-          _start = duration;
+          _start = totalParkingSeconds;
           _waiting = true;
         });
-        startTimer(duration: timeLeft);
+        // startTimer(duration: timeLeft);
       }
     }
   }
 
   void startTimer({@required int duration}) {
-    var parkingDuration = Duration(seconds: duration);
+    var intervalDuration = Duration(seconds: 1);
 
     timer = new Timer.periodic(
-        parkingDuration,
+        intervalDuration,
         (Timer timer) => setState(() {
               if (_start < 1) {
                 // If the user's parking time had not started, call checkTimer to start the timer again.
