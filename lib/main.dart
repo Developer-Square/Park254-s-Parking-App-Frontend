@@ -37,6 +37,7 @@ import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/pages/home_page.dart';
 import 'package:park254_s_parking_app/components/booking/Booking.dart';
 import 'package:park254_s_parking_app/pages/login_page.dart';
+import 'package:park254_s_parking_app/pages/onboarding_page.dart';
 import 'package:park254_s_parking_app/pages/search%20page/search_page.dart';
 import 'package:park254_s_parking_app/pages/vendor_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -215,9 +216,8 @@ class _MyAppState extends State<MyApp> {
                             refreshToken: refreshToken,
                           )
                     : Loader()
-                // Check if a user is logged in to google or facebook before redirecting them.
-                // to the onboarding page.
-                : AuthService().handleAuthState(),
+                // If there's no data redirect the user to the onboarding page.
+                : OnBoardingPage(),
             routes: {
               '/login_screen': (context) => LoginScreen(),
             },

@@ -21,22 +21,6 @@ import '../../pages/home_page.dart';
 import 'package:encrypt/encrypt.dart' as encryptionPackage;
 
 class AuthService {
-  // Determine if the user is authenticated and redirect accordingly
-  handleAuthState() {
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.hasData) {
-          // TODO: Add a method to get the token from the backend.
-          return HomePage();
-        } else {
-          // user not authorized redirect to login page.
-          return OnBoardingPage();
-        }
-      },
-    );
-  }
-
   Future<UserCredential> signInWithGoogle(
       {BuildContext context, Function showLoader}) async {
     showLoader(state: true);
