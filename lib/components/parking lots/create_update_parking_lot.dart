@@ -48,7 +48,7 @@ class CreateUpdateParkingLot extends StatefulWidget {
 
 class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   /// We are storing the images twice because inorder to display the images.
-  /// need to put them in [File] format while sending them to cloudinary requires.
+  /// we need to put them in [File] format while sending them to cloudinary requires.
   /// them to be [String] format.
   // Intial images links in the backend.
   final List _backendImages = [];
@@ -98,7 +98,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
   }
 
   void setLoader(bool value) {
-    showLoader = value;
+    setState(() {
+      showLoader = value;
+    });
   }
 
   // Select an image via gallery or camera.
@@ -139,6 +141,7 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
     setState(() {
       _imageFiles.remove(selected);
       _imagesToSend.removeAt(index);
+      _backendImages.removeAt(index);
       selected = null;
       // ToDo: Add a way to delete images from cloudinary.
     });
@@ -158,6 +161,9 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
       widget.prices.text = '';
       widget.address.text = '';
       widget.city.text = '';
+      _imageFiles.clear();
+      _imagesToSend.clear();
+      _backendImages.clear();
     });
   }
 
