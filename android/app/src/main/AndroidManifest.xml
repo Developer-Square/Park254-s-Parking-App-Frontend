@@ -18,7 +18,7 @@
         android:label="park254_s_parking_app"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyCRv0qsKcr8DwaWi8rEA8vVnIYO1hkokx0"/>
+               android:value="AIzaSyBoQs2IZNwBOnO26D1LQBlcueBqvYmc6aM"/>
          <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

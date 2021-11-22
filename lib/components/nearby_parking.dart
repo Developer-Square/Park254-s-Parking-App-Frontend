@@ -51,11 +51,13 @@ class _NearByParkingState extends State<NearByParking>
   bool _large;
   String selectedCard = 'Nearby Parking';
   NearbyParkingLots parkingLots;
+  var recommendedParkingLots = [];
   int maxRetries;
   // User's details from the store.
   UserWithTokenModel storeDetails;
   // Parking details from the store.
   NearbyParkingListModel nearbyParkingDetails;
+  NearbyParkingListModel recommendedParkingDetails;
 
   @override
   void initState() {
@@ -142,9 +144,20 @@ class _NearByParkingState extends State<NearByParking>
 
   Widget build(BuildContext context) {
     nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
-    if (nearbyParkingDetails.nearbyParking != null) {
+    recommendedParkingDetails = Provider.of<NearbyParkingListModel>(context);
+    List<NearbyParkingLot> recommendedParkingLots;
+    if (nearbyParkingDetails.nearbyParking != null &&
+        recommendedParkingDetails.recommendedNearbyParking != null) {
       setState(() {
         parkingLots = nearbyParkingDetails.nearbyParking;
+        recommendedParkingLots =
+            recommendedParkingDetails.recommendedNearbyParking.lots;
+        // Sorting the parking lots from high to low using the rating value.
+        // to display them on the recommended parking section.
+        if (recommendedParkingLots != null) {
+          recommendedParkingLots
+              .sort((a, b) => b.ratingValue.compareTo(a.ratingValue));
+        }
       });
     }
     return Align(
@@ -158,9 +171,11 @@ class _NearByParkingState extends State<NearByParking>
               child:
                   ListView(scrollDirection: Axis.horizontal, children: <Widget>[
                 SizedBox(width: 12.0),
-                buildNearbyContainer('Nearby Parking'),
+                buildNearbyContainer(
+                    title: 'Nearby Parking', lots: parkingLots.lots),
                 SizedBox(width: 15.0),
-                buildNearbyContainer('Recommended Parking'),
+                buildNearbyContainer(
+                    title: 'Recommended Parking', lots: recommendedParkingLots),
                 SizedBox(width: 12.0),
               ]))),
     );
@@ -200,25 +215,27 @@ class _NearByParkingState extends State<NearByParking>
 
   /// Builds out the different parking locations using data provided.
   /// by parking model.
-  Widget buildParkingPlacesList(title) {
+  Widget buildParkingPlacesList({String title, List<NearbyParkingLot> lots}) {
     return ListView.builder(
-        itemCount: parkingLots.lots.length,
+        itemCount: lots != null ? lots.length : 0,
         itemBuilder: (context, index) {
           return Column(
             children: [
               NearByParkingList(
                 activeCard: title == selectedCard ? true : false,
-                imgPath: parkingLots.lots[index].images.length > 0
-                    ? parkingLots.lots[index].images[0]
+                imgPath: lots[index].images != null
+                    ? lots[index].images.length > 0
+                        ? lots[index].images[0]
+                        : ''
                     : '',
-                parkingPrice: parkingLots.lots[index].price,
-                parkingPlaceName: parkingLots.lots[index].name,
-                rating: parkingLots.lots[index].rating,
-                distance: parkingLots.lots[index].distance,
-                parkingSlots: parkingLots.lots[index].spaces,
+                parkingPrice: lots[index].price,
+                parkingPlaceName: lots[index].name,
+                rating: lots[index].ratingValue,
+                distance: lots[index].distance,
+                parkingSlots: lots[index].spaces,
                 mapController: widget.mapController,
                 customInfoWindowController: widget.customInfoWindowController,
-                parkingData: parkingLots.lots[index],
+                parkingData: lots[index],
                 showNearbyParking: widget.showNearByParkingFn,
                 hideAllDetails: _closeFullSizeWidgetRedirection,
                 large: _large,
@@ -236,7 +253,7 @@ class _NearByParkingState extends State<NearByParking>
   /// Builds out the nearby parking widget and the recommended parking widget.
   ///
   /// Disables the cards depending on which one is selected.
-  Widget buildNearbyContainer(String title) {
+  Widget buildNearbyContainer({String title, List<NearbyParkingLot> lots}) {
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       _large ? buildTitle(title) : Container(),
       InkWell(
@@ -300,7 +317,7 @@ class _NearByParkingState extends State<NearByParking>
                 SizedBox(
                     height: _large ? 420.0 : 205.0,
                     child: parkingLots != null && parkingLots.lots != null
-                        ? buildParkingPlacesList(title)
+                        ? buildParkingPlacesList(title: title, lots: lots)
                         : Loader()),
               ],
             ),

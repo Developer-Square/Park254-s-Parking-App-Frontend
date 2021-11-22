@@ -10,7 +10,7 @@ class BookingProvider with ChangeNotifier {
   DateTime _leavingDate;
   TimeOfDay _arrivalTime;
   TimeOfDay _leavingTime;
-  List<BookingDetailsPopulated> _bookingDetails;
+  List<dynamic> _bookingDetails;
   List _parkingLotDetails = [];
   List _activeBookings = [];
   bool _update = false;
@@ -24,7 +24,7 @@ class BookingProvider with ChangeNotifier {
   DateTime get leavingDate => _leavingDate;
   TimeOfDay get arrivalTime => _arrivalTime;
   TimeOfDay get leavingTime => _leavingTime;
-  List<BookingDetailsPopulated> get bookingDetails => _bookingDetails;
+  List<dynamic> get bookingDetails => _bookingDetails;
   List get parkingLotDetails => _parkingLotDetails;
   List get activeBookings => _activeBookings;
   bool get update => _update;
@@ -36,8 +36,7 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setBookingDetails(
-      {@required List<BookingDetailsPopulated> value, List bookings}) {
+  void setBookingDetails({@required List<dynamic> value, List bookings}) {
     _bookingDetails = value;
     _activeBookings = bookings;
     notifyListeners();

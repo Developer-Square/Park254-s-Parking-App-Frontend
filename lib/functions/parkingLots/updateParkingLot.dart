@@ -45,11 +45,6 @@ Future<ParkingLot> updateParkingLot({
   if (longitude == 0 || latitude == 0) {
     body.remove('location');
   }
-  if (images.length == 0) {
-    body.remove('images');
-  }
-
-  log(jsonEncode(body));
 
   final url = Uri.https(globals.apiKey, '/v1/parkingLots/$parkingLotId');
   final response = await http.patch(

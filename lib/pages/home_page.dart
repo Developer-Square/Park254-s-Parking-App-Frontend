@@ -100,37 +100,41 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Stack(
-        children: [
-          AnimatedSwitcher(
-            child: changeScreens(hideNavigationIcons),
-            key: ValueKey(_activeTab),
-            duration: Duration(seconds: 2),
-            transitionBuilder: (widget, animation) =>
-                ScaleTransition(scale: animation, child: widget),
+    return WillPopScope(
+        // This prevents a user from going back to the login page since we don't want.
+        // them to login again.
+        onWillPop: () async => false,
+        child: SafeArea(
+            child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          body: Stack(
+            children: [
+              AnimatedSwitcher(
+                child: changeScreens(hideNavigationIcons),
+                key: ValueKey(_activeTab),
+                duration: Duration(seconds: 2),
+                transitionBuilder: (widget, animation) =>
+                    ScaleTransition(scale: animation, child: widget),
+              ),
+              showBottomNavigation
+                  ? Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          height: 50.0,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.white,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              _buildNavigatorIcons('home', 'Home'),
+                              _buildNavigatorIcons('parking', 'My Parking'),
+                              _buildNavigatorIcons('profile', 'Profile')
+                            ],
+                          )))
+                  : Container(),
+            ],
           ),
-          showBottomNavigation
-              ? Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                      height: 50.0,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          _buildNavigatorIcons('home', 'Home'),
-                          _buildNavigatorIcons('parking', 'My Parking'),
-                          _buildNavigatorIcons('profile', 'Profile')
-                        ],
-                      )))
-              : Container(),
-        ],
-      ),
-    ));
+        )));
   }
 
   /// Creates the navigation buttons at the bottom of the page.

@@ -1,26 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/BackArrow.dart';
-import 'package:park254_s_parking_app/components/SimpleTextField.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/functions/auth/forgotPassword.dart';
-import 'package:park254_s_parking_app/pages/reset_password.dart';
+import 'package:park254_s_parking_app/functions/auth/resetPassword.dart';
+import 'package:park254_s_parking_app/pages/login_page.dart';
 import '../config/globals.dart' as globals;
 
-class ForgotResetPassword extends StatefulWidget {
-  final String pageType;
-
-  ForgotResetPassword({@required this.pageType});
-
+class ResetPassword extends StatefulWidget {
   @override
-  _ForgotResetPasswordState createState() => _ForgotResetPasswordState();
+  _ResetPasswordState createState() => _ResetPasswordState();
 }
 
-class _ForgotResetPasswordState extends State<ForgotResetPassword> {
+class _ResetPasswordState extends State<ResetPassword> {
   // Helps in validation of the form.
   final formKey = GlobalKey<FormState>();
-  TextEditingController forgotEmail = new TextEditingController();
+  TextEditingController token = new TextEditingController();
+  TextEditingController password = new TextEditingController();
+  TextEditingController confirmPassword = new TextEditingController();
   bool showLoader;
 
   @override
@@ -30,19 +27,19 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
   }
 
   // Make api.
-  sendForgotEmail() {
-    if (formKey.currentState.validate()) {
+  sendResetPassword() {
+    if (formKey.currentState.validate() &&
+        password.text == confirmPassword.text) {
       setState(() {
         showLoader = true;
       });
-      // Navigator.of(context)
-      //     .push(MaterialPageRoute(builder: (context) => ResetPassword()));
-      forgotPassword(email: forgotEmail.text).then((value) {
+      resetPassword(token: token.text, password: confirmPassword.text)
+          .then((value) {
         if (value == 'success') {
           buildNotification(
-              'Check your email for the token we\'ve sent', 'success');
+              'Password reset successfully. You can now login.', 'success');
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ResetPassword()));
+              .push(MaterialPageRoute(builder: (context) => LoginPage()));
           setState(() {
             showLoader = false;
           });
@@ -73,7 +70,7 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
                   child: Column(
                     children: [
                       Text(
-                        'Once you input your email and click \'Send\' you\'ll get an email from us to reset your password.',
+                        'Once you reset your password, you can try logging in again.',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: globals.textColor,
@@ -81,32 +78,25 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
                       ),
                       SizedBox(height: 15.0),
                       Form(
-                        key: formKey,
-                        child: SimpleTextField(
-                          validate: true,
-                          placeholder: 'Email',
-                          controller: forgotEmail,
-                          fontWeight: FontWeight.normal,
-                          textColor: globals.textColor,
-                          decorate: true,
-                          decoration: InputDecoration(
-                              hintText: 'Email',
-                              labelText: 'Kindly enter your email',
-                              labelStyle:
-                                  TextStyle(color: globals.backgroundColor)),
-                          alignLeft: true,
-                        ),
-                      ),
+                          key: formKey,
+                          child: Column(children: <Widget>[
+                            _buildFormField(text: 'Token', controller: token),
+                            _buildFormField(
+                                text: 'Password', controller: password),
+                            _buildFormField(
+                                text: 'Confirm Password',
+                                controller: confirmPassword)
+                          ]))
                     ],
                   ),
                 ),
-                flex: 2,
+                flex: 5,
               ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: InkWell(
                   onTap: () {
-                    sendForgotEmail();
+                    sendResetPassword();
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width,
@@ -116,7 +106,7 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
                     ),
                     child: Center(
                       child: Text(
-                        'Send',
+                        'Confirm',
                         style: globals.buildTextStyle(
                             18.0, true, globals.textColor),
                       ),
@@ -130,5 +120,27 @@ class _ForgotResetPasswordState extends State<ForgotResetPassword> {
         ]),
       ),
     );
+  }
+
+  /// Builds out every form field depending on the [text] variable passed to it.
+  Widget _buildFormField({String text, TextEditingController controller}) {
+    return Column(children: <Widget>[
+      Container(
+          child: TextFormField(
+        validator: (value) {
+          if (value == '' || value.isEmpty) {
+            return 'Please enter your ${text.toLowerCase()}';
+          }
+        },
+        controller: controller,
+        obscureText:
+            text == 'Password' || text == 'Confirm Password' ? true : false,
+        obscuringCharacter: '*',
+        decoration: InputDecoration(
+            hintText: text,
+            hintStyle: TextStyle(color: globals.placeHolderColor)),
+      )),
+      SizedBox(height: 15.0),
+    ]);
   }
 }

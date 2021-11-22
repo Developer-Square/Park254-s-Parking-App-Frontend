@@ -204,6 +204,7 @@ createUpdateParking({
           }
         }).catchError((err) {
           setLoader(false);
+          log('Error from createUpdateParking, In helper_functions.dart');
           log(err);
         });
       }

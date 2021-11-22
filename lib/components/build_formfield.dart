@@ -133,6 +133,12 @@ class BuildFormFieldState extends State<BuildFormField> {
                                                   value.isEmpty) {
                                                 return 'Please enter your ${widget.text == 'Phone number' ? 'phone number' : 'vehicle plate number'}';
                                               }
+                                              // Ensure the user enters a valid phone number.
+                                              if (widget.text ==
+                                                      'Phone number' &&
+                                                  value.length < 10) {
+                                                return 'Your phone number should be 10 digits or more';
+                                              }
                                             },
                                             decoration: InputDecoration(
                                                 hintText: widget.text ==
@@ -147,7 +153,33 @@ class BuildFormFieldState extends State<BuildFormField> {
                                           widget.text == 'Phone number'
                                               ? buildSingleTextField(
                                                   '', 'Email', '', widget.email)
-                                              : Container()
+                                              : Container(),
+                                          SizedBox(height: 35.0),
+                                          Text(
+                                            'Choose your role',
+                                            style: globals.buildTextStyle(
+                                                16.0, true, globals.textColor),
+                                          ),
+                                          SizedBox(height: 15.0),
+                                          buildRoleRadioButtons(),
+                                          SizedBox(height: 25.0),
+                                          Text(
+                                            'Add your password',
+                                            style: globals.buildTextStyle(
+                                                16.0, true, globals.textColor),
+                                          ),
+                                          buildSingleTextField(
+                                              'Create Password',
+                                              'Password',
+                                              '',
+                                              widget.createPassword),
+                                          SizedBox(height: 15.0),
+                                          buildSingleTextField(
+                                              'Confirm Password',
+                                              'Password',
+                                              '',
+                                              widget.confirmPassword),
+                                          SizedBox(height: 35.0),
                                         ])
                                       : TextFormField(
                                           validator: (value) {
@@ -293,19 +325,19 @@ class BuildFormFieldState extends State<BuildFormField> {
           },
         ),
         SizedBox(height: 15.0),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          Text('Didn\'t receive the code?',
-              style: TextStyle(
-                  color: globals.textColor.withOpacity(0.75),
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold)),
-          FlatButton(
-              onPressed: () {},
-              padding: EdgeInsets.only(right: 20.0),
-              child: Text('Resend',
-                  style: globals.buildTextStyle(
-                      16.0, true, globals.backgroundColor)))
-        ])
+        // Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        //   Text('Didn\'t receive the code?',
+        //       style: TextStyle(
+        //           color: globals.textColor.withOpacity(0.75),
+        //           fontSize: 16.0,
+        //           fontWeight: FontWeight.bold)),
+        //   FlatButton(
+        //       onPressed: () {},
+        //       padding: EdgeInsets.only(right: 20.0),
+        //       child: Text('Resend',
+        //           style: globals.buildTextStyle(
+        //               16.0, true, globals.backgroundColor)))
+        // ])
       ],
     );
   }

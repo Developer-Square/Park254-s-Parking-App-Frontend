@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/components/loader.dart';
 import 'package:park254_s_parking_app/functions/auth/register.dart';
@@ -26,6 +28,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String verification;
   bool showLoader;
   String roleError;
+  String verificationID;
   var details = [];
   final formKey = GlobalKey<FormState>();
   TextEditingController name = new TextEditingController();
@@ -64,13 +67,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
   changeScreens() {
     if (_step == 1) {
       return RegistrationScreens(
-          title: 'Phone number',
-          info: 'Welcome to Park254, kindly provide your phone number below',
-          step: _step,
-          formKey: formKey,
-          nameController: name,
-          emailController: email,
-          phoneController: phone);
+        title: 'Phone number',
+        info: 'Welcome to Park254, kindly provide your details below',
+        step: _step,
+        formKey: formKey,
+        nameController: name,
+        emailController: email,
+        phoneController: phone,
+        selectedValue: selectedValue,
+        validateFn: validateRadioButton,
+        createPasswordController: createPassword,
+        confirmPasswordController: confirmPassword,
+      );
     } else if (_step == 2) {
       return RegistrationScreens(
         title: 'Verification',
@@ -79,71 +87,130 @@ class _RegistrationPageState extends State<RegistrationPage> {
         formKey: formKey,
         verificationController: setVerifiationCode,
       );
-    } else if (_step == 3) {
-      return RegistrationScreens(
-          title: 'Role',
-          info: 'Kindly choose the type of account you\'re creating',
-          step: _step,
-          selectedValue: selectedValue,
-          validateFn: validateRadioButton,
-          formKey: formKey,
-          text: roleError);
-    } else if (_step == 4) {
-      return RegistrationScreens(
-          title: 'Password',
-          info: 'Enter your password',
-          step: _step,
-          formKey: formKey,
-          text: roleError,
-          createPasswordController: createPassword,
-          confirmPasswordController: confirmPassword);
     }
   }
 
   // Make api call to register a user.
   void sendRegisterDetails() async {
-    // ToDo: Add a way to verify the verification code
-    //
     // Verify that the user has chosen a role.
-    if (_step == 3 && selectedValue == null) {
+    if (_step == 1 && selectedValue == null) {
       buildNotification('Kindly choose a role', 'error');
-    } else if (_step == 4) {
-      FocusScope.of(context).unfocus();
-      if (createPassword.text == confirmPassword.text) {
+    } else if (_step == 1) {
+      if (createPassword.text != confirmPassword.text) {
+        buildNotification('Passwords don\'t match', 'error');
+      } else {
+        FocusScope.of(context).unfocus();
         setState(() {
-          showLoader = true;
+          _step += 1;
         });
-        register(
-          email: email.text,
-          name: name.text,
-          password: createPassword.text,
-          phone: phone.text,
-          role: selectedValue,
-        ).then((value) {
-          if (value.user.id != null) {
-            setState(() {
-              showLoader = false;
-              buildNotification(
-                  'You were registered successfully. Try Logging in now.',
-                  'success');
-            });
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => LoginPage(message: roleError)));
-          }
-        }).catchError((err) {
+      }
+    } else if (_step == 2) {
+      FocusScope.of(context).unfocus();
+      setState(() {
+        showLoader = true;
+      });
+      register(
+        email: email.text,
+        name: name.text,
+        password: createPassword.text,
+        phone: phone.text,
+        role: selectedValue,
+      ).then((value) {
+        if (value.user.id != null) {
           setState(() {
             showLoader = false;
+            buildNotification(
+                'You were registered successfully. Try Logging in now.',
+                'success');
           });
-          buildNotification(err.message, 'error');
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => LoginPage(message: roleError)));
+        }
+      }).catchError((err) {
+        setState(() {
+          showLoader = false;
         });
-      } else {
-        buildNotification('Passwords don\'t match', 'error');
-      }
-    } else {
-      setState(() {
-        _step += 1;
+        buildNotification(err.message, 'error');
       });
     }
+  }
+
+  // Verify the user's code.
+  void verifyCode() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    if (verification != null) {
+      String smsCode = verification.trim();
+
+      // Create a PhoneAuthCredential with the code
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationID, smsCode: smsCode);
+
+      try {
+        // Sign the user in (or link) with the credential
+        var firebaseUser = await auth.signInWithCredential(credential);
+        if (firebaseUser.user.phoneNumber != null) {
+          buildNotification('Verification complete', 'success');
+          setState(() {
+            _step += 1;
+          });
+        } else {
+          buildNotification(
+              'Verification code failed, Kindly try again', 'error');
+        }
+      } catch (e) {
+        log(e.toString());
+        buildNotification(e.toString().substring(32), 'error');
+      }
+    }
+  }
+
+  // Change the number to international format because that's what.
+  // firebase is expecting.
+  String refinePhoneNumber({String phone}) {
+    if (phone.substring(0, 1) == '0') {
+      return '+254' + phone.substring(1);
+    } else if (phone.substring(0, 1) == '2') {
+      return '+' + phone;
+    } else if (phone.substring(0, 1) == '+') {
+      return phone;
+    }
+  }
+
+  // Verify a user's phone number.
+  void firebaseVerification() async {
+    setState(() {
+      _step += 1;
+    });
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await auth.verifyPhoneNumber(
+      // Add a plus to make the phone number valid.
+      phoneNumber: refinePhoneNumber(phone: phone.text),
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // ANDROID ONLY.
+        log('No automatic code verification');
+      },
+      verificationFailed: (FirebaseAuthException error) {
+        if (error.code == 'invalid-phone-number') {
+          buildNotification('The provided number is not valid', 'error');
+        } else {
+          log(error.toString());
+          buildNotification('Something went wrong, kindly try again', 'error');
+        }
+      },
+      codeSent: (String verificationId, int resendToken) async {
+        setState(() {
+          verificationID = verificationId;
+        });
+        // Update the UI - wait for the user to enter the SMS code
+        buildNotification('Check for the code and add it manually', 'info');
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        log('no automatic code verification');
+      },
+    );
   }
 
   @override
@@ -166,12 +233,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               }),
           title: Text(
             _step == 1
-                ? 'Phone number'
+                ? 'User Details'
                 : _step == 2
                     ? 'Verification'
-                    : _step == 3
-                        ? 'Role'
-                        : 'Password',
+                    : '',
             style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
@@ -181,10 +246,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 4'),
+              _buildSteps('of 2'),
             ],
           ),
-          SizedBox(height: 170.0),
           AnimatedSwitcher(
             child: changeScreens(),
             key: ValueKey(_step),
@@ -197,7 +261,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             child: InkWell(
                 onTap: () {
                   // Validate the form.
-                  if (_step <= 5 && formKey.currentState.validate()) {
+                  if (_step <= 2 && formKey.currentState.validate()) {
                     // Get and record details from every page.
                     sendRegisterDetails();
                   }
@@ -210,7 +274,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   child: Center(
                     child: Text(
-                      _step == 5 ? 'Finish' : 'Next',
+                      _step == 2 ? 'Finish' : 'Next',
                       style:
                           globals.buildTextStyle(18.0, true, globals.textColor),
                     ),

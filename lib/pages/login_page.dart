@@ -39,14 +39,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // email.text = 'ryantest4@gmail.com';
-    emailOrPhone.text = '0796867328';
+    emailOrPhone.text = 'ryanvendor8@gmail.com';
+    // emailOrPhone.text = '0796867328';
     password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
     maxRetries = 0;
     locationEnabled = false;
-    // Check whether there's a message to display
+    // Check whether there's a message to display.
     if (widget.message != null) {
       if (widget.message.length > 0) {
         buildNotification(widget.message, 'success');
