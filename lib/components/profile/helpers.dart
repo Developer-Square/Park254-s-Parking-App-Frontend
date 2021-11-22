@@ -98,7 +98,12 @@ Widget buildWalletItem({String logo, String phonenumber}) {
       width: 40.0,
     ),
     SizedBox(width: 15.0),
-    buildDots(phonenumber: phonenumber),
+    phonenumber.length < 10
+        ? Text(
+            'No Phonenumber.',
+            style: globals.buildTextStyle(16.0, true, globals.textColor),
+          )
+        : buildDots(phonenumber: phonenumber),
     SizedBox(width: 10.0),
   ]);
 }

@@ -8,22 +8,27 @@ import 'package:park254_s_parking_app/models/nearbyParkingLots.model.dart';
 
 class NearbyParkingListModel with ChangeNotifier {
   NearbyParkingLots _nearbyParking = new NearbyParkingLots(lots: null);
+  // This so as we're able to mutate the parking lots and arrange them from highest rated to lowest.
+  // without mutating the other _nearbyParking lots.
+  NearbyParkingLots _recommendedNearbyParking =
+      new NearbyParkingLots(lots: null);
   NearbyParkingLot _nearbyParkingLot = new NearbyParkingLot(
-      id: null,
-      city: null,
-      owner: null,
-      images: null,
-      price: null,
-      rating: null,
-      ratingCount: null,
-      ratingValue: null,
-      location: null,
-      spaces: null,
-      features: null,
-      name: null,
-      address: null,
-      distance: null,
-      availableSpaces: null);
+    id: null,
+    city: null,
+    owner: null,
+    images: null,
+    price: null,
+    rating: null,
+    ratingCount: null,
+    ratingValue: null,
+    location: null,
+    spaces: null,
+    features: null,
+    name: null,
+    address: null,
+    distance: null,
+    availableSpaces: null,
+  );
   bool loading = false;
   bool _showBookNowTab = false;
   Position _currentPosition;
@@ -31,6 +36,7 @@ class NearbyParkingListModel with ChangeNotifier {
   String _currentPage;
 
   NearbyParkingLots get nearbyParking => _nearbyParking;
+  NearbyParkingLots get recommendedNearbyParking => _recommendedNearbyParking;
   NearbyParkingLot get nearbyParkingLot => _nearbyParkingLot;
   Position get currentPosition => _currentPosition;
   Directions get directionsInfo => _directionsInfo;
@@ -65,6 +71,13 @@ class NearbyParkingListModel with ChangeNotifier {
   }) async {
     loading = true;
     _nearbyParking = await getNearbyParkingLots(
+      token: token,
+      longitude: longitude,
+      latitude: latitude,
+      maxDistance: maxDistance,
+    );
+
+    _recommendedNearbyParking = await getNearbyParkingLots(
       token: token,
       longitude: longitude,
       latitude: latitude,

@@ -8,7 +8,7 @@ import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/functions/utils/getRandomNumber.dart';
 import 'package:provider/provider.dart';
-import 'Booking.dart';
+import 'booking/Booking.dart';
 import 'nearby_parking_list.dart';
 
 /// Creates a booking tab position at the bottom of the screen.

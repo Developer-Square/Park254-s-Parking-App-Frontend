@@ -4,7 +4,7 @@ import 'dart:math' as dartMath;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:park254_s_parking_app/components/Booking.dart';
+import 'package:park254_s_parking_app/components/booking/Booking.dart';
 import 'package:park254_s_parking_app/components/BoxShadowWrapper.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/ParkingInfo.dart';
 import 'package:park254_s_parking_app/components/parking%20lots/create_update_parking_lot.dart';
@@ -52,7 +52,7 @@ class MyParkingState extends State<MyParkingScreen> {
   // Used when we are fetching details for individual parking lots.
   List activeBookings = [];
   UserModel userModel;
-  List<BookingDetailsPopulated> bookingDetailsList;
+  List<dynamic> bookingDetailsList;
   TextEditingController fullNameController = new TextEditingController();
   TextEditingController spacesController = new TextEditingController();
   TextEditingController pricesController = new TextEditingController();
@@ -113,26 +113,32 @@ class MyParkingState extends State<MyParkingScreen> {
       DateTime currentDate = DateTime.now().toLocal();
       TimeOfDay currentTime = TimeOfDay.now();
       int index = 0;
+      // If the user doesn't have any bookings, send an empty array to the store.
+      // This is so that the myparking page isn't always in a loading state.
+      if (value.bookingDetailsList.length > 0) {
+        // Get parking lot details i.e. names, ratings etc.
+        value.bookingDetailsList.forEach((element) {
+          // Keep track of the iterations.
+          var localExitTime = element.exitTime.toLocal();
+          index += 1;
+          // Check for the active bookings.
+          Duration days = localExitTime.difference(currentDate);
+          TimeOfDay exitTime = TimeOfDay.fromDateTime(localExitTime);
+          double totalTime = (exitTime.hour + (exitTime.minute / 60)) -
+              (currentTime.hour + (currentTime.minute / 60));
 
-      // Get parking lot details i.e. names, ratings etc.
-      value.bookingDetailsList.forEach((element) {
-        // Keep track of the iterations.
-        var localExitTime = element.exitTime.toLocal();
-        index += 1;
-        // Check for the active bookings.
-        Duration days = localExitTime.difference(currentDate);
-        TimeOfDay exitTime = TimeOfDay.fromDateTime(localExitTime);
-        double totalTime = (exitTime.hour + (exitTime.minute / 60)) -
-            (currentTime.hour + (currentTime.minute / 60));
-
-        if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
-          _getParkingLotsInfo(value: value, index: index);
-          // Add the booking id for active bookings.
-          activeBookings.add(element.id);
-        } else {
-          _getParkingLotsInfo(value: value, index: index);
-        }
-      });
+          if (double.parse(days.inHours.toString()) >= 0 && totalTime >= 0) {
+            _getParkingLotsInfo(value: value, index: index);
+            // Add the booking id for active bookings.
+            activeBookings.add(element.id);
+          } else {
+            _getParkingLotsInfo(value: value, index: index);
+          }
+        });
+      } else {
+        bookingDetailsProvider.setUpdate(value: false);
+        bookingDetailsProvider.setBookingDetails(value: [], bookings: []);
+      }
     }).catchError((err) {
       log("In fetchParkingLotHistory, myparking_screen");
       log(err.toString());
@@ -357,18 +363,26 @@ class MyParkingState extends State<MyParkingScreen> {
                                   context: context,
                                 ))
                             : userRole == 'user' && bookingDetailsList != null
-                                ? SizedBox(
-                                    height: MediaQuery.of(context).size.height,
-                                    child: buildParkingLotResults(
-                                      userRole: userRole,
-                                      results: bookingDetailsList,
-                                      updateParking: _updateParking,
-                                      updateParkingTime: _updateParkingTime,
-                                      deleteParkingLot: _deleteParkingLot,
-                                      bookingDetailsProvider:
-                                          bookingDetailsProvider,
-                                      context: context,
-                                    ))
+                                ? bookingDetailsList.length > 0
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: buildParkingLotResults(
+                                          userRole: userRole,
+                                          results: bookingDetailsList,
+                                          updateParking: _updateParking,
+                                          updateParkingTime: _updateParkingTime,
+                                          deleteParkingLot: _deleteParkingLot,
+                                          bookingDetailsProvider:
+                                              bookingDetailsProvider,
+                                          context: context,
+                                        ))
+                                    : Center(
+                                        child: Text(
+                                        'No Parking Results',
+                                        style: globals.buildTextStyle(
+                                            17.0, true, Colors.grey),
+                                      ))
                                 : Center(
                                     child: Text(
                                     'Loading....',
