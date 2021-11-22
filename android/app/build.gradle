@@ -63,7 +63,7 @@ flutter {
 
 dependencies {
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:28.4.1')
+    implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
