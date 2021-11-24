@@ -70,6 +70,7 @@ class _SearchPageState extends State<SearchPage> {
   NearbyParkingListModel nearbyParkingDetails;
   double latitude;
   double longitude;
+  Timer _timer;
 
   @override
   void initState() {
@@ -195,7 +196,6 @@ class _SearchPageState extends State<SearchPage> {
 
   void setSearchResults(response) {
     setState(() {
-      // TODO: Create a model for predictions data.
       // If successfull store all the suggestions in a list to display below the search bar.
       _placeList = json.decode(response.body)['predictions'];
       // Hide the recent searches when the user starts typing on the search bar input.
@@ -234,6 +234,7 @@ class _SearchPageState extends State<SearchPage> {
   // Clears the suggestions when a user clicks on one of them.
   void clearPlaceList(address) {
     setState(() {
+      _searchText = searchBarController.text;
       showSuggestion = false;
     });
     _placeList.clear();
@@ -266,6 +267,12 @@ class _SearchPageState extends State<SearchPage> {
       _recentSearchesList = [];
     });
   }
+
+  // _timer = new Timer(const Duration(milliseconds: 400), () {
+  //     setState(() {
+  //      var _logoStyle = FlutterLogoStyle.horizontal;
+  //     });
+  //   });
 
   Widget build(BuildContext context) {
     nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
@@ -310,10 +317,10 @@ class _SearchPageState extends State<SearchPage> {
                 ? SingleChildScrollView(
                     child: Container(
                       // Hides all the recent searches if one of them are clicked.
-                      height: _recentSearchesList.length > 0
-                          ? MediaQuery.of(context).size.height / 2
-                          : _placeList.length > 0
-                              ? MediaQuery.of(context).size.height / 1.85
+                      height: _placeList.length > 0
+                          ? MediaQuery.of(context).size.height / 1.85
+                          : _recentSearchesList.length > 0 && showRecentSearches
+                              ? MediaQuery.of(context).size.height / 2
                               : 110.0,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
@@ -351,7 +358,8 @@ class _SearchPageState extends State<SearchPage> {
                                       addedSearchFn: addSearchFn,
                                     )
                                   // Display suggestions available.
-                                  : _recentSearchesList.length > 0
+                                  : _recentSearchesList.length > 0 &&
+                                          showSuggestion
                                       ? showRecentSearchesWidget(
                                           addSearchToList: addSearchToList,
                                           recentSearchesList:
