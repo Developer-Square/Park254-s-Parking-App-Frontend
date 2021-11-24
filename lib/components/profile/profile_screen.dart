@@ -232,8 +232,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     buildContainer(
                         logo: widget.logo2Path,
                         type: 'wallet',
-                        phoneNumber: storeDetails != null
-                            ? storeDetails.user.user.phone.toString()
+                        phoneNumber: phoneController.text != ''
+                            ? phoneController.text
                             : 'No Phonenumber'),
                     SizedBox(height: 50.0),
                     userRole != 'vendor'
