@@ -156,6 +156,14 @@ class BuildFormFieldState extends State<BuildFormField> {
                                               : Container(),
                                           SizedBox(height: 35.0),
                                           Text(
+                                            'Choose your role',
+                                            style: globals.buildTextStyle(
+                                                16.0, true, globals.textColor),
+                                          ),
+                                          SizedBox(height: 15.0),
+                                          buildRoleRadioButtons(),
+                                          SizedBox(height: 25.0),
+                                          Text(
                                             'Add your password',
                                             style: globals.buildTextStyle(
                                                 16.0, true, globals.textColor),

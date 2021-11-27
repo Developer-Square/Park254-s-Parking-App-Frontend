@@ -74,6 +74,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
         nameController: name,
         emailController: email,
         phoneController: phone,
+        selectedValue: selectedValue,
+        validateFn: validateRadioButton,
         createPasswordController: createPassword,
         confirmPasswordController: confirmPassword,
       );
@@ -85,33 +87,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
         formKey: formKey,
         verificationController: setVerifiationCode,
       );
-    } else if (_step == 3) {
-      return RegistrationScreens(
-        title: 'Role',
-        info: 'Choose your role',
-        step: _step,
-        formKey: formKey,
-        selectedValue: selectedValue,
-        validateFn: validateRadioButton,
-      );
     }
   }
 
   // Make api call to register a user.
   void sendRegisterDetails() async {
     // Verify that the user has chosen a role.
-    if (_step == 3 && selectedValue == null) {
+    if (_step == 1 && selectedValue == null) {
       buildNotification('Kindly choose a role', 'error');
-    } else if (_step == 2) {
-      verifyCode();
     } else if (_step == 1) {
       if (createPassword.text != confirmPassword.text) {
         buildNotification('Passwords don\'t match', 'error');
       } else {
         FocusScope.of(context).unfocus();
-        firebaseVerification();
+        setState(() {
+          _step += 1;
+        });
       }
-    } else if (_step == 3) {
+    } else if (_step == 2) {
       FocusScope.of(context).unfocus();
       setState(() {
         showLoader = true;
@@ -243,7 +236,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ? 'User Details'
                 : _step == 2
                     ? 'Verification'
-                    : 'Role',
+                    : '',
             style: globals.buildTextStyle(18.0, true, globals.textColor),
           ),
           centerTitle: true,
@@ -253,7 +246,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Row(
             children: <Widget>[
               _buildSteps('STEP $_step'),
-              _buildSteps('of 3'),
+              _buildSteps('of 2'),
             ],
           ),
           AnimatedSwitcher(
@@ -268,7 +261,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             child: InkWell(
                 onTap: () {
                   // Validate the form.
-                  if (_step <= 3 && formKey.currentState.validate()) {
+                  if (_step <= 2 && formKey.currentState.validate()) {
                     // Get and record details from every page.
                     sendRegisterDetails();
                   }
@@ -281,7 +274,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   child: Center(
                     child: Text(
-                      _step == 3 ? 'Finish' : 'Next',
+                      _step == 2 ? 'Finish' : 'Next',
                       style:
                           globals.buildTextStyle(18.0, true, globals.textColor),
                     ),
