@@ -30,6 +30,7 @@ Future<Transaction> fetchTransaction({
     'Amount': amount.toString(),
     'createdAt': createdAt,
   };
+  log(queryParameters.toString());
 
   final url = Uri.https(globals.apiKey, '/v1/mpesaWebHook', queryParameters);
 
