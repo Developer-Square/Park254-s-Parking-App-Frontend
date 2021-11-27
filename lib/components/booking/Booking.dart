@@ -526,20 +526,7 @@ class _BookingState extends State<Booking> {
   Widget _paymentButton() {
     return Container(
       padding: EdgeInsets.only(left: 20, right: 20, top: 20),
-      // child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
-      // TODO: Remove this test code.
-      child: GoButton(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PaymentSuccessful(
-                    bookingId: widget.bookingNumber,
-                    price: widget.price,
-                    destination: widget.destination,
-                    arrivalTime: arrivalTime,
-                    arrivalDate: arrivalDate,
-                    leavingTime: leavingTime,
-                    leavingDate: leavingDate,
-                  ))),
-          title: 'Pay now'),
+      child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
     );
   }
 

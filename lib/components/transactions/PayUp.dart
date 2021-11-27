@@ -183,12 +183,12 @@ class _PayUpState extends State<PayUp> {
     String type,
   }) async {
     String access = storeDetails.user.accessToken.token;
-    String internationalNumber = '254';
-    String phonenumber = storeDetails.user.user.phone.toString();
+    String phonenumber = '254' + storeDetails.user.user.phone.toString();
+    num internationalPhoneNumber = int.parse(phonenumber);
 
     if (access != null) {
       pay(
-        phoneNumber: 254796867328,
+        phoneNumber: internationalPhoneNumber,
         amount: widget.total,
         token: access,
         setCreatedAt: transactionDetails.setCreatedAt,

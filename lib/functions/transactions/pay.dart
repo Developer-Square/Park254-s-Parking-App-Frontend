@@ -37,7 +37,6 @@ Future<Transaction> pay({
     headers: headers,
     body: body,
   );
-  log(body.toString());
   if (response.statusCode == 200) {
     return await fetchTransaction(
       phoneNumber: phoneNumber,
