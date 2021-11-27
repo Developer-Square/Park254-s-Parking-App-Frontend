@@ -70,7 +70,6 @@ class _SearchPageState extends State<SearchPage> {
   NearbyParkingListModel nearbyParkingDetails;
   double latitude;
   double longitude;
-  Timer _timer;
 
   @override
   void initState() {
@@ -267,12 +266,6 @@ class _SearchPageState extends State<SearchPage> {
       _recentSearchesList = [];
     });
   }
-
-  // _timer = new Timer(const Duration(milliseconds: 400), () {
-  //     setState(() {
-  //      var _logoStyle = FlutterLogoStyle.horizontal;
-  //     });
-  //   });
 
   Widget build(BuildContext context) {
     nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
