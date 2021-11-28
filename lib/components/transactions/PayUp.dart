@@ -252,6 +252,7 @@ class _PayUpState extends State<PayUp> {
     transactionDetails = Provider.of<TransactionModel>(context);
     resultCode = transactionDetails.transaction.resultCode;
     resultDesc = transactionDetails.transaction.resultDesc;
+    log((width / 10).toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(
@@ -259,7 +260,8 @@ class _PayUpState extends State<PayUp> {
           height: height / 2,
           width: width * 0.9,
           child: Container(
-            padding: EdgeInsets.all(width / 10),
+            padding:
+                EdgeInsets.only(top: 10.0, left: width / 10, right: width / 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
@@ -303,12 +305,15 @@ class _PayUpState extends State<PayUp> {
                   ),
                   flex: 1,
                 ),
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child: widget.timeDatePicker,
+                Container(
+                  height: 60.0,
+                  child: Expanded(
+                    child: Container(
+                      color: Colors.white,
+                      child: widget.timeDatePicker,
+                    ),
+                    flex: 1,
                   ),
-                  flex: 1,
                 ),
                 Expanded(
                   child: GoButton(
