@@ -199,6 +199,7 @@ class _PayUpState extends State<PayUp> {
         // then it failed.
         if (value.resultCode == 0) {
           transactionDetails.setLoading(false);
+          widget.toggleDisplay();
           buildNotification('Payment Successful', 'success');
           if (type == 'update') {
             buildNotification('Parking lot updated successfully', 'success');
@@ -252,7 +253,6 @@ class _PayUpState extends State<PayUp> {
     transactionDetails = Provider.of<TransactionModel>(context);
     resultCode = transactionDetails.transaction.resultCode;
     resultDesc = transactionDetails.transaction.resultDesc;
-    log((width / 10).toString());
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

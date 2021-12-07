@@ -219,6 +219,7 @@ class _BookingState extends State<Booking> {
     if (bookingDetailsProvider != null) {
       if (bookingDetailsProvider.update) {
         parkingDays = leavingDate.difference(widget.exitDate);
+        log(parkingDays.toString());
         totalTime = (leavingTime.hour + (leavingTime.minute / 60)) -
             (widget.exitDate.hour + (widget.exitDate.minute / 60)) +
             parkingDays.inHours;
@@ -263,8 +264,10 @@ class _BookingState extends State<Booking> {
   }
 
   /// Generates receipt
-  void _generateReceipt(
-      {@required BookingProvider bookingDetails, @required String bookingId}) {
+  void _generateReceipt({
+    @required BookingProvider bookingDetails,
+    @required String bookingId,
+  }) {
     if (bookingDetails != null && bookingDetailsProvider != null) {
       bookingDetailsProvider.setUpdate(value: true);
       bookingDetails.setBooking(
@@ -525,9 +528,11 @@ class _BookingState extends State<Booking> {
 
   Widget _paymentButton() {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
-      child: GoButton(onTap: () => _togglePayUp(), title: 'Pay now'),
-    );
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+        child: GoButton(
+          onTap: () => _togglePayUp(),
+          title: 'Pay Now',
+        ));
   }
 
   Widget _timeDatePicker() {
