@@ -183,12 +183,12 @@ class _PayUpState extends State<PayUp> {
     String type,
   }) async {
     String access = storeDetails.user.accessToken.token;
-    String internationalNumber = '254';
-    String phonenumber = storeDetails.user.user.phone.toString();
+    String phonenumber = '254' + storeDetails.user.user.phone.toString();
+    num internationalPhoneNumber = int.parse(phonenumber);
 
     if (access != null) {
       pay(
-        phoneNumber: 254796867328,
+        phoneNumber: internationalPhoneNumber,
         amount: widget.total,
         token: access,
         setCreatedAt: transactionDetails.setCreatedAt,
@@ -259,7 +259,8 @@ class _PayUpState extends State<PayUp> {
           height: height / 2,
           width: width * 0.9,
           child: Container(
-            padding: EdgeInsets.all(width / 10),
+            padding:
+                EdgeInsets.only(top: 10.0, left: width / 10, right: width / 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
@@ -303,12 +304,19 @@ class _PayUpState extends State<PayUp> {
                   ),
                   flex: 1,
                 ),
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child: widget.timeDatePicker,
+                Container(
+                  height: 60.0,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: widget.timeDatePicker,
+                        ),
+                        flex: 1,
+                      ),
+                    ],
                   ),
-                  flex: 1,
                 ),
                 Expanded(
                   child: GoButton(

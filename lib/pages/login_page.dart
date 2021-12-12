@@ -39,9 +39,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    emailOrPhone.text = 'ryanvendor8@gmail.com';
-    // emailOrPhone.text = '0796867328';
-    password.text = 'ryann254';
     showLoader = false;
     keyboardVisible = false;
     maxRetries = 0;
