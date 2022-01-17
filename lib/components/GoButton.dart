@@ -9,14 +9,11 @@ import 'PrimaryText.dart';
 /// ```dart
 /// GoButton(onTap: () => _togglePayUp, title: 'Pay now'),
 /// ```
-class GoButton extends StatelessWidget{
+class GoButton extends StatelessWidget {
   final Function onTap;
   final String title;
 
-  GoButton({
-    @required this.onTap,
-    @required this.title
-  });
+  GoButton({@required this.onTap, @required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +26,7 @@ class GoButton extends StatelessWidget{
             child: InkWell(
               onTap: onTap,
               child: Center(
-                child: PrimaryText(
-                    content: title
-                ),
+                child: PrimaryText(content: title),
               ),
             ),
             borderRadius: BorderRadius.all(Radius.circular(25.0)),
