@@ -51,6 +51,18 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Change the number to kenyan format from the international format because.
+  // thats what the backend is expecting.
+  String refinePhoneNumber({String phone}) {
+    if (phone.substring(0, 1) == '2') {
+      return '0' + phone.substring(3);
+    } else if (phone.substring(0, 1) == '0') {
+      return phone;
+    } else {
+      return '0' + phone.substring(4);
+    }
+  }
+
   /// Determine the current position of the device.
   ///
   /// When the location services are not enabled or permissions
@@ -63,8 +75,10 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         showLoader = true;
       });
-      login(emailOrPhone: emailOrPhone.text, password: password.text)
-          .then((value) {
+      login(
+        emailOrPhone: refinePhoneNumber(phone: emailOrPhone.text),
+        password: password.text,
+      ).then((value) {
         // Only proceed to the HomePage when permissions are granted.
         checkPermissions().then((permissionValue) {
           if (value.user.id != null) {
