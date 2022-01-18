@@ -123,30 +123,6 @@ class _MoreInfoState extends State<MoreInfo> {
     );
   }
 
-  Widget _popUpMenu() {
-    return PopupMenuButton<int>(
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 1,
-          child: PrimaryText(content: 'Share Spot'),
-        ),
-        PopupMenuItem(
-          value: 2,
-          child: Text(
-            'Report an issue',
-            style: TextStyle(color: Colors.red),
-          ),
-        )
-      ],
-      onSelected: (value) => {},
-      icon: Icon(
-        Icons.more_vert,
-        color: globals.textColor,
-      ),
-      offset: Offset(0, 100),
-    );
-  }
-
   Widget _textWithIcon(IconData iconData, String content) {
     return RichText(
       text: TextSpan(children: [
@@ -163,13 +139,6 @@ class _MoreInfoState extends State<MoreInfo> {
   Widget _parkingDetails() {
     return _paddingContainer(Column(
       children: <Widget>[
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[_secondaryText('PARKING MALL'), _popUpMenu()],
-          ),
-          flex: 1,
-        ),
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -26,7 +26,6 @@ class RegistrationScreens extends StatelessWidget {
   TextEditingController vehicleModelController;
   TextEditingController vehiclePlateController;
   TextEditingController createPasswordController;
-  TextEditingController confirmPasswordController;
 
   RegistrationScreens({
     @required this.title,
@@ -42,7 +41,6 @@ class RegistrationScreens extends StatelessWidget {
     this.vehicleModelController,
     this.vehiclePlateController,
     this.createPasswordController,
-    this.confirmPasswordController,
     this.showToolTip,
     this.hideToolTip,
     this.text,
@@ -71,21 +69,21 @@ class RegistrationScreens extends StatelessWidget {
             ),
             SizedBox(height: 35.0),
             BuildFormField(
-                text: title,
-                context: context,
-                placeholder: '',
-                controller: _controller,
-                selectedValue: selectedValue,
-                validateFn: validateFn,
-                formKey: formKey,
-                email: emailController,
-                name: nameController,
-                phone: phoneController,
-                verification: verificationController,
-                vehicleModel: vehicleModelController,
-                vehiclePlate: vehiclePlateController,
-                createPassword: createPasswordController,
-                confirmPassword: confirmPasswordController),
+              text: title,
+              context: context,
+              placeholder: '',
+              controller: _controller,
+              selectedValue: selectedValue,
+              validateFn: validateFn,
+              formKey: formKey,
+              email: emailController,
+              name: nameController,
+              phone: phoneController,
+              verification: verificationController,
+              vehicleModel: vehicleModelController,
+              vehiclePlate: vehiclePlateController,
+              createPassword: createPasswordController,
+            ),
             SizedBox(height: 60.0),
           ],
         ),

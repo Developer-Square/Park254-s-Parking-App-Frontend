@@ -300,28 +300,25 @@ Widget _popUpMenu({
 }) {
   return PopupMenuButton<int>(
     itemBuilder: (context) => [
-      PopupMenuItem(
-        value: 1,
-        child: Text(userRole == 'vendor'
-            ? 'Update'
-            : bookingDetailsProvider != null
-                ? bookingDetailsProvider.activeBookings
-                        .contains(bookingDetails.id)
-                    ? 'Update Time'
-                    : 'Share Spot'
-                : 'Share Spot'),
-      ),
+      // Hide the option when the user is not a vendor and when they're not updating the time.
+      userRole == 'vendor' ||
+              bookingDetailsProvider.activeBookings.contains(bookingDetails.id)
+          ? PopupMenuItem(
+              value: 1,
+              child: Text(userRole == 'vendor'
+                  ? 'Update'
+                  : bookingDetailsProvider != null
+                      ? bookingDetailsProvider.activeBookings
+                              .contains(bookingDetails.id)
+                          ? 'Update Time'
+                          : ''
+                      : ''),
+            )
+          : null,
       PopupMenuItem(
         value: 2,
         child: Text(
-          userRole == 'vendor'
-              ? 'Delete'
-              : bookingDetailsProvider != null
-                  ? bookingDetailsProvider.activeBookings
-                          .contains(bookingDetails.id)
-                      ? 'Report an issue'
-                      : 'Delete'
-                  : 'Delete',
+          'Delete',
           style: TextStyle(color: Colors.red),
         ),
       )
