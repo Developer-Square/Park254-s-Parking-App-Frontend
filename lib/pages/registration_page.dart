@@ -105,12 +105,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     } else if (_step == 2) {
       verifyCode();
     } else if (_step == 1) {
-      if (createPassword.text != confirmPassword.text) {
-        buildNotification('Passwords don\'t match', 'error');
-      } else {
-        FocusScope.of(context).unfocus();
-        firebaseVerification();
-      }
+      FocusScope.of(context).unfocus();
+      firebaseVerification();
     } else if (_step == 3) {
       FocusScope.of(context).unfocus();
       setState(() {
