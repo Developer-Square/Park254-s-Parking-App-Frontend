@@ -176,7 +176,7 @@ class _EditScreenState extends State<EditScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: BackArrow(
-          clearFields: clearFields,
+          clearFields: () {},
         ),
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: true,
@@ -231,20 +231,17 @@ class _EditScreenState extends State<EditScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         SizedBox(height: 50.0),
-        ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(100.0)),
-            child: Hero(
-                tag: widget.profileImgPath,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(widget.profileImgPath),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  height: 80.0,
-                  width: 80.0,
-                ))),
+        CircleAvatar(
+            radius: 49,
+            backgroundColor: globals.randomColorGenerator() != null
+                ? globals.randomColorGenerator()
+                : globals.profile3,
+            child: Text(
+              widget.fullName.text.length > 1
+                  ? widget.fullName.text.substring(0, 1).toUpperCase()
+                  : '',
+              style: globals.buildTextStyle(53, true, globals.textColor),
+            )),
         SizedBox(height: 40.0),
         BuildFormField(
             text: 'Profile',
