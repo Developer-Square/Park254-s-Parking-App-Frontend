@@ -479,7 +479,8 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final transactionDetails = Provider.of<TransactionModel>(context);
-    if (transactionDetails != null) {
+    if (transactionDetails != null &&
+        transactionDetails.transaction.transactionDate != null) {
       mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
       transactionYear = transactionDetails.transaction.transactionDate
           .toString()

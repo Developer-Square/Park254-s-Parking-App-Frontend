@@ -279,11 +279,11 @@ class _BookingState extends State<Booking> {
 
     Navigator.pushNamed(context, PaymentSuccessful.routeName,
         arguments: ReceiptArguments(
-          bookingId: bookingId,
-          parkingSpace: widget.parkingLotNumber,
+          bookingId: '123434353523434343',
+          parkingSpace: 'Near Light tower',
           price: amount,
-          destination: widget.destination,
-          address: widget.address,
+          destination: 'Gachororo',
+          address: 'Kikuyu Road',
           arrivalTime: arrivalTime,
           arrivalDate: arrivalDate,
           leavingTime: leavingTime,
