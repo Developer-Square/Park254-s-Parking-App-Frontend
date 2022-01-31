@@ -21,6 +21,7 @@ Future<Vehicle> updateVehicle({
 }) async {
   Map<String, String> headers = {
     dartIO.HttpHeaders.authorizationHeader: "Bearer $token",
+    dartIO.HttpHeaders.contentTypeHeader: "application/json",
   };
   Map<String, dynamic> body = {
     "owner": owner,
