@@ -51,7 +51,7 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
           color: Colors.white),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,24 +59,23 @@ Widget buildProfileTab(context, widget, fullNameController, balance) {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                  child: Hero(
-                    tag: widget.profileImgPath,
-                    child: Image(
-                      height: 60.0,
-                      width: 60.0,
-                      fit: BoxFit.cover,
-                      image: AssetImage(widget.profileImgPath),
-                    ),
+                CircleAvatar(
+                  radius: 49,
+                  backgroundColor: globals.randomColorGenerator(),
+                  child: Text(
+                    fullNameController.text.substring(0, 1).toUpperCase(),
+                    style: globals.buildTextStyle(53, true, globals.textColor),
                   ),
                 ),
                 SizedBox(width: 10.0),
-                Text(
-                  fullNameController.text == ''
-                      ? 'User'
-                      : fullNameController.text,
-                  style: globals.buildTextStyle(16.0, true, globals.textColor),
+                Center(
+                  child: Text(
+                    fullNameController.text == ''
+                        ? 'User'
+                        : fullNameController.text,
+                    style:
+                        globals.buildTextStyle(16.0, true, globals.textColor),
+                  ),
                 )
               ],
             ),
