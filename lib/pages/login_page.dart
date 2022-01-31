@@ -76,7 +76,9 @@ class _LoginPageState extends State<LoginPage> {
         showLoader = true;
       });
       login(
-        emailOrPhone: refinePhoneNumber(phone: emailOrPhone.text),
+        emailOrPhone: emailOrPhone.text.contains('@gmail.com')
+            ? emailOrPhone.text
+            : refinePhoneNumber(phone: emailOrPhone.text),
         password: password.text,
       ).then((value) {
         // Only proceed to the HomePage when permissions are granted.

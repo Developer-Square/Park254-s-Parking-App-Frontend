@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -31,6 +32,7 @@ Future<UserWithToken> login({
   } else {
     body = jsonEncode({'phone': emailOrPhone, 'password': password});
   }
+  log(body);
   final response = await http.post(
     url,
     body: body,

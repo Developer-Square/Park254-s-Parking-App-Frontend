@@ -186,7 +186,7 @@ class _BookingTabState extends State<BookingTab> {
                                 : null,
                             imageTwo: nearbyParkingListDetails
                                         .nearbyParkingLot.images.length >
-                                    0
+                                    1
                                 ? nearbyParkingListDetails
                                     .nearbyParkingLot.images[1]
                                 : null,
