@@ -28,11 +28,10 @@ Future<UserWithToken> login({
 
   // This so as we know whether the user is logging through their email or phone number.
   if (emailValid) {
-    body = jsonEncode({'email': emailOrPhone, 'password': password});
+    body = jsonEncode({'email': emailOrPhone.trim(), 'password': password});
   } else {
-    body = jsonEncode({'phone': emailOrPhone, 'password': password});
+    body = jsonEncode({'phone': emailOrPhone.trim(), 'password': password});
   }
-  log(body);
   final response = await http.post(
     url,
     body: body,

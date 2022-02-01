@@ -27,7 +27,7 @@ Future<UserWithToken> register({
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/auth/register');
   Map<String, dynamic> body = {
-    'email': email,
+    'email': email.trim(),
     'role': role,
     'name': name,
     'password': password,
@@ -35,7 +35,6 @@ Future<UserWithToken> register({
   };
 
   body.removeWhere((key, value) => value == '' || value == 0);
-  log(body.toString());
   final response = await http.post(
     url,
     body: jsonEncode(body),
