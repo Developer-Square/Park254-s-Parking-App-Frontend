@@ -439,7 +439,9 @@ class _BookingState extends State<Booking> {
   Widget _checkSpacesButton() {
     return InkWell(
       onTap: () {
-        transactionDetails.setLoading(true);
+        if (transactionDetails != null) {
+          transactionDetails.setLoading(true);
+        }
 
         // Change the TimeOfDay to DateTime.
         final now = new DateTime.now();
@@ -461,10 +463,13 @@ class _BookingState extends State<Booking> {
                     'success');
               }
             }
-
-            transactionDetails.setLoading(false);
+            if (transactionDetails != null) {
+              transactionDetails.setLoading(false);
+            }
           }).catchError((err) {
-            transactionDetails.setLoading(false);
+            if (transactionDetails != null) {
+              transactionDetails.setLoading(false);
+            }
 
             log("In Booking.dart, checkSpacesButton function");
             log(err.toString());
@@ -588,7 +593,9 @@ class _BookingState extends State<Booking> {
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
     if (transactionDetails != null) {
-      isLoading = transactionDetails.loader;
+      setState(() {
+        isLoading = transactionDetails.loader;
+      });
     }
 
     return SafeArea(

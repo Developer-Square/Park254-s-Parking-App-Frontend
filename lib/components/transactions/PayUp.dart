@@ -273,7 +273,6 @@ class _PayUpState extends State<PayUp> {
   @override
   void dispose() {
     super.dispose();
-    timer.cancel();
   }
 
   @override
@@ -281,8 +280,10 @@ class _PayUpState extends State<PayUp> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     transactionDetails = Provider.of<TransactionModel>(context);
-    resultCode = transactionDetails.transaction.resultCode;
-    resultDesc = transactionDetails.transaction.resultDesc;
+    if (transactionDetails != null) {
+      resultCode = transactionDetails.transaction.resultCode;
+      resultDesc = transactionDetails.transaction.resultDesc;
+    }
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

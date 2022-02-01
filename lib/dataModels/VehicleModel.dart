@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/functions/vehicles/getVehicles.dart';
@@ -56,8 +58,11 @@ class VehicleModel with ChangeNotifier {
     return _vehicleData.vehicles.firstWhere((v) => v.id == id);
   }
 
+  // This function has to return a Vehicle result or a null result because the.
+  // .firstWhere() method throws an error of 'Bad state' if used without an orElse.
   Vehicle findByOwnerId({@required String id}) {
-    return _vehicleData.vehicles.firstWhere((v) => v.owner == id);
+    return _vehicleData.vehicles
+        .firstWhere((v) => v.owner == id, orElse: () => null);
   }
 
   void updateVehicle({Vehicle vehicle}) {
