@@ -226,8 +226,8 @@ class _NearByParkingState extends State<NearByParking>
                 imgPath: lots[index].images != null
                     ? lots[index].images.length > 0
                         ? lots[index].images[0]
-                        : ''
-                    : '',
+                        : 'assets/images/parking_photos/placeholder-2.jpg'
+                    : 'assets/images/parking_photos/placeholder-3.jpg',
                 parkingPrice: lots[index].price,
                 parkingPlaceName: lots[index].name,
                 rating: lots[index].ratingValue,

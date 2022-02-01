@@ -76,8 +76,8 @@ class _MoreInfoState extends State<MoreInfo> {
                   fit: BoxFit.cover,
                 )
               : Image(
-                  image:
-                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  image: AssetImage(
+                      'assets/images/parking_photos/placeholder-1.jpg'),
                   fit: BoxFit.cover,
                 ),
           flex: 1,
@@ -89,8 +89,8 @@ class _MoreInfoState extends State<MoreInfo> {
                   fit: BoxFit.cover,
                 )
               : Image(
-                  image:
-                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  image: AssetImage(
+                      'assets/images/parking_photos/placeholder-1.jpg'),
                   fit: BoxFit.cover,
                 ),
           flex: 1,
@@ -262,7 +262,7 @@ class _MoreInfoState extends State<MoreInfo> {
                             )
                           : Image(
                               image: AssetImage(
-                                  'assets/images/parking_photos/parking_1.jpg'),
+                                  'assets/images/parking_photos/placeholder_2.jpg'),
                               fit: BoxFit.cover,
                             ),
                       flex: 1,

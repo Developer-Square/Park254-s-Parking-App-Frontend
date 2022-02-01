@@ -119,7 +119,7 @@ class _BookingTabState extends State<BookingTab> {
                       nearbyParkingListDetails.nearbyParkingLot.images.length >
                               0
                           ? nearbyParkingListDetails.nearbyParkingLot.images[0]
-                          : '',
+                          : 'assets/images/parking_photos/placeholder-1.jpg',
                   parkingPrice: nearbyParkingListDetails.nearbyParkingLot.price,
                   parkingPlaceName:
                       nearbyParkingListDetails.nearbyParkingLot.name.length > 20

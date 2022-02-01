@@ -149,8 +149,7 @@ class _NearByParkingList extends State<NearByParkingList> {
                             height: 75.0,
                             width: 75.0,
                             fit: BoxFit.cover,
-                            image: AssetImage(
-                                'assets/images/parking_photos/parking_1.jpg'),
+                            image: AssetImage(widget.imgPath),
                           ),
                   ),
                   Positioned(

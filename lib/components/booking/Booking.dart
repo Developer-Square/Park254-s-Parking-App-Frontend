@@ -279,11 +279,11 @@ class _BookingState extends State<Booking> {
 
     Navigator.pushNamed(context, PaymentSuccessful.routeName,
         arguments: ReceiptArguments(
-          bookingId: '123434353523434343',
-          parkingSpace: 'Near Light tower',
+          bookingId: bookingDetailsProvider.bookingId,
+          parkingSpace: widget.destination,
           price: amount,
-          destination: 'Gachororo',
-          address: 'Kikuyu Road',
+          destination: widget.destination,
+          address: widget.address,
           arrivalTime: arrivalTime,
           arrivalDate: arrivalDate,
           leavingTime: leavingTime,
@@ -324,7 +324,7 @@ class _BookingState extends State<Booking> {
                       ? Image.network(widget.imagePath)
                       : Image(
                           image: AssetImage(
-                              'assets/images/parking_photos/parking_1.jpg'),
+                              'assets/images/parking_photos/placeholder_3.jpg'),
                         ),
                   flex: 2,
                   fit: FlexFit.loose,
