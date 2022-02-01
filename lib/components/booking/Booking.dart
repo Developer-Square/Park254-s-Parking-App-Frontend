@@ -324,7 +324,7 @@ class _BookingState extends State<Booking> {
                       ? Image.network(widget.imagePath)
                       : Image(
                           image: AssetImage(
-                              'assets/images/parking_photos/placeholder_3.jpg'),
+                              'assets/images/parking_photos/placeholder_3.png'),
                         ),
                   flex: 2,
                   fit: FlexFit.loose,
