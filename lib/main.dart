@@ -354,19 +354,6 @@ class _MyAppState extends State<MyApp> {
                       imageOne: args.imageOne,
                       imageTwo: args.imageTwo);
                 });
-              } else if (settings.name == PaymentSuccessful.routeName) {
-                final ReceiptArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PaymentSuccessful(
-                    bookingId: args.bookingId,
-                    price: args.price,
-                    destination: args.destination,
-                    arrivalTime: args.arrivalTime,
-                    arrivalDate: args.arrivalDate,
-                    leavingTime: args.leavingTime,
-                    leavingDate: args.leavingDate,
-                  );
-                });
               } else if (settings.name == ParkingInfo.routeName) {
                 final ParkingInfoArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {

@@ -258,6 +258,9 @@ class _PayUpState extends State<PayUp> {
             buildNotification(err.message.toString(), 'error');
           }
         });
+      } else {
+        transactionDetails.setLoading(false);
+        buildNotification('Couldn\'t launch mpesa, please try again', 'error');
       }
 
       return transactionInitialisation;

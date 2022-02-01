@@ -277,18 +277,27 @@ class _BookingState extends State<Booking> {
       );
     }
 
-    Navigator.pushNamed(context, PaymentSuccessful.routeName,
-        arguments: ReceiptArguments(
-          bookingId: bookingDetailsProvider.bookingId,
-          parkingSpace: widget.destination,
-          price: amount,
-          destination: widget.destination,
-          address: widget.address,
-          arrivalTime: arrivalTime,
-          arrivalDate: arrivalDate,
-          leavingTime: leavingTime,
-          leavingDate: leavingDate,
-        ));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PaymentSuccessful(
+            bookingId: bookingId,
+            price: amount,
+            destination: widget.destination,
+            arrivalTime: arrivalTime,
+            arrivalDate: arrivalDate,
+            leavingTime: leavingTime,
+            leavingDate: leavingDate)));
+    // Navigator.pushNamed(context, PaymentSuccessful.routeName,
+    //     arguments: ReceiptArguments(
+    //       bookingId: bookingId,
+    //       parkingSpace: widget.parkingLotNumber,
+    //       price: amount,
+    //       destination: widget.destination,
+    //       address: widget.address,
+    //       arrivalTime: arrivalTime,
+    //       arrivalDate: arrivalDate,
+    //       leavingTime: leavingTime,
+    //       leavingDate: leavingDate,
+    //     ));
   }
 
   void changeValue({String newValue, String value}) {
