@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as dartIO;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,15 +27,14 @@ Future<UserWithToken> register({
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/auth/register');
   Map<String, dynamic> body = {
-    'email': email,
+    'email': email.trim(),
     'role': role,
     'name': name,
-    'password': password,
+    'password': password.trim(),
     'phone': phone.toString(),
   };
 
   body.removeWhere((key, value) => value == '' || value == 0);
-
   final response = await http.post(
     url,
     body: jsonEncode(body),

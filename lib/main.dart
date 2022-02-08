@@ -3,6 +3,7 @@ import 'dart:core';
 import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mpesa_flutter_plugin/mpesa_flutter_plugin.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:park254_s_parking_app/components/google_map.dart';
 import 'package:park254_s_parking_app/components/helper_functions.dart';
@@ -56,6 +57,8 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  MpesaFlutterPlugin.setConsumerKey('movwC8DA2qfOkAfJBiwxeLHLppJgnM2Z');
+  MpesaFlutterPlugin.setConsumerSecret('4r8DAKznXQx1AyPT');
   runApp(MyApp());
 }
 
@@ -350,19 +353,6 @@ class _MyAppState extends State<MyApp> {
                       address: args.address,
                       imageOne: args.imageOne,
                       imageTwo: args.imageTwo);
-                });
-              } else if (settings.name == PaymentSuccessful.routeName) {
-                final ReceiptArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PaymentSuccessful(
-                    bookingId: args.bookingId,
-                    price: args.price,
-                    destination: args.destination,
-                    arrivalTime: args.arrivalTime,
-                    arrivalDate: args.arrivalDate,
-                    leavingTime: args.leavingTime,
-                    leavingDate: args.leavingDate,
-                  );
                 });
               } else if (settings.name == ParkingInfo.routeName) {
                 final ParkingInfoArguments args = settings.arguments;

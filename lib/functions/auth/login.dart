@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -27,9 +28,11 @@ Future<UserWithToken> login({
 
   // This so as we know whether the user is logging through their email or phone number.
   if (emailValid) {
-    body = jsonEncode({'email': emailOrPhone, 'password': password});
+    body =
+        jsonEncode({'email': emailOrPhone.trim(), 'password': password.trim()});
   } else {
-    body = jsonEncode({'phone': emailOrPhone, 'password': password});
+    body =
+        jsonEncode({'phone': emailOrPhone.trim(), 'password': password.trim()});
   }
   final response = await http.post(
     url,

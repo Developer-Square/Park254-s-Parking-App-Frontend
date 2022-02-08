@@ -262,10 +262,6 @@ class _EditScreenState extends State<EditScreen> {
             controller: widget.phone),
         SizedBox(height: 20.0),
         SizedBox(height: 40.0),
-        Text(
-          'Do you want to top up your balance ?',
-          style: globals.buildTextStyle(16.0, true, globals.backgroundColor),
-        ),
         SizedBox(
           height: 55.0,
         ),

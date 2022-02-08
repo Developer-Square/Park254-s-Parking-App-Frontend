@@ -37,7 +37,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController vehicleModel = new TextEditingController();
   TextEditingController vehiclePlate = new TextEditingController();
   TextEditingController createPassword = new TextEditingController();
-  TextEditingController confirmPassword = new TextEditingController();
 
   @override
   void initState() {
@@ -68,14 +67,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (_step == 1) {
       return RegistrationScreens(
         title: 'Phone number',
-        info: 'Welcome to Park254, kindly provide your details below',
+        info: 'Please provide your details below',
         step: _step,
         formKey: formKey,
         nameController: name,
         emailController: email,
         phoneController: phone,
         createPasswordController: createPassword,
-        confirmPasswordController: confirmPassword,
       );
     } else if (_step == 2) {
       return RegistrationScreens(

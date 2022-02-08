@@ -94,11 +94,14 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       vehicleDetails = Provider.of<VehicleModel>(context, listen: false);
 
       if (vehicleDetails != null && userDetails != null) {
-        if (vehicleDetails.vehicleData.vehicles != null) {
+        if (vehicleDetails.vehicleData.vehicles != null &&
+            userDetails.user.user.id != null) {
           Vehicle vehicle =
               vehicleDetails.findByOwnerId(id: userDetails.user.user.id);
-          numberPlate = vehicle.plate;
-          vehicleModel = vehicle.model;
+          if (vehicle != null) {
+            numberPlate = vehicle.plate;
+            vehicleModel = vehicle.model;
+          }
 
           _dataMap = {
             'numberPlate': numberPlate ?? 'No number plate',
@@ -110,11 +113,11 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
     }
   }
 
-  // @override
-  // void dispose() {
-  //   timer.cancel();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    // timer.cancel();
+    super.dispose();
+  }
 
   // Calculates the difference between two datetimes.
   // int difference({
@@ -479,7 +482,9 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final transactionDetails = Provider.of<TransactionModel>(context);
-    if (transactionDetails != null) {
+    if (transactionDetails != null &&
+        transactionDetails.transaction.transactionDate != null &&
+        transactionDetails.transaction.mpesaReceiptNumber != null) {
       mpesaReceiptNumber = transactionDetails.transaction.mpesaReceiptNumber;
       transactionYear = transactionDetails.transaction.transactionDate
           .toString()

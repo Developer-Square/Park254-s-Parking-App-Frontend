@@ -277,18 +277,15 @@ class _BookingState extends State<Booking> {
       );
     }
 
-    Navigator.pushNamed(context, PaymentSuccessful.routeName,
-        arguments: ReceiptArguments(
-          bookingId: bookingId,
-          parkingSpace: widget.parkingLotNumber,
-          price: amount,
-          destination: widget.destination,
-          address: widget.address,
-          arrivalTime: arrivalTime,
-          arrivalDate: arrivalDate,
-          leavingTime: leavingTime,
-          leavingDate: leavingDate,
-        ));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PaymentSuccessful(
+            bookingId: bookingId,
+            price: amount,
+            destination: widget.destination,
+            arrivalTime: arrivalTime,
+            arrivalDate: arrivalDate,
+            leavingTime: leavingTime,
+            leavingDate: leavingDate)));
   }
 
   void changeValue({String newValue, String value}) {
@@ -324,7 +321,7 @@ class _BookingState extends State<Booking> {
                       ? Image.network(widget.imagePath)
                       : Image(
                           image: AssetImage(
-                              'assets/images/parking_photos/parking_1.jpg'),
+                              'assets/images/parking_photos/placeholder_3.png'),
                         ),
                   flex: 2,
                   fit: FlexFit.loose,
@@ -430,7 +427,9 @@ class _BookingState extends State<Booking> {
   Widget _checkSpacesButton() {
     return InkWell(
       onTap: () {
-        transactionDetails.setLoading(true);
+        if (transactionDetails != null) {
+          transactionDetails.setLoading(true);
+        }
 
         // Change the TimeOfDay to DateTime.
         final now = new DateTime.now();
@@ -452,10 +451,13 @@ class _BookingState extends State<Booking> {
                     'success');
               }
             }
-
-            transactionDetails.setLoading(false);
+            if (transactionDetails != null) {
+              transactionDetails.setLoading(false);
+            }
           }).catchError((err) {
-            transactionDetails.setLoading(false);
+            if (transactionDetails != null) {
+              transactionDetails.setLoading(false);
+            }
 
             log("In Booking.dart, checkSpacesButton function");
             log(err.toString());
@@ -579,7 +581,9 @@ class _BookingState extends State<Booking> {
         height - padding.top - padding.bottom - kToolbarHeight;
     transactionDetails = Provider.of<TransactionModel>(context);
     if (transactionDetails != null) {
-      isLoading = transactionDetails.loader;
+      setState(() {
+        isLoading = transactionDetails.loader;
+      });
     }
 
     return SafeArea(

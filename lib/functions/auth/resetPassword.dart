@@ -24,7 +24,7 @@ Future<String> resetPassword({
     queryParameters,
   );
   log(url.toString());
-  final String body = jsonEncode({'password': password});
+  final String body = jsonEncode({'password': password.trim()});
   final response = await http.post(
     url,
     body: body,

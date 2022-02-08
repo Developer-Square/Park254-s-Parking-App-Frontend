@@ -76,8 +76,8 @@ class _MoreInfoState extends State<MoreInfo> {
                   fit: BoxFit.cover,
                 )
               : Image(
-                  image:
-                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  image: AssetImage(
+                      'assets/images/parking_photos/placeholder_1.png'),
                   fit: BoxFit.cover,
                 ),
           flex: 1,
@@ -89,8 +89,8 @@ class _MoreInfoState extends State<MoreInfo> {
                   fit: BoxFit.cover,
                 )
               : Image(
-                  image:
-                      AssetImage('assets/images/parking_photos/parking_1.jpg'),
+                  image: AssetImage(
+                      'assets/images/parking_photos/placeholder_2.png'),
                   fit: BoxFit.cover,
                 ),
           flex: 1,
@@ -123,30 +123,6 @@ class _MoreInfoState extends State<MoreInfo> {
     );
   }
 
-  Widget _popUpMenu() {
-    return PopupMenuButton<int>(
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 1,
-          child: PrimaryText(content: 'Share Spot'),
-        ),
-        PopupMenuItem(
-          value: 2,
-          child: Text(
-            'Report an issue',
-            style: TextStyle(color: Colors.red),
-          ),
-        )
-      ],
-      onSelected: (value) => {},
-      icon: Icon(
-        Icons.more_vert,
-        color: globals.textColor,
-      ),
-      offset: Offset(0, 100),
-    );
-  }
-
   Widget _textWithIcon(IconData iconData, String content) {
     return RichText(
       text: TextSpan(children: [
@@ -164,13 +140,6 @@ class _MoreInfoState extends State<MoreInfo> {
     return _paddingContainer(Column(
       children: <Widget>[
         Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[_secondaryText('PARKING MALL'), _popUpMenu()],
-          ),
-          flex: 1,
-        ),
-        Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -185,8 +154,8 @@ class _MoreInfoState extends State<MoreInfo> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              _textWithIcon(Icons.near_me,
-                  '${widget.distance.toString().substring(0, 4)} m'),
+              // _textWithIcon(Icons.near_me,
+              //     '${widget.distance.toString().substring(0, 4)} m'),
               _textWithIcon(
                   Icons.attach_money, '${widget.price.toString()} / Hour'),
               PrimaryText(content: '${widget.rating.toString()}'),
@@ -293,7 +262,7 @@ class _MoreInfoState extends State<MoreInfo> {
                             )
                           : Image(
                               image: AssetImage(
-                                  'assets/images/parking_photos/parking_1.jpg'),
+                                  'assets/images/parking_photos/placeholder_2.png'),
                               fit: BoxFit.cover,
                             ),
                       flex: 1,

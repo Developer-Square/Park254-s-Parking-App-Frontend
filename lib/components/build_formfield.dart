@@ -24,7 +24,6 @@ class BuildFormField extends StatefulWidget {
   TextEditingController vehicleModel;
   TextEditingController vehiclePlate;
   TextEditingController createPassword;
-  TextEditingController confirmPassword;
 
   BuildFormField({
     this.text,
@@ -42,7 +41,6 @@ class BuildFormField extends StatefulWidget {
     this.vehicleModel,
     this.vehiclePlate,
     this.createPassword,
-    this.confirmPassword,
   });
   @override
   BuildFormFieldState createState() => BuildFormFieldState();
@@ -67,14 +65,11 @@ class BuildFormFieldState extends State<BuildFormField> {
           child: Container(
               padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: widget.text == 'Password'
-                  // Create the two input fields in step 4 of registration screens.
                   ? Column(
                       children: [
                         buildSingleTextField('Create Password', widget.text, '',
                             widget.createPassword),
                         SizedBox(height: 15.0),
-                        buildSingleTextField('Confirm Password', widget.text,
-                            '', widget.confirmPassword)
                       ],
                     )
                   // Create the verification input field.
@@ -154,23 +149,11 @@ class BuildFormFieldState extends State<BuildFormField> {
                                               ? buildSingleTextField(
                                                   '', 'Email', '', widget.email)
                                               : Container(),
-                                          SizedBox(height: 35.0),
-                                          Text(
-                                            'Add your password',
-                                            style: globals.buildTextStyle(
-                                                16.0, true, globals.textColor),
-                                          ),
                                           buildSingleTextField(
                                               'Create Password',
                                               'Password',
                                               '',
                                               widget.createPassword),
-                                          SizedBox(height: 15.0),
-                                          buildSingleTextField(
-                                              'Confirm Password',
-                                              'Password',
-                                              '',
-                                              widget.confirmPassword),
                                           SizedBox(height: 35.0),
                                         ])
                                       : TextFormField(
@@ -257,7 +240,7 @@ class BuildFormFieldState extends State<BuildFormField> {
                   color: Colors.grey.withOpacity(0.7),
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0)
-              : TextStyle(color: globals.backgroundColor, fontSize: 18.0),
+              : TextStyle(color: globals.backgroundColor, fontSize: 16.0),
           hintText: placeholder,
           hintStyle: TextStyle(color: globals.placeHolderColor)),
     );

@@ -25,10 +25,10 @@ Future<User> createUser({
   };
   final Uri url = Uri.https(globals.apiKey, '/v1/users');
   final String body = jsonEncode({
-    'email': email,
+    'email': email.trim(),
     'role': role,
     'name': name,
-    'password': password,
+    'password': password.trim(),
     'phone': phone,
   });
   final response = await http.post(

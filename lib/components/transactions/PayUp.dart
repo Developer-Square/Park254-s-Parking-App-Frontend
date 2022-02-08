@@ -1,24 +1,20 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:mpesa_flutter_plugin/mpesa_flutter_plugin.dart';
 import 'package:park254_s_parking_app/components/GoButton.dart';
 import 'package:park254_s_parking_app/components/PrimaryText.dart';
-import 'package:park254_s_parking_app/components/loader.dart';
-import 'package:park254_s_parking_app/components/parking%20lots/myparking_screen.dart';
-import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/components/transactions/widgets/retry_modal.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/dataModels/TransactionModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
-import 'package:park254_s_parking_app/dataModels/VehicleModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/book.dart';
 import 'package:park254_s_parking_app/functions/bookings/cancelBooking.dart';
 import 'package:park254_s_parking_app/functions/bookings/updateBooking.dart';
-import 'package:park254_s_parking_app/functions/transactions/pay.dart';
-import 'package:park254_s_parking_app/models/booking.model.dart';
-import 'package:park254_s_parking_app/pages/home_page.dart';
+import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
 import 'package:provider/provider.dart';
 
 import '../helper_functions.dart';
@@ -75,6 +71,7 @@ class _PayUpState extends State<PayUp> {
   int arrivalMinute;
   int leavingHour;
   int leavingMinute;
+  Timer timer;
 
   @override
   void initState() {
@@ -110,11 +107,7 @@ class _PayUpState extends State<PayUp> {
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(
-          transactionDetails: transactionDetails,
-          bookingId: value.id,
-          type: 'update',
-        );
+        lipaNaMpesa(type: 'update');
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, updateParkingLotBooking function");
@@ -147,11 +140,7 @@ class _PayUpState extends State<PayUp> {
         // Set the bookingId to be used incase the transaction fails.
         bookingId = value.id;
         // Call the mpesa STK push.
-        callPaymentMethod(
-          transactionDetails: transactionDetails,
-          bookingId: value.id,
-          type: 'create',
-        );
+        lipaNaMpesa(type: 'create');
       }).catchError((err) {
         transactionDetails.setLoading(false);
         log("In PayUp.dart, createBooking function");
@@ -177,72 +166,113 @@ class _PayUpState extends State<PayUp> {
     }
   }
 
-  void callPaymentMethod({
-    @required TransactionModel transactionDetails,
-    @required String bookingId,
-    String type,
-  }) async {
-    String access = storeDetails.user.accessToken.token;
+  // Create the lipaNaMpesa method here.
+  Future<void> lipaNaMpesa({String type}) async {
+    dynamic transactionInitialisation;
     String phonenumber = '254' + storeDetails.user.user.phone.toString();
-    num internationalPhoneNumber = int.parse(phonenumber);
 
-    if (access != null) {
-      pay(
-        phoneNumber: internationalPhoneNumber,
-        amount: widget.total,
-        token: access,
-        setCreatedAt: transactionDetails.setCreatedAt,
-        setTransaction: transactionDetails.setTransaction,
-        setLoading: transactionDetails.setLoading,
-      ).then((value) {
-        // If resultCode is equal to 0 then the transcation other than that.
-        // then it failed.
-        if (value.resultCode == 0) {
-          transactionDetails.setLoading(false);
-          buildNotification('Payment Successful', 'success');
-          if (type == 'update') {
-            buildNotification('Parking lot updated successfully', 'success');
-          } else {
-            buildNotification('Parking lot booked successfully', 'success');
-          }
+    try {
+      transactionInitialisation =
+          await MpesaFlutterPlugin.initializeMpesaSTKPush(
+        businessShortCode: '888884',
+        transactionType: TransactionType.CustomerPayBillOnline,
+        amount: 1.0,
+        partyA: phonenumber,
+        partyB: '888884',
+        callBackURL: Uri(
+          scheme: 'https',
+          host: globals.apiKey,
+          path: '/v1/paymentCallBack',
+        ),
+        transactionDesc: 'Parking',
+        accountReference: 'Park254 Limited',
+        phoneNumber: phonenumber,
+        baseUri: Uri(scheme: "https", host: "api.safaricom.co.ke"),
+        passKey:
+            '8c23dfcc5ab412f53682df968b14636acc65e3fb3286c3b3e75c9be3321d749b',
+      );
 
-          // When a user is updating, redirect them to the myParkingScreen after.
-          // payment is complete.
-          if (bookingDetails != null) {
-            if (bookingDetails.update) {
-              widget.updateParkingTime();
-            } else {
-              // Move the payment successful page.
-              widget.receiptGenerator(bookingDetails, bookingId);
+      if (transactionInitialisation['ResponseCode'] == '0') {
+        String access = storeDetails.user.accessToken.token;
+
+        timer = new Timer(const Duration(seconds: 4), () async {
+          String createdAt = DateTime.now().toUtc().toIso8601String();
+          transactionDetails.setCreatedAt(createdAt);
+
+          try {
+            var response = await fetchTransaction(
+              phoneNumber: int.parse(phonenumber),
+              amount: 1.0,
+              token: access,
+              createdAt: transactionDetails.createdAt,
+              setTransaction: transactionDetails.setTransaction,
+              setLoading: transactionDetails.setLoading,
+            );
+
+            if (response.resultCode == 0) {
+              // If resultCode is equal to 0 then the transcation other than that.
+              // then it failed.
+              transactionDetails.setLoading(false);
+              buildNotification('Payment Successful', 'success');
+              if (type == 'update') {
+                buildNotification(
+                    'Parking lot updated successfully', 'success');
+              } else {
+                buildNotification('Parking lot booked successfully', 'success');
+              }
+              log(response.resultCode.toString());
+              // When a user is updating, redirect them to the myParkingScreen after.
+              // payment is complete.
+              if (bookingDetails != null) {
+                if (bookingDetails.update) {
+                  widget.updateParkingTime();
+                } else {
+                  // Move to the payment successful page.
+                  widget.receiptGenerator(bookingDetails, bookingId);
+                }
+              } else {
+                // Move to the payment successful page.
+                widget.receiptGenerator(bookingDetails, bookingId);
+              }
             }
-          } else {
-            // Move the payment successful page.
-            widget.receiptGenerator(bookingDetails, bookingId);
-          }
-        }
-        // If the transaction failed and the user has not retried it then show retry modal.
-        else if (value.resultCode == 503) {
-          buildNotification(resultDesc ?? 'Transaction failed', 'error');
+            // If the transaction failed and the user has not retried it then show retry modal.
+            else if (response.resultCode == 503) {
+              buildNotification(resultDesc ?? 'Transaction failed', 'error');
 
-          retryModal(
-            parentContext: context,
-            transactionDetails: transactionDetails,
-            total: widget.total,
-            token: access,
-            receiptGenerator: () =>
-                widget.receiptGenerator(bookingDetails, bookingId),
-            cancelBooking: () =>
-                cancelParkingLotBooking(access: access, bookingId: bookingId),
-          );
-        }
-      }).catchError((err) {
-        cancelParkingLotBooking(access: access, bookingId: bookingId);
+              retryModal(
+                parentContext: context,
+                transactionDetails: transactionDetails,
+                total: widget.total,
+                token: access,
+                receiptGenerator: () =>
+                    widget.receiptGenerator(bookingDetails, bookingId),
+                cancelBooking: () => cancelParkingLotBooking(
+                    access: access, bookingId: bookingId),
+              );
+            }
+          } catch (err) {
+            cancelParkingLotBooking(access: access, bookingId: bookingId);
+            transactionDetails.setLoading(false);
+            log("In PayUp.dart, lipaNaMpesa function");
+            log(err.toString());
+            buildNotification(err.message.toString(), 'error');
+          }
+        });
+      } else {
         transactionDetails.setLoading(false);
-        log("In PayUp.dart, callPaymentMethod function");
-        log(err.toString());
-        buildNotification(err.message.toString(), 'error');
-      });
+        buildNotification('Couldn\'t launch mpesa, please try again', 'error');
+      }
+
+      return transactionInitialisation;
+    } catch (e) {
+      log('In PayUp.dart, lipaNaMpesa function');
+      log("CAUGHT EXCEPTION: " + e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -250,8 +280,10 @@ class _PayUpState extends State<PayUp> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     transactionDetails = Provider.of<TransactionModel>(context);
-    resultCode = transactionDetails.transaction.resultCode;
-    resultDesc = transactionDetails.transaction.resultDesc;
+    if (transactionDetails != null) {
+      resultCode = transactionDetails.transaction.resultCode;
+      resultDesc = transactionDetails.transaction.resultDesc;
+    }
 
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
       Center(

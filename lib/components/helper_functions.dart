@@ -75,7 +75,8 @@ buildNotification(textMsg, msgType) {
           : msgType == 'info'
               ? Colors.blue
               : globals.backgroundColor,
-      autoDismiss: false, trailing: Builder(builder: (context) {
+      duration: Duration(seconds: 5),
+      autoDismiss: true, trailing: Builder(builder: (context) {
     return FlatButton(
         onPressed: () {
           OverlaySupportEntry.of(context).dismiss();

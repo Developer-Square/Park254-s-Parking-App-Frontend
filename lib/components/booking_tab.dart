@@ -55,21 +55,25 @@ class _BookingTabState extends State<BookingTab> {
     // Close the booking tab when moving to the booking page.
     if (nearbyParkingListDetails != null) {
       nearbyParkingListDetails.setBookNowTab('bookingTab');
+
+      if (nearbyParkingListDetails.nearbyParkingLot != null) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Booking(
+                  address: nearbyParkingListDetails.nearbyParkingLot.location
+                      .toString(),
+                  bookingNumber: getRandomNumber(),
+                  destination: nearbyParkingListDetails.nearbyParkingLot.name,
+                  parkingLotNumber: getRandomNumber(),
+                  // TODO: Change that number when in production.
+                  price: 1,
+                  imagePath:
+                      nearbyParkingListDetails.nearbyParkingLot.images.length >
+                              0
+                          ? nearbyParkingListDetails.nearbyParkingLot.images[0]
+                          : '',
+                )));
+      }
     }
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Booking(
-              address:
-                  nearbyParkingListDetails.nearbyParkingLot.location.toString(),
-              bookingNumber: getRandomNumber(),
-              destination: nearbyParkingListDetails.nearbyParkingLot.name,
-              parkingLotNumber: getRandomNumber(),
-              // TODO: Change that number when in production.
-              price: 1,
-              imagePath:
-                  nearbyParkingListDetails.nearbyParkingLot.images.length > 0
-                      ? nearbyParkingListDetails.nearbyParkingLot.images[0]
-                      : '',
-            )));
   }
 
   @override
@@ -119,7 +123,7 @@ class _BookingTabState extends State<BookingTab> {
                       nearbyParkingListDetails.nearbyParkingLot.images.length >
                               0
                           ? nearbyParkingListDetails.nearbyParkingLot.images[0]
-                          : '',
+                          : 'assets/images/parking_photos/placeholder_1.png',
                   parkingPrice: nearbyParkingListDetails.nearbyParkingLot.price,
                   parkingPlaceName:
                       nearbyParkingListDetails.nearbyParkingLot.name.length > 20
@@ -186,7 +190,7 @@ class _BookingTabState extends State<BookingTab> {
                                 : null,
                             imageTwo: nearbyParkingListDetails
                                         .nearbyParkingLot.images.length >
-                                    0
+                                    1
                                 ? nearbyParkingListDetails
                                     .nearbyParkingLot.images[1]
                                 : null,

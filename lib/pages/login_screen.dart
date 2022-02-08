@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       padding: const EdgeInsets.only(
                                           left: 30.0, right: 20.0),
                                       child: Text(
-                                          'You need to sign in or create an account to continue',
+                                          'Please sign in or create an account to continue',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: globals.textColor,
