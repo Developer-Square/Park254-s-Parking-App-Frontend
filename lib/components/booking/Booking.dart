@@ -286,18 +286,6 @@ class _BookingState extends State<Booking> {
             arrivalDate: arrivalDate,
             leavingTime: leavingTime,
             leavingDate: leavingDate)));
-    // Navigator.pushNamed(context, PaymentSuccessful.routeName,
-    //     arguments: ReceiptArguments(
-    //       bookingId: bookingId,
-    //       parkingSpace: widget.parkingLotNumber,
-    //       price: amount,
-    //       destination: widget.destination,
-    //       address: widget.address,
-    //       arrivalTime: arrivalTime,
-    //       arrivalDate: arrivalDate,
-    //       leavingTime: leavingTime,
-    //       leavingDate: leavingDate,
-    //     ));
   }
 
   void changeValue({String newValue, String value}) {

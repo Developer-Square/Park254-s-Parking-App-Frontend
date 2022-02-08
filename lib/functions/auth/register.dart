@@ -30,7 +30,7 @@ Future<UserWithToken> register({
     'email': email.trim(),
     'role': role,
     'name': name,
-    'password': password,
+    'password': password.trim(),
     'phone': phone.toString(),
   };
 

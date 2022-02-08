@@ -5,6 +5,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:park254_s_parking_app/components/transactions/PaymentSuccessful.dart';
 import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/dataModels/UserWithTokenModel.dart';
 import 'package:park254_s_parking_app/functions/bookings/getBookingById.dart';
@@ -14,6 +15,22 @@ import 'package:park254_s_parking_app/functions/parkingLots/updateParkingLot.dar
 
 import '../../helper_functions.dart';
 import 'helpers_widgets.dart';
+
+void moveToPaymentSuccessfulPage({dynamic data, BuildContext context}) {
+  var localEntryTime = data.entryTime.toLocal();
+  var localExitTime = data.exitTime.toLocal();
+
+  Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => PaymentSuccessful(
+            bookingId: data.parkingLotId.id,
+            price: data.parkingLotId.price,
+            destination: data.parkingLotId.name,
+            arrivalTime: TimeOfDay.fromDateTime(localEntryTime),
+            arrivalDate: data.entryTime,
+            leavingTime: TimeOfDay.fromDateTime(localExitTime),
+            leavingDate: data.exitTime,
+          )));
+}
 
 Future scan({
   UserWithTokenModel storeDetails,

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:park254_s_parking_app/components/build_formfield.dart';
 import 'package:park254_s_parking_app/dataModels/BookingProvider.dart';
+import 'package:park254_s_parking_app/dataModels/ParkingLotListModel.dart';
 import 'package:park254_s_parking_app/models/booking.populated.model.dart';
+import 'package:park254_s_parking_app/models/parkingLot.model.dart';
 import '../../../config/globals.dart' as globals;
 import '../../BackArrow.dart';
 import '../../BoxShadowWrapper.dart';
@@ -103,7 +105,7 @@ Widget buildParkingLotResults({
                     parkingPrice: timeOfDayToString(results[index].entryTime),
                     parkingLocation: results[index].parkingLotId.address,
                     paymentStatus: timeOfDayToString(results[index].exitTime),
-                    parkingLotData: results[index].parkingLotId,
+                    parkingLotData: results[index],
                     bookingDetails: results[index],
                     updateParking: updateParking,
                     updateParkingTime: updateParkingTime,
@@ -272,14 +274,14 @@ Widget buildParkingContainer({
                   ],
                 ),
                 _popUpMenu(
-                  data: parkingLotData,
-                  bookingDetails: bookingDetails,
-                  bookingDetailsProvider: bookingDetailsProvider,
-                  userRole: userRole,
-                  updateParking: updateParking,
-                  updateParkingTime: updateParkingTime,
-                  deleteParkingLot: deleteParkingLot,
-                )
+                    data: parkingLotData,
+                    bookingDetails: bookingDetails,
+                    bookingDetailsProvider: bookingDetailsProvider,
+                    userRole: userRole,
+                    updateParking: updateParking,
+                    updateParkingTime: updateParkingTime,
+                    deleteParkingLot: deleteParkingLot,
+                    context: context)
               ]),
         )
       ]),
@@ -289,15 +291,15 @@ Widget buildParkingContainer({
 
 /// Builds out the pop-up that appears when you click on the three dots.
 /// that comes with every parking lot.
-Widget _popUpMenu({
-  @required dynamic data,
-  @required dynamic bookingDetails,
-  @required BookingProvider bookingDetailsProvider,
-  @required String userRole,
-  @required Function updateParking,
-  @required Function deleteParkingLot,
-  @required Function updateParkingTime,
-}) {
+Widget _popUpMenu(
+    {@required dynamic data,
+    @required dynamic bookingDetails,
+    @required BookingProvider bookingDetailsProvider,
+    @required String userRole,
+    @required Function updateParking,
+    @required Function deleteParkingLot,
+    @required Function updateParkingTime,
+    @required BuildContext context}) {
   return PopupMenuButton<int>(
     itemBuilder: (context) => [
       // Hide the option when the user is not a vendor and when they're not updating the time.
@@ -321,7 +323,21 @@ Widget _popUpMenu({
           'Delete',
           style: TextStyle(color: Colors.red),
         ),
-      )
+      ),
+      userRole == 'user'
+          ? bookingDetailsProvider != null
+              ? bookingDetailsProvider.activeBookings
+                      .contains(bookingDetails.id)
+                  ? PopupMenuItem(
+                      value: 3,
+                      child: Text(
+                        'Parking Pass',
+                        style: TextStyle(color: globals.textColor),
+                      ),
+                    )
+                  : Container()
+              : Container()
+          : Container()
     ],
     onSelected: (value) => {
       userRole == 'vendor'
@@ -332,7 +348,12 @@ Widget _popUpMenu({
                   bookingDetailsProvider.activeBookings
                       .contains(bookingDetails.id)
               ? updateParkingTime(bookingDetails: bookingDetails)
-              : () {}
+              : value == 3
+                  ? moveToPaymentSuccessfulPage(
+                      data: data,
+                      context: context,
+                    )
+                  : () {}
     },
     icon: Icon(
       Icons.more_vert,
