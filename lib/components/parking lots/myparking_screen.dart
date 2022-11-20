@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 import '../../config/globals.dart' as globals;
 import '../helper_functions.dart';
 import './widgets/helpers_widgets.dart';
-import 'package:barcode_scan/barcode_scan.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
 
 /// Creates a my parking screen that shows you a history of places you've parked.
 ///

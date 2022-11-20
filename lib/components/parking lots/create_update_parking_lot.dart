@@ -124,16 +124,14 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
 
 // Allows the user to crop the image.
   Future<void> _cropImage() async {
-    File cropped = await ImageCropper.cropImage(
-      sourcePath: selected.path,
-    );
+    // File cropped = await ImageCropper.cropImage(sourcePath: selected.path);
 
-    // If the image was changed set the new value to state otherwise.
-    // retain the old value.
-    setState(() {
-      _imageFiles[index] = cropped.path ?? selected.path;
-      _imagesToSend[index] = cropped.path ?? selected.path;
-    });
+    // // If the image was changed set the new value to state otherwise.
+    // // retain the old value.
+    // setState(() {
+    //   _imageFiles[index] = cropped.path ?? selected.path;
+    //   _imagesToSend[index] = cropped.path ?? selected.path;
+    // });
   }
 
   // Clear the image.
