@@ -589,7 +589,7 @@ class _BookingState extends State<Booking> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
             title: Column(
               children: <Widget>[

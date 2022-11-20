@@ -306,7 +306,7 @@ class BuildFormFieldState extends State<BuildFormField> {
         //           color: globals.textColor.withOpacity(0.75),
         //           fontSize: 16.0,
         //           fontWeight: FontWeight.bold)),
-        //   FlatButton(
+        //   TextButton(
         //       onPressed: () {},
         //       padding: EdgeInsets.only(right: 20.0),
         //       child: Text('Resend',

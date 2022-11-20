@@ -90,7 +90,7 @@ void retryModal({
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          FlatButton(
+                          TextButton(
                             onPressed: () => retryFunction(
                                 transactionDetails: transactionDetails,
                                 total: total,
@@ -98,22 +98,22 @@ void retryModal({
                                 context: context,
                                 receiptGenerator: receiptGenerator,
                                 cancelBooking: cancelBooking),
-                            color: globals.primaryColor,
-                            textColor: Colors.white,
-                            minWidth: 30.0,
-                            height: 30.0,
+                            // color: globals.primaryColor,
+                            // textColor: Colors.white,
+                            // minWidth: 30.0,
+                            // height: 30.0,
                             child: Text('Ok'),
                           ),
                           SizedBox(width: 15.0),
-                          FlatButton(
+                          TextButton(
                             onPressed: () {
                               cancelBooking();
                               Navigator.pop(parentContext);
                             },
-                            color: Colors.red,
-                            textColor: Colors.white,
-                            minWidth: 30.0,
-                            height: 30.0,
+                            // color: Colors.red,
+                            // textColor: Colors.white,
+                            // minWidth: 30.0,
+                            // height: 30.0,
                             child: Text('Cancel'),
                           ),
                         ])

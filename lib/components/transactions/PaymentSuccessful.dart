@@ -504,7 +504,7 @@ class _PaymentSuccessfulState extends State<PaymentSuccessful> {
       child: SafeArea(
         child: Scaffold(
           backgroundColor: globals.textColor,
-          resizeToAvoidBottomPadding: true,
+          resizeToAvoidBottomInset: true,
           body: SingleChildScrollView(
             child: Container(
               width: MediaQuery.of(context).size.width,

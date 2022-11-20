@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:park254_s_parking_app/.env.dart';
+import 'package:park254_s_parking_app/env.dart';
 import 'package:park254_s_parking_app/models/directions.model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

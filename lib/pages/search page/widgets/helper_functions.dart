@@ -9,7 +9,7 @@ import 'package:park254_s_parking_app/dataModels/NavigationProvider.dart';
 import 'package:park254_s_parking_app/dataModels/NearbyParkingListModel.dart';
 import 'package:park254_s_parking_app/functions/directions/getDirections.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../.env.dart';
+import 'package:park254_s_parking_app/env.dart';
 
 // Draws a route from the user's current location to the destination.
 void addRouteToMap({

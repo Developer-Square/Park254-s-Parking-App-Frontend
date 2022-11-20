@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
         onWillPop: () async => false,
         child: SafeArea(
             child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           body: Stack(
             children: [
               AnimatedSwitcher(
