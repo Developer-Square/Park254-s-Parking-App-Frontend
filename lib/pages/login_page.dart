@@ -209,7 +209,9 @@ class _LoginPageState extends State<LoginPage> {
                                 color: globals.textColor, fontSize: 18.0),
                           ),
                           TextButton(
-                              // padding: EdgeInsets.only(right: 10.0),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.only(right: 10.0),
+                              ),
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => RegistrationPage()));

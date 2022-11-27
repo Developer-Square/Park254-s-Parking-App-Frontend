@@ -34,7 +34,6 @@ Future<Transaction> fetchTransaction({
   final url = Uri.https(globals.apiKey, '/v1/paymentCallBack', queryParameters);
 
   final response = await http.get(url, headers: headers);
-  log(response.statusCode.toString());
   if (response.statusCode == 200) {
     final transaction = Transaction.fromJson(jsonDecode(response.body));
     setLoading(false);
@@ -43,6 +42,7 @@ Future<Transaction> fetchTransaction({
   }
   // When the request timeouts.
   else if (response.statusCode == 503) {
+    log(response.body.toString());
     Transaction transaction = Transaction(
         id: null,
         merchantRequestID: null,

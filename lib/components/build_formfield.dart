@@ -300,19 +300,20 @@ class BuildFormFieldState extends State<BuildFormField> {
           },
         ),
         SizedBox(height: 15.0),
-        // Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        //   Text('Didn\'t receive the code?',
-        //       style: TextStyle(
-        //           color: globals.textColor.withOpacity(0.75),
-        //           fontSize: 16.0,
-        //           fontWeight: FontWeight.bold)),
-        //   TextButton(
-        //       onPressed: () {},
-        //       padding: EdgeInsets.only(right: 20.0),
-        //       child: Text('Resend',
-        //           style: globals.buildTextStyle(
-        //               16.0, true, globals.backgroundColor)))
-        // ])
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Text('Didn\'t receive the code?',
+              style: TextStyle(
+                  color: globals.textColor.withOpacity(0.75),
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold)),
+          TextButton(
+              onPressed: () {},
+              style:
+                  TextButton.styleFrom(padding: EdgeInsets.only(right: 20.0)),
+              child: Text('Resend',
+                  style: globals.buildTextStyle(
+                      16.0, true, globals.backgroundColor)))
+        ])
       ],
     );
   }

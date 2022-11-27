@@ -19,7 +19,6 @@ final Color profile6 = Color(0xffe5e8f2);
 
 final colors = [profile1, profile2, profile3, profile4, profile5, profile6];
 
-// final String apiKey = 'park254-parking-app-server.herokuapp.com';
 final String apiKey = 'park254-backend.herokuapp.com';
 
 buildTextStyle(double fontSize, bool fontWeight, color) {
