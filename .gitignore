@@ -9,6 +9,7 @@
 .history
 .svn/
 .vscode
+.env.dart
 
 
 # IntelliJ related
