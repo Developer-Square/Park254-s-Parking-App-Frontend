@@ -47,8 +47,9 @@ void getSuggestion({
   String country = 'country:ke';
   String baseURL =
       'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-  String request =
-      '$baseURL?input=$input&components=$country&key=$kGOOGLE_API_KEY&sessiontoken=$sessionToken';
+  Uri request =
+      '$baseURL?input=$input&components=$country&key=$kGOOGLE_API_KEY&sessiontoken=$sessionToken'
+          as Uri;
 
   var response = await http.get(request);
   if (response.statusCode == 200) {
