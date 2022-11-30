@@ -1,48 +1,48 @@
 {
   "project_info": {
-    "project_number": "942781615744",
-    "project_id": "park-254",
-    "storage_bucket": "park-254.appspot.com"
+    "project_number": "359259064594",
+    "project_id": "park254-parking-app-test",
+    "storage_bucket": "park254-parking-app-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:942781615744:android:25a3fc4211f8db57c1a065",
+        "mobilesdk_app_id": "1:359259064594:android:88af17164371d40f03cbcb",
         "android_client_info": {
           "package_name": "com.example.park254_s_parking_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "942781615744-grsq6nstlpf2uiomjkan85u87admf6i0.apps.googleusercontent.com",
+          "client_id": "359259064594-41mvibofdhep1r7o699ip98qo5n61f1a.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.park254_s_parking_app",
-            "certificate_hash": "adde301c3752eb59ff79a6fb93e75cde7a10ca63"
+            "certificate_hash": "b7cbfc6d6d8bc448dace1bac3797d34dbab97d54"
           }
         },
         {
-          "client_id": "942781615744-vv5495c6jlo8ol8vvvc3u4ril9le1hjg.apps.googleusercontent.com",
+          "client_id": "359259064594-oq3ngjntsr07v127g7gmfl714nktqa7p.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB5VWV040w7lvMKxzlJdWSfUf52mmDxtfw"
+          "current_key": "AIzaSyBYzdnALwMrvs0_HIp0aVt4nTWco_MdJJM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "942781615744-vv5495c6jlo8ol8vvvc3u4ril9le1hjg.apps.googleusercontent.com",
+              "client_id": "359259064594-oq3ngjntsr07v127g7gmfl714nktqa7p.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "942781615744-jpthmqa7l93fjj8lbimpts2rqcm19eo4.apps.googleusercontent.com",
+              "client_id": "359259064594-arqv7pn2rd4s7jd0b10hoe6uqa5g7j2r.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.park254SParkingApp"
+                "bundle_id": "com.example.park254sparkingapp"
               }
             }
           ]

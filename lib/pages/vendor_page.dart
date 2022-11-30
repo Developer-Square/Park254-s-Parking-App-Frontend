@@ -79,7 +79,7 @@ class _VendorPageState extends State<VendorPage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           AnimatedSwitcher(

@@ -262,7 +262,7 @@ class _ParkingInfoState extends State<ParkingInfo> {
 
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomInset: true,
         appBar: PreferredSize(
           preferredSize:
               Size.fromHeight(MediaQuery.of(context).size.height / 3),

@@ -208,8 +208,10 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                                 color: globals.textColor, fontSize: 18.0),
                           ),
-                          FlatButton(
-                              padding: EdgeInsets.only(right: 10.0),
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.only(right: 10.0),
+                              ),
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => RegistrationPage()));
@@ -253,14 +255,14 @@ class _LoginPageState extends State<LoginPage> {
       text == 'Password'
           ? (Align(
               alignment: Alignment.centerRight,
-              child: FlatButton(
+              child: TextButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ForgotResetPassword(
                               pageType: 'forgot',
                             )));
                   },
-                  padding: EdgeInsets.only(right: 20.0),
+                  // padding: EdgeInsets.only(right: 20.0),
                   child: Text(
                     'Forgot Password',
                     style: TextStyle(color: globals.textColor, fontSize: 15.0),

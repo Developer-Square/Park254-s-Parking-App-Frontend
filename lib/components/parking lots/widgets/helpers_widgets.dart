@@ -389,9 +389,9 @@ Widget editUploadedImage(currentScreen, selected, _cropImage, _clear) {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           // User should not be able to crop an uploaded image.
           currentScreen != 'update'
-              ? FlatButton(onPressed: _cropImage, child: Icon(Icons.crop))
+              ? TextButton(onPressed: _cropImage, child: Icon(Icons.crop))
               : Container(),
-          FlatButton(onPressed: _clear, child: Icon(Icons.close))
+          TextButton(onPressed: _clear, child: Icon(Icons.close))
         ]),
       ],
     ),

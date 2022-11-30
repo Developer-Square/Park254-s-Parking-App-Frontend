@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:park254_s_parking_app/config/globals.dart' as globals;
 import 'package:park254_s_parking_app/functions/transactions/fetchTransaction.dart';
+import 'package:path/path.dart';
 
 import '../../helper_functions.dart';
 
@@ -90,7 +91,7 @@ void retryModal({
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          FlatButton(
+                          TextButton(
                             onPressed: () => retryFunction(
                                 transactionDetails: transactionDetails,
                                 total: total,
@@ -98,22 +99,25 @@ void retryModal({
                                 context: context,
                                 receiptGenerator: receiptGenerator,
                                 cancelBooking: cancelBooking),
-                            color: globals.primaryColor,
-                            textColor: Colors.white,
-                            minWidth: 30.0,
-                            height: 30.0,
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: globals.primaryColor,
+                              fixedSize: Size(30.0, 30.0),
+                            ),
                             child: Text('Ok'),
                           ),
                           SizedBox(width: 15.0),
-                          FlatButton(
+                          TextButton(
                             onPressed: () {
                               cancelBooking();
                               Navigator.pop(parentContext);
                             },
-                            color: Colors.red,
-                            textColor: Colors.white,
-                            minWidth: 30.0,
-                            height: 30.0,
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.red,
+                              textStyle: TextStyle(color: Colors.white),
+                              fixedSize: Size(30.0, 30.0),
+                            ),
                             child: Text('Cancel'),
                           ),
                         ])

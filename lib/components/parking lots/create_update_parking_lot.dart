@@ -124,8 +124,29 @@ class _CreateUpdateParkingLotState extends State<CreateUpdateParkingLot> {
 
 // Allows the user to crop the image.
   Future<void> _cropImage() async {
-    File cropped = await ImageCropper.cropImage(
+    CroppedFile cropped = await ImageCropper().cropImage(
       sourcePath: selected.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
     );
 
     // If the image was changed set the new value to state otherwise.

@@ -43,7 +43,7 @@ class _SnapState extends State<Snap> {
         '${DateTime.now()}.png',
       );
       await _initializeControllerFuture;
-      await _controller.takePicture(path);
+      await _controller.takePicture();
       _toggleDisplay();
     } catch (e) {
       // If an error occurs, log the error to the console.

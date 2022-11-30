@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
     nearbyParkingDetails = Provider.of<NearbyParkingListModel>(context);
     return SafeArea(
         child: Scaffold(
-            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             body: Stack(children: [
               GoogleMapWidget(
